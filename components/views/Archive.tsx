@@ -309,7 +309,7 @@ const Archive: React.FC = () => {
                      
                      {/* Action Bar (Replaces inline player) */}
                      <div className="bg-vallenato-blue p-4 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300">
-                        <span className="text-white text-xs font-bold uppercase tracking-widest">Escuchar Audio</span>
+                        <span className="text-white text-xs font-bold uppercase tracking-widest">Reproducir Estampa</span>
                         <div className="bg-white/20 p-1.5 rounded-full">
                            <Play size={14} className="text-white fill-white" />
                         </div>

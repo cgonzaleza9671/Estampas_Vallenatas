@@ -162,12 +162,12 @@ const Bio: React.FC = () => {
               asegurando que las futuras generaciones conozcan la raíz del sentimiento vallenato.
             </p>
             
-            {/* Secondary Image - Updated caption */}
-            <div className="relative inline-block rounded-3xl overflow-hidden shadow-2xl border-4 border-white sepia-[.15] group cursor-pointer mx-auto">
+            {/* Secondary Image with Golden Frame Hover Effect */}
+            <div className="relative inline-block rounded-3xl overflow-hidden shadow-2xl border-4 border-white hover:border-vallenato-mustard hover:shadow-[0_0_40px_rgba(234,170,0,0.5)] transition-all duration-500 sepia-[.15] group cursor-pointer mx-auto">
                <img 
                  src="https://i.imgur.com/hDuEleJ.jpeg" 
                  alt="Álvaro González Pimienta junto al gran Luis Enrique Martínez" 
-                 className="max-w-full md:max-w-3xl h-auto object-cover"
+                 className="max-w-full md:max-w-3xl h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                />
                <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-6 pt-12">
                   <p className="text-white font-sans text-xs uppercase tracking-widest text-center">
