@@ -131,7 +131,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
               <div className="h-full bg-vallenato-cream p-4 md:p-6 rounded-xl md:rounded-2xl border-l-4 border-vallenato-mustard">
                 <h3 className="font-serif text-xl md:text-2xl text-vallenato-blue mb-3 md:mb-4 flex items-center gap-2">
                   <FileText className="text-vallenato-red w-4 h-4 md:w-5 md:h-5" />
-                  {isVideo ? "Información" : "Comentario del Maestro"}
+                  {isVideo ? "Información" : "Comentario de Álvaro González Pimienta"}
                 </h3>
                 <p className="text-gray-700 font-serif leading-relaxed text-base md:text-lg italic">
                    "{item.descripcion}"
