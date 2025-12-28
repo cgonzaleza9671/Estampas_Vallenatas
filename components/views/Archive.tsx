@@ -55,9 +55,13 @@ const Archive: React.FC = () => {
 
   const uniqueSecondaryList = useMemo(() => {
     // Accordionists for Audio only
-    if (activeTab !== 'audio') return [];
-    const list = audios.map(item => item.acordeonero).filter(Boolean);
-    return ['All', ...new Set(list)];
+    if (activeTab !== 'audio' && activeTab !== 'video') return [];
+    // Only audio has accordionists logic for now, but keeping safe access
+    if (activeTab === 'audio') {
+        const list = audios.map(item => item.acordeonero).filter(Boolean);
+        return ['All', ...new Set(list)];
+    }
+    return [];
   }, [audios, activeTab]);
 
   // Filtering Logic
@@ -114,7 +118,7 @@ const Archive: React.FC = () => {
           <span className="text-vallenato-red font-bold uppercase tracking-widest text-xs">Archivo Histórico</span>
           <h1 className="text-4xl md:text-5xl font-serif text-vallenato-blue mb-4">La Memoria del Acordeón</h1>
           <p className="text-gray-600 max-w-2xl mx-auto font-light">
-            Explore nuestra colección preservada. Utilice los filtros para navegar por la historia de la sabana.
+            Explore nuestra colección preservada. Utilice los filtros para navegar
           </p>
         </div>
 

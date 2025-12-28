@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ViewState } from './types';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -9,6 +9,11 @@ import Locations from './components/views/Locations';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>(ViewState.HOME);
+
+  // Ensure page scrolls to top on view change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentView]);
 
   const renderView = () => {
     switch (currentView) {

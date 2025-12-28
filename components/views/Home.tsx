@@ -240,7 +240,7 @@ const Home: React.FC<HomeProps> = ({ setViewState }) => {
               <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mb-4">Parranda Digital</h2>
               <div className="h-1 w-20 bg-vallenato-red mx-auto"></div>
               <p className="mt-6 text-gray-600 max-w-xl mx-auto font-light">
-                Nuestras listas de reproducción oficiales. La parranda no termina cuando se apaga el acordeón.
+                Listas de reproducción recomendadas para que lleves lo mejor del Vallenato en tu plataforma preferida
               </p>
             </div>
 

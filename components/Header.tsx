@@ -20,12 +20,13 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
   const handleNav = (view: ViewState) => {
     onNavigate(view);
     setMobileMenuOpen(false);
+    window.scrollTo(0, 0);
   };
 
   return (
     <header className="sticky top-0 z-50 bg-vallenato-blue/95 backdrop-blur-md shadow-museum border-b-4 border-vallenato-mustard">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-        {/* Logo Area - Recreated to match specific reference */}
+        {/* Logo Area */}
         <div 
           className="flex items-center gap-3 cursor-pointer group" 
           onClick={() => handleNav(ViewState.HOME)}
@@ -50,7 +51,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
           {/* Text Logo */}
           <div className="flex flex-col -space-y-1.5 select-none">
             <h1 className="text-3xl font-serif font-bold text-white tracking-wide">Estampas</h1>
-            {/* Changed to white for better readability */}
             <span className="text-lg font-sans font-light text-white tracking-[0.05em] drop-shadow-sm">Vallenatas</span>
           </div>
         </div>
@@ -74,29 +74,38 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
 
         {/* Mobile Menu Toggle */}
         <button 
-          className="lg:hidden text-white hover:text-vallenato-mustard"
+          className="lg:hidden text-white hover:text-vallenato-mustard transition-colors p-1"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Dropdown (Modern Floating Card) */}
       {mobileMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-vallenato-blue border-t border-white/10 p-6 flex flex-col gap-4 animate-fade-in-down shadow-xl h-[calc(100vh-80px)] overflow-y-auto">
-          {navItems.map((item) => (
-            <button
-              key={item.value}
-              onClick={() => handleNav(item.value)}
-              className={`text-center py-4 text-lg font-bold uppercase tracking-widest rounded-xl transition-colors ${
-                currentView === item.value 
-                  ? 'bg-vallenato-mustard text-vallenato-blue' 
-                  : 'text-white hover:bg-white/10 border border-white/5'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
+        <div className="absolute top-full left-0 w-full px-4 pt-2 lg:hidden animate-fade-in-down z-50">
+          <div className="bg-vallenato-blue/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 flex flex-col gap-1">
+            {navItems.map((item) => (
+              <button
+                key={item.value}
+                onClick={() => handleNav(item.value)}
+                className={`
+                  w-full py-4 px-4 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-between group
+                  ${
+                    currentView === item.value 
+                      ? 'bg-vallenato-mustard text-vallenato-blue shadow-md' 
+                      : 'text-white hover:bg-white/10'
+                  }
+                `}
+              >
+                {item.label}
+                {/* Visual indicator dot for active state */}
+                {currentView === item.value && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-vallenato-blue" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </header>

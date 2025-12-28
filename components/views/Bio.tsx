@@ -131,7 +131,7 @@ const Bio: React.FC = () => {
                   <div>
                      <h3 className="text-2xl font-serif text-vallenato-blue font-bold mb-3">11 Veces Jurado</h3>
                      <p className="text-gray-600 text-sm leading-relaxed font-light">
-                       Con un criterio respetado por juglares y novatos, ha sido designado 11 veces como jurado en el Festival de la Leyenda Vallenata en distintas categorías (piquería, canción inédita, rey vallenato, rey de reyes y rey vallenato profesional).
+                       Con un criterio respetado por juglares y novatos, ha sido designado <strong className="text-vallenato-blue font-bold">11 veces como jurado</strong> en el <strong className="text-vallenato-blue font-bold">Festival de la Leyenda Vallenata</strong> en distintas categorías (piquería, canción inédita, rey vallenato, rey de reyes y rey vallenato profesional).
                      </p>
                   </div>
                </div>
@@ -144,7 +144,7 @@ const Bio: React.FC = () => {
                   <div>
                      <h3 className="text-2xl font-serif text-vallenato-blue font-bold mb-3">Voz Autorizada</h3>
                      <p className="text-gray-600 text-sm leading-relaxed font-light">
-                        Creador y director del programa "Estampas Vallenatas", una plataforma radial líder que se convirtió en referencia obligada para la preservación cultura.
+                        <strong className="text-vallenato-blue font-bold">Creador y director</strong> del programa <strong className="text-vallenato-blue font-bold">"Estampas Vallenatas"</strong>, una plataforma radial líder que se convirtió en referencia obligada para la <strong className="text-vallenato-blue font-bold">preservación cultural</strong>.
                      </p>
                   </div>
                </div>
@@ -187,7 +187,7 @@ const Bio: React.FC = () => {
                <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-12">
                   <div className="md:col-span-1 border-r border-gray-200 pr-8">
                      <span className="text-vallenato-red font-bold uppercase tracking-widest text-xs mb-2 block">El Legado</span>
-                     <h3 className="text-3xl font-serif text-gray-900 mb-4">Historias de Radio y Amistad</h3>
+                     <h3 className="text-3xl font-serif text-gray-900 mb-4">Anécdotas de una vida Vallenata</h3>
                      <p className="text-sm text-gray-500 italic leading-relaxed">
                         Extracto de entrevista realizada para la revista del cuadragésimo segundo Festival de la Leyenda Vallenata
                      </p>
