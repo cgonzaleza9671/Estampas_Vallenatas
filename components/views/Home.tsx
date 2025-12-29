@@ -159,20 +159,36 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
           
           <div className="mt-4 w-full max-w-4xl flex flex-col items-center">
              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
-                {Object.entries(timeLeft).map(([label, value]) => (
-                  <div key={label} className="flex flex-col items-center justify-center bg-black/30 rounded-xl py-3 border border-white/10">
-                     <span className="text-2xl md:text-3xl font-mono font-bold mb-1 text-vallenato-mustard">
-                       {String(value).padStart(2, '0')}
-                     </span>
-                     <span className="text-[10px] md:text-xs text-white uppercase tracking-widest font-bold opacity-90">
-                       {label === 'months' ? 'Meses' : 
-                        label === 'weeks' ? 'Sem' :
-                        label === 'days' ? 'Días' :
-                        label === 'hours' ? 'Hrs' :
-                        label === 'minutes' ? 'Min' : 'Seg'}
-                     </span>
-                  </div>
-                ))}
+                {Object.entries(timeLeft).map(([label, value]) => {
+                  const isSeconds = label === 'seconds';
+                  return (
+                    <div 
+                      key={label} 
+                      className={`flex flex-col items-center justify-center bg-black/30 rounded-xl py-3 border transition-all duration-300 ${
+                        isSeconds 
+                        ? 'border-vallenato-mustard/60 scale-105 shadow-[0_0_15px_rgba(234,170,0,0.3)] bg-vallenato-mustard/5' 
+                        : 'border-white/10'
+                      }`}
+                    >
+                       <span className={`text-2xl md:text-3xl font-mono font-bold mb-1 transition-all ${
+                         isSeconds 
+                         ? 'text-vallenato-mustard drop-shadow-[0_0_8px_rgba(234,170,0,0.8)] animate-pulse' 
+                         : 'text-vallenato-mustard'
+                       }`}>
+                         {String(value).padStart(2, '0')}
+                       </span>
+                       <span className={`text-[10px] md:text-xs uppercase tracking-widest font-bold opacity-90 ${
+                         isSeconds ? 'text-vallenato-mustard' : 'text-white'
+                       }`}>
+                         {label === 'months' ? 'Meses' : 
+                          label === 'weeks' ? 'Sem' :
+                          label === 'days' ? 'Días' :
+                          label === 'hours' ? 'Hrs' :
+                          label === 'minutes' ? 'Min' : 'Seg'}
+                       </span>
+                    </div>
+                  );
+                })}
              </div>
              <p className="text-white text-xs md:text-sm mt-5 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
                Cuenta regresiva para el 59° Festival de la Leyenda Vallenata
