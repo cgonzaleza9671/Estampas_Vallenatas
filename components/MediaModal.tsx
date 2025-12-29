@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Calendar, User, Mic2, FileText, Music, Video, Tv, ListMusic, UserCheck } from 'lucide-react';
 import { AudioItem, VideoItem } from '../types';
+import { SombreroVueltiaoIcon } from './CustomIcons';
 
 interface MediaModalProps {
   item: AudioItem | VideoItem | null;
@@ -66,7 +67,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                  <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                  <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
                     <div className="mb-4 md:mb-6 bg-white/10 p-3 md:p-4 rounded-full backdrop-blur-md border border-white/20 shadow-xl animate-pulse">
-                       <Music size={32} className="text-vallenato-mustard md:w-12 md:h-12" />
+                       <SombreroVueltiaoIcon size={32} className="text-vallenato-mustard md:w-12 md:h-12" />
                     </div>
                     <audio 
                       controls 

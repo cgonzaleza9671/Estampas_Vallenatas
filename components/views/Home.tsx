@@ -5,7 +5,7 @@ import Button from '../Button';
 import MediaModal from '../MediaModal';
 import { Play, Sparkles, ExternalLink, ArrowRight, Music, Disc, Youtube, Globe, User, ListMusic, Video, Calendar } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../services/supabaseClient';
-import { AccordionPlayIcon, YouTubeLogo, SpotifyLogo, AppleMusicLogo } from '../CustomIcons';
+import { SombreroVueltiaoIcon, YouTubeLogo, SpotifyLogo, AppleMusicLogo } from '../CustomIcons';
 
 interface HomeProps {
   setViewState: (view: ViewState) => void;
@@ -209,7 +209,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
                    >
                       <div className="p-6 bg-vallenato-beige/30 relative flex-grow">
                          <div className="absolute top-4 right-4 text-vallenato-blue/20 group-hover:text-vallenato-mustard transition-colors">
-                            <AccordionPlayIcon className="w-16 h-16" />
+                            <SombreroVueltiaoIcon className="w-16 h-16" />
                          </div>
                          <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate pr-8 group-hover:text-vallenato-red transition-colors">{item.titulo}</h3>
                          <p className="text-vallenato-red text-sm font-bold uppercase mt-1 flex items-center gap-1">

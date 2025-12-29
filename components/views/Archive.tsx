@@ -3,7 +3,7 @@ import { fetchAudios, fetchVideos } from '../../services/supabaseClient';
 import { AudioItem, VideoItem } from '../../types';
 import MediaModal from '../MediaModal';
 import { Music, Video, Filter, Loader2, AlertCircle, RefreshCw, Calendar, Play, User, Search, Mic2, X, ListMusic, Tv } from 'lucide-react';
-import { AccordionPlayIcon } from '../CustomIcons';
+import { SombreroVueltiaoIcon } from '../CustomIcons';
 
 interface ArchiveProps {
   initialTab?: 'audio' | 'video';
@@ -291,7 +291,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
                         
                         {/* Custom Icon for Estampa */}
                         <div className="absolute top-4 right-4 text-vallenato-blue/10 group-hover:text-vallenato-mustard/40 transition-colors pointer-events-none">
-                            <AccordionPlayIcon className="w-12 h-12" />
+                            <SombreroVueltiaoIcon className="w-12 h-12" />
                         </div>
 
                         <h3 className="text-xl font-serif text-vallenato-blue font-bold mb-1 leading-tight group-hover:text-vallenato-red transition-colors">
