@@ -153,7 +153,7 @@ const Home: React.FC<HomeProps> = ({ setViewState }) => {
              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
                 {Object.entries(timeLeft).map(([label, value]) => (
                   <div key={label} className="flex flex-col items-center justify-center bg-black/20 rounded-xl py-3 border border-white/5">
-                     <span className={`text-2xl md:text-3xl font-mono font-bold mb-1 ${(label === 'minutes' || label === 'seconds') ? 'text-vallenato-red' : 'text-vallenato-mustard'}`}>
+                     <span className={`text-2xl md:text-3xl font-mono font-bold mb-1 ${(label === 'minutes' || label === 'seconds') ? 'text-vallenato-blue' : 'text-vallenato-mustard'}`}>
                        {String(value).padStart(2, '0')}
                      </span>
                      <span className="text-[10px] md:text-xs text-white/70 uppercase tracking-widest font-bold">
