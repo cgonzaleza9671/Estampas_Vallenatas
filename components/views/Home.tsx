@@ -134,7 +134,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
       )}
 
       {/* 2. Sección Hero (Carrusel Visual) */}
-      <section className="relative min-h-[85vh] md:min-h-[90vh] w-full overflow-hidden flex items-center justify-center py-12">
+      <section className="relative min-h-[85vh] md:min-h-[90vh] w-full overflow-hidden flex items-center justify-center pt-12 pb-8 md:pb-12">
         {HERO_GALLERY.map((img, index) => (
           <div 
             key={index}
@@ -191,16 +191,16 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
       </section>
 
       {/* 4. Sección: Estampas Recientes (AUDIOS) */}
-      <section className="py-24 bg-white relative z-10">
+      <section className="pt-16 pb-12 bg-white relative z-10">
          <div className="container mx-auto px-6">
-             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+             <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-6">
                 <div>
                    <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
                    <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Audios</h2>
                 </div>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-10">
                 {recentAudios.map((item) => (
                    <div 
                      key={item.id} 
@@ -243,16 +243,16 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
       </section>
 
       {/* 5. Sección: Estampas Recientes (VIDEOS) */}
-      <section className="py-24 bg-vallenato-cream/50 relative z-10 border-t border-vallenato-mustard/10">
+      <section className="pt-12 pb-20 bg-vallenato-cream/50 relative z-10 border-t border-vallenato-mustard/10">
          <div className="container mx-auto px-6">
-             <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+             <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12 gap-6">
                 <div>
                    <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
                    <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Videos</h2>
                 </div>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 md:mb-10">
                 {recentVideos.map((item) => (
                    <div 
                      key={item.id} 
