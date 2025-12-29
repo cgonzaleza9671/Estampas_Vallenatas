@@ -5,9 +5,13 @@ import MediaModal from '../MediaModal';
 import { Music, Video, Filter, Loader2, AlertCircle, RefreshCw, Calendar, Play, User, Search, Mic2, X, ListMusic, Tv } from 'lucide-react';
 import { AccordionPlayIcon } from '../CustomIcons';
 
-const Archive: React.FC = () => {
+interface ArchiveProps {
+  initialTab?: 'audio' | 'video';
+}
+
+const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
   // State
-  const [activeTab, setActiveTab] = useState<'audio' | 'video'>('audio');
+  const [activeTab, setActiveTab] = useState<'audio' | 'video'>(initialTab);
   const [audios, setAudios] = useState<AudioItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +25,11 @@ const Archive: React.FC = () => {
   // Modal State
   const [selectedItem, setSelectedItem] = useState<AudioItem | VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Sync activeTab with initialTab if it changes from props
+  useEffect(() => {
+    setActiveTab(initialTab);
+  }, [initialTab]);
 
   // Load Data
   const loadData = async () => {
@@ -48,22 +57,16 @@ const Archive: React.FC = () => {
   // Dynamic Filters Lists
   const uniquePrimaryList = useMemo(() => {
     let items: (AudioItem | VideoItem)[] = activeTab === 'audio' ? audios : videos;
-    // Both now use 'autor'
     const list = items.map(item => item.autor).filter(Boolean);
     return ['All', ...new Set(list)];
   }, [audios, videos, activeTab]);
 
   const uniqueSecondaryList = useMemo(() => {
-    // Accordionists for Audio only
-    if (activeTab !== 'audio' && activeTab !== 'video') return [];
-    // Only audio has accordionists logic for now, but keeping safe access
-    if (activeTab === 'audio') {
-        const list = audios
-          .map(item => item.acordeonero)
-          .filter(val => val && val.trim() !== "" && val !== "-");
-        return ['All', ...new Set(list)];
-    }
-    return [];
+    if (activeTab !== 'audio') return [];
+    const list = audios
+      .map(item => item.acordeonero)
+      .filter(val => val && val.trim() !== "" && val !== "-");
+    return ['All', ...new Set(list)];
   }, [audios, activeTab]);
 
   // Filtering Logic

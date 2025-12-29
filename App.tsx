@@ -9,24 +9,30 @@ import Locations from './components/views/Locations';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>(ViewState.HOME);
+  const [archiveInitialTab, setArchiveInitialTab] = useState<'audio' | 'video'>('audio');
 
   // Ensure page scrolls to top on view change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [currentView]);
 
+  const navigateToArchive = (tab: 'audio' | 'video') => {
+    setArchiveInitialTab(tab);
+    setCurrentView(ViewState.ARCHIVE);
+  };
+
   const renderView = () => {
     switch (currentView) {
       case ViewState.HOME:
-        return <Home setViewState={setCurrentView} />;
+        return <Home setViewState={setCurrentView} onNavigateArchive={navigateToArchive} />;
       case ViewState.ARCHIVE:
-        return <Archive />;
+        return <Archive initialTab={archiveInitialTab} />;
       case ViewState.BIO:
         return <Bio />;
       case ViewState.LOCATIONS:
         return <Locations />;
       default:
-        return <Home setViewState={setCurrentView} />;
+        return <Home setViewState={setCurrentView} onNavigateArchive={navigateToArchive} />;
     }
   };
 

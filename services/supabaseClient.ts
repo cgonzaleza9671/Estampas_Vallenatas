@@ -65,7 +65,6 @@ export const fetchAudios = async (): Promise<AudioItem[]> => {
       
     if (error) {
       console.error("Error fetching audios:", JSON.stringify(error, null, 2));
-      // MOCK data adaptation if needed, but assuming DB works
       return [];
     }
     
@@ -115,9 +114,28 @@ export const fetchVideos = async (): Promise<VideoItem[]> => {
   }
 };
 
+export const fetchRecentVideos = async (limit: number = 2): Promise<VideoItem[]> => {
+  try {
+    const { data, error } = await supabase
+      .from('Videos')
+      .select('*')
+      .order('fecha', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error("Error fetching recent videos:", JSON.stringify(error, null, 2));
+      return [];
+    }
+    
+    return data.map(mapDatabaseVideo);
+  } catch (e) {
+    console.error("Exception fetching recent videos:", e);
+    return [];
+  }
+};
+
 export const saveQuestion = async (question: Question): Promise<boolean> => {
   try {
-    // Explicit mapping to match the database schema: public.Preguntas
     const payload = {
       nombre_apellido: question.nombre_apellido,
       ciudad: question.ciudad,
