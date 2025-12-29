@@ -58,7 +58,9 @@ const Archive: React.FC = () => {
     if (activeTab !== 'audio' && activeTab !== 'video') return [];
     // Only audio has accordionists logic for now, but keeping safe access
     if (activeTab === 'audio') {
-        const list = audios.map(item => item.acordeonero).filter(Boolean);
+        const list = audios
+          .map(item => item.acordeonero)
+          .filter(val => val && val.trim() !== "" && val !== "-");
         return ['All', ...new Set(list)];
     }
     return [];

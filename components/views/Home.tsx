@@ -101,21 +101,22 @@ const Home: React.FC<HomeProps> = ({ setViewState }) => {
       {!loadingLatest && latestAudio && (
         <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-           <div className="container mx-auto px-6 py-3 flex flex-col sm:flex-row items-center justify-between relative z-10 gap-3">
+           {/* Change: justify-between -> justify-center and larger gap for cohesion */}
+           <div className="container mx-auto px-6 py-3 flex flex-col sm:flex-row items-center justify-center relative z-10 gap-4 md:gap-10">
               <div className="flex items-center gap-3">
-                 <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse">
+                 <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse flex-shrink-0">
                     <Sparkles size={16} className="text-vallenato-blue" />
                  </div>
                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
-                    <span className="text-xs font-bold uppercase tracking-widest text-vallenato-mustard">Novedad Exclusiva:</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap">Novedad Exclusiva:</span>
                     <span className="font-serif italic text-lg line-clamp-1">"{latestAudio.titulo}" - {latestAudio.autor}</span>
                  </div>
               </div>
               <button 
                 onClick={() => openMedia(latestAudio)}
-                className="bg-white/10 hover:bg-white text-white hover:text-vallenato-blue px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border border-white/20"
+                className="bg-white/10 hover:bg-white text-white hover:text-vallenato-blue px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border border-white/20 shadow-lg flex-shrink-0"
               >
-                Escuchar <Play size={12} fill="currentColor" />
+                Reproducir <Play size={12} fill="currentColor" />
               </button>
            </div>
         </div>
@@ -152,7 +153,7 @@ const Home: React.FC<HomeProps> = ({ setViewState }) => {
              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
                 {Object.entries(timeLeft).map(([label, value]) => (
                   <div key={label} className="flex flex-col items-center justify-center bg-black/20 rounded-xl py-3 border border-white/5">
-                     <span className="text-2xl md:text-3xl font-mono font-bold text-vallenato-mustard mb-1">
+                     <span className={`text-2xl md:text-3xl font-mono font-bold mb-1 ${(label === 'minutes' || label === 'seconds') ? 'text-vallenato-red' : 'text-vallenato-mustard'}`}>
                        {String(value).padStart(2, '0')}
                      </span>
                      <span className="text-[10px] md:text-xs text-white/70 uppercase tracking-widest font-bold">
