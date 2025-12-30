@@ -9,19 +9,19 @@ const Footer: React.FC = () => {
         {/* Brand Column */}
         <div className="space-y-6">
           <div className="flex items-center gap-3">
-             {/* Matching Header Logo Style for Consistency */}
-             <div className="flex items-center gap-2 px-2.5 py-1 bg-white/5 rounded-lg border border-white/10">
-                 {/* Chevrons */}
-                 <div className="flex gap-[2px]">
+             {/* Ultra Compact Isotype Style */}
+             <div className="flex items-center justify-center gap-1 px-[4px] py-[1px] bg-white/5 rounded-lg border border-white/10 min-w-[46px]">
+                 {/* Chevrons with offset for centering */}
+                 <div className="flex gap-[1.5px] ml-0.5">
                     <div className="w-1 h-6 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
                     <div className="w-1 h-6 bg-vallenato-mustard transform -skew-x-12 rounded-sm shadow-sm"></div>
                     <div className="w-1 h-6 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
                  </div>
                  {/* Accordion Bar */}
-                 <div className="bg-vallenato-blue w-4 h-8 rounded-md border border-white/20 flex flex-col items-center justify-between py-1.5 shadow-inner">
-                    <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
-                    <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
-                    <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
+                 <div className="bg-vallenato-blue w-3.5 h-7 rounded-md border border-white/20 flex flex-col items-center justify-between py-1.5 shadow-inner">
+                    <div className="w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
+                    <div className="w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
+                    <div className="w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
                  </div>
              </div>
              

@@ -31,20 +31,20 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
           className="flex items-center gap-3 cursor-pointer group" 
           onClick={() => handleNav(ViewState.HOME)}
         >
-          {/* Graphic Isotype */}
-          <div className="flex items-center gap-2.5 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 group-hover:bg-white/10 transition-colors">
-             {/* Chevrons/Lines (Red-Yellow-Red) */}
-             <div className="flex gap-[3px]">
+          {/* Graphic Isotype - Ultra compact framing with centered alignment */}
+          <div className="flex items-center justify-center gap-1.5 px-[5px] py-[2px] bg-white/5 rounded-lg border border-white/10 group-hover:bg-white/10 transition-colors min-w-[65px]">
+             {/* Chevrons/Lines (Red-Yellow-Red) - ml-1 added to offset visual skew */}
+             <div className="flex gap-[2.5px] ml-1">
                 <div className="w-1.5 h-8 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
                 <div className="w-1.5 h-8 bg-vallenato-mustard transform -skew-x-12 rounded-sm shadow-sm"></div>
                 <div className="w-1.5 h-8 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
              </div>
              
-             {/* Accordion Bar (Blue with dots) */}
-             <div className="bg-vallenato-blue w-6 h-10 rounded-md border border-white/20 flex flex-col items-center justify-between py-2 shadow-inner">
-                <div className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
-                <div className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
-                <div className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
+             {/* Accordion Bar (Blue with dots) - Optimized size */}
+             <div className="bg-vallenato-blue w-5 h-9 rounded-md border border-white/20 flex flex-col items-center justify-between py-1.5 shadow-inner">
+                <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
+                <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
+                <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
              </div>
           </div>
 

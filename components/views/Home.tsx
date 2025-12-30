@@ -153,9 +153,9 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
             <span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-3">El Museo Digital del</span>
             <span className="text-vallenato-red">Folclor Vallenato</span>
           </h1>
-          <p className="text-gray-100 text-lg md:text-2xl font-light mb-12 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-lg">
+          <h2 className="text-gray-100 text-lg md:text-2xl font-light mb-12 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-lg">
             Un archivo que preserva la riqueza musical de los grandes juglares de Colombia
-          </p>
+          </h2>
           
           <div className="mt-4 w-full max-w-4xl flex flex-col items-center">
              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
@@ -333,7 +333,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
               <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mb-4">Parranda Digital</h2>
               <div className="h-1 w-20 bg-vallenato-red mx-auto"></div>
               <p className="mt-6 text-gray-600 max-w-xl mx-auto font-light">
-                Listas de reproducción recomendadas para que lleves lo mejor del Vallenato en tu plataforma preferida
+                Listas de reproducción <span className="font-bold text-vallenato-red">recomendadas</span> para que lleves lo mejor del Vallenato en tu <span className="font-bold text-vallenato-blue">plataforma preferida</span>
               </p>
             </div>
 
@@ -375,7 +375,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
                      <p className="text-sm text-gray-500 uppercase tracking-widest relative z-10">Clásicos del Vallenato</p>
                   </div>
                   <div className="p-8 text-center">
-                     <p className="text-gray-600 mb-6 font-serif italic">"Pasado y presente para parrandear"</p>
+                     <p className="text-gray-600 mb-6 font-serif italic">"Pasado y presente para que la parranda perdure con los clásicos"</p>
                      <a href="https://open.spotify.com/playlist/37i9dQZF1DXbUPnz12C5bA" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-[#1DB954] font-bold uppercase text-xs tracking-widest group-hover:underline">
                         Escuchar Playlist <SpotifyLogo className="w-5 h-5" />
                      </a>
@@ -386,13 +386,11 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
                <div className="group bg-white rounded-3xl shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-pink-900/10 border-t-8 border-[#FA243C]">
                   <div className="bg-pink-50 p-8 flex flex-col items-center relative overflow-hidden">
                      <div className="absolute -right-6 -top-6 text-pink-100 opacity-50 transform rotate-12">
-                       <Disc size={120} />
+                       <Music size={120} />
                      </div>
-                     <img 
-                       src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Apple_Music_icon.svg" 
-                       alt="Apple Music Logo" 
-                       className="h-16 w-auto relative z-10 mb-4 drop-shadow-md"
-                     />
+                     <div className="h-16 flex items-center justify-center relative z-10 mb-4">
+                        <AppleMusicLogo className="h-full w-auto text-[#FA243C] drop-shadow-sm" />
+                     </div>
                      <h3 className="text-2xl font-bold text-gray-800 relative z-10">Apple Music</h3>
                      <p className="text-sm text-gray-500 uppercase tracking-widest relative z-10">Vallenato Essentials</p>
                   </div>
