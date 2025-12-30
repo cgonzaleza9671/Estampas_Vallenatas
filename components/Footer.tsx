@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center gap-3">
              {/* Matching Header Logo Style for Consistency */}
-             <div className="flex items-center gap-1.5 p-1 bg-white/5 rounded-lg border border-white/10">
+             <div className="flex items-center gap-2 px-2.5 py-1 bg-white/5 rounded-lg border border-white/10">
                  {/* Chevrons */}
                  <div className="flex gap-[2px]">
                     <div className="w-1 h-6 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>

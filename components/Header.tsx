@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
           onClick={() => handleNav(ViewState.HOME)}
         >
           {/* Graphic Isotype */}
-          <div className="flex items-center gap-1.5 p-1 bg-white/5 rounded-lg border border-white/10 group-hover:bg-white/10 transition-colors">
+          <div className="flex items-center gap-2.5 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10 group-hover:bg-white/10 transition-colors">
              {/* Chevrons/Lines (Red-Yellow-Red) */}
              <div className="flex gap-[3px]">
                 <div className="w-1.5 h-8 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>

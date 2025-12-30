@@ -102,9 +102,14 @@ const Bio: React.FC = () => {
           {/* Right: Editorial Text */}
           <div className="space-y-8">
              <h2 className="text-4xl font-serif text-vallenato-blue font-bold">Una vida hecha canción</h2>
-             <p className="text-gray-600 text-lg leading-relaxed">
-               Desde los patios de Valledupar hasta las ondas hertzianas, Álvaro González ha dedicado cinco décadas a documentar lo que otros solo cantaban. No es solo un espectador; es parte viva de la historia, compartiendo parrandas y secretos con los fundadores del género.
-             </p>
+             <div className="text-gray-600 text-lg leading-relaxed space-y-4">
+               <p>
+                 Desde sus primeros años en Valledupar hasta su asentamiento en Bogotá, Álvaro González ha dedicado más de cinco décadas a documentar toda la riqueza cultural que ha vivido a través del Vallenato.
+               </p>
+               <p>
+                 No es solo un espectador; es parte viva de la historia, compartiendo parrandas y secretos con los fundadores del género.
+               </p>
+             </div>
              
              {/* Fixed Overlapping Quote by using Flexbox */}
              <blockquote className="bg-vallenato-cream p-8 rounded-tr-[3rem] rounded-bl-[3rem] border-l-4 border-vallenato-red shadow-sm flex flex-col sm:flex-row gap-6">
