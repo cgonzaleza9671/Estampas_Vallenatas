@@ -395,7 +395,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
                      <p className="text-sm text-gray-500 uppercase tracking-widest relative z-10">Vallenato Essentials</p>
                   </div>
                   <div className="p-8 text-center">
-                     <p className="text-gray-600 mb-6 font-serif italic">"Lo esencial para enamorarse del Vallenato"</p>
+                     <p className="text-gray-600 mb-6 font-serif italic">"Lo esencial para enamorarse del Vallenato clásico y el nuevo"</p>
                      <a href="https://music.apple.com/us/playlist/vallenato-essentials/pl.4463cdc654a9494f8d933923e91b3a22" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-[#FA243C] font-bold uppercase text-xs tracking-widest group-hover:underline">
                         Abrir Álbum <AppleMusicLogo className="w-5 h-5" />
                      </a>
