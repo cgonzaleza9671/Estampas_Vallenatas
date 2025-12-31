@@ -69,7 +69,7 @@ const Bio: React.FC = () => {
          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-vallenato-red/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
          
          <div className="container mx-auto px-6 relative z-10 text-center">
-            <h1 className="text-5xl md:text-7xl font-serif text-white font-bold mb-6 tracking-tight drop-shadow-lg">
+            <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] bg-clip-text text-transparent bg-gradient-to-b from-[#FDE68A] via-[#EAAA00] to-[#B45309] py-2">
               Álvaro González Pimienta
             </h1>
             <div className="h-1 w-24 bg-vallenato-mustard mx-auto mb-6"></div>
@@ -224,7 +224,6 @@ const Bio: React.FC = () => {
                      <Sparkles className="text-vallenato-blue w-6 h-6" />
                   </div>
                   <h2 className="text-3xl md:text-4xl font-serif text-white mb-2">Pregúntale al Maestro</h2>
-                  {/* Removed Subtitle as requested */}
                </div>
             </div>
 
