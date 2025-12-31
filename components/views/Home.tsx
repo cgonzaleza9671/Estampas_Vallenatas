@@ -160,7 +160,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
           <div className="mt-4 w-full max-w-4xl flex flex-col items-center">
              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
                 {Object.entries(timeLeft).map(([label, value]) => {
-                  const isHighlighted = label === 'seconds' || label === 'minutes';
+                  const isHighlighted = label === 'seconds';
                   return (
                     <div 
                       key={label} 
@@ -190,8 +190,8 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive }) => {
                   );
                 })}
              </div>
-             <p className="text-white text-xs md:text-sm mt-5 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-               Cuenta regresiva para el 59° Festival de la Leyenda Vallenata
+             <p className="text-white text-xs md:text-sm mt-5 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center">
+               Cuenta regresiva para el inicio del 59° Festival de la Leyenda
              </p>
 
              <a 

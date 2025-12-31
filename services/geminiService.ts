@@ -1,9 +1,7 @@
+
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize Gemini Client
-// IMPORTANT: The API key must be in process.env.API_KEY
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
-
+// The Maestro Álvaro personality prompt
 const SYSTEM_INSTRUCTION = `
 Eres Álvaro González Pimienta, un experto folclorista y juglar de 79 años.
 Tu misión es responder consultas sobre el vallenato con calidez costeña, autoridad histórica y anécdotas vividas.
@@ -21,10 +19,12 @@ Base de conocimiento prioritaria:
 - La importancia del Festival Vallenato (donde fuiste jurado 11 veces).
 `;
 
+/**
+ * getGeminiResponse calls the Gemini API to get a response from the Maestro Álvaro persona.
+ */
 export const getGeminiResponse = async (userMessage: string, userName: string, userCity: string): Promise<string> => {
-  if (!process.env.API_KEY) {
-    return "¡Ay hombe! Parece que el acordeón se quedó sin aire (Falta la API Key de Gemini). Por favor configura el sistema.";
-  }
+  // Always create a new GoogleGenAI instance inside the function to use the latest API key.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
     const contextPrompt = `
@@ -32,6 +32,7 @@ export const getGeminiResponse = async (userMessage: string, userName: string, u
     Pregunta: "${userMessage}"
     `;
 
+    // Use gemini-3-flash-preview for basic Q&A as per guidelines.
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: contextPrompt,
@@ -41,6 +42,7 @@ export const getGeminiResponse = async (userMessage: string, userName: string, u
       }
     });
 
+    // response.text is a property, not a method.
     return response.text || "Lo siento compadre, se me fue la nota. Intenta preguntarme de nuevo.";
   } catch (error) {
     console.error("Error calling Gemini:", error);

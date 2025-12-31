@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { fetchAudios, fetchVideos } from '../../services/supabaseClient';
 import { AudioItem, VideoItem } from '../../types';
 import MediaModal from '../MediaModal';
-import { Music, Video, Filter, Loader2, AlertCircle, RefreshCw, Calendar, Play, User, Search, Mic2, X, ListMusic, Tv } from 'lucide-react';
+import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, X, ListMusic, SkipBack, SkipForward, Volume2, LayoutGrid, List } from 'lucide-react';
 import { SombreroVueltiaoIcon } from '../CustomIcons';
 
 interface ArchiveProps {
@@ -12,6 +12,7 @@ interface ArchiveProps {
 const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
   // State
   const [activeTab, setActiveTab] = useState<'audio' | 'video'>(initialTab);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [audios, setAudios] = useState<AudioItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,19 +20,25 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
   
   // Filters State
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedPrimaryFilter, setSelectedPrimaryFilter] = useState('All'); // Audio: Autor, Video: Autor
-  const [selectedSecondaryFilter, setSelectedSecondaryFilter] = useState('All'); // Audio: Acordeonero
+  const [selectedPrimaryFilter, setSelectedPrimaryFilter] = useState('All'); 
+  const [selectedSecondaryFilter, setSelectedSecondaryFilter] = useState('All'); 
 
-  // Modal State
-  const [selectedItem, setSelectedItem] = useState<AudioItem | VideoItem | null>(null);
+  // Player State
+  const [currentAudio, setCurrentAudio] = useState<AudioItem | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Modal State (Video only)
+  const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Sync activeTab with initialTab if it changes from props
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
 
-  // Load Data
   const loadData = async () => {
     setLoading(true);
     setError(false);
@@ -54,7 +61,100 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
     loadData();
   }, []);
 
-  // Dynamic Filters Lists
+  // Player Logic
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch(e => console.log("Playback interrupted"));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying, currentAudio]);
+
+  // Synchronize audio element volume with state
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume, currentAudio]);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = parseFloat(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  };
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = parseFloat(e.target.value);
+    setVolume(val);
+  };
+
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
+  // Helper to format date without year for list view
+  const formatDateWithoutYear = (fullDate: string) => {
+    // Expected format: "12 de octubre de 2023" -> "12 de octubre"
+    const parts = fullDate.split(' de ');
+    if (parts.length >= 2) {
+      return `${parts[0]} de ${parts[1]}`;
+    }
+    return fullDate;
+  };
+
+  // Grouping Logic for Audios
+  const groupedAudios = useMemo(() => {
+    let items = audios;
+
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      items = items.filter(item => item.titulo.toLowerCase().includes(query));
+    }
+    if (selectedPrimaryFilter !== 'All') {
+      items = items.filter(item => item.autor === selectedPrimaryFilter);
+    }
+    if (selectedSecondaryFilter !== 'All') {
+      items = items.filter(item => item.acordeonero === selectedSecondaryFilter);
+    }
+
+    const groups: { [key: string]: AudioItem[] } = {};
+    items.forEach(item => {
+      const parts = item.fecha_publicacion.split(' de ');
+      const key = parts.length >= 3 ? `${parts[1]} de ${parts[2]}` : "Archivo Histórico";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+
+    return groups;
+  }, [audios, searchQuery, selectedPrimaryFilter, selectedSecondaryFilter]);
+
+  // Video filtering
+  const filteredVideos = useMemo<VideoItem[]>(() => {
+    let items = videos;
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase();
+      items = items.filter(item => item.titulo.toLowerCase().includes(query));
+    }
+    if (selectedPrimaryFilter !== 'All') {
+      items = items.filter(item => item.autor === selectedPrimaryFilter);
+    }
+    return items;
+  }, [videos, searchQuery, selectedPrimaryFilter]);
+
   const uniquePrimaryList = useMemo(() => {
     let items: (AudioItem | VideoItem)[] = activeTab === 'audio' ? audios : videos;
     const list = items.map(item => item.autor).filter(Boolean);
@@ -63,59 +163,29 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
 
   const uniqueSecondaryList = useMemo(() => {
     if (activeTab !== 'audio') return [];
-    const list = audios
-      .map(item => item.acordeonero)
-      .filter(val => val && val.trim() !== "" && val !== "-");
+    const list = audios.map(item => item.acordeonero).filter(v => v && v !== "-");
     return ['All', ...new Set(list)];
   }, [audios, activeTab]);
 
-  // Filtering Logic
-  const filteredItems = useMemo(() => {
-    let items: (AudioItem | VideoItem)[] = activeTab === 'audio' ? audios : videos;
-
-    // 1. Filter by Title (Search Query)
-    if (searchQuery.trim() !== '') {
-      const query = searchQuery.toLowerCase();
-      items = items.filter(item => item.titulo.toLowerCase().includes(query));
-    }
-
-    // 2. Primary Filter: Autor (Both Audio and Video)
-    if (selectedPrimaryFilter !== 'All') {
-      items = items.filter(item => item.autor === selectedPrimaryFilter);
-    }
-
-    // 3. Secondary Filter: Acordeonero (Only for Audio tab)
-    if (activeTab === 'audio' && selectedSecondaryFilter !== 'All') {
-      items = (items as AudioItem[]).filter(item => item.acordeonero === selectedSecondaryFilter);
-    }
-
-    return items;
-  }, [activeTab, audios, videos, selectedPrimaryFilter, selectedSecondaryFilter, searchQuery]);
-
-  // Handlers
   const handleTabChange = (tab: 'audio' | 'video') => {
     setActiveTab(tab);
-    // Reset filters on tab change
     setSearchQuery('');
     setSelectedPrimaryFilter('All');
     setSelectedSecondaryFilter('All');
   };
 
-  const clearFilters = () => {
-    setSearchQuery('');
-    setSelectedPrimaryFilter('All');
-    setSelectedSecondaryFilter('All');
+  const playAudio = (item: AudioItem) => {
+    if (currentAudio?.id === item.id) {
+      setIsPlaying(!isPlaying);
+    } else {
+      setCurrentAudio(item);
+      setIsPlaying(true);
+      setCurrentTime(0);
+    }
   };
-
-  const openMedia = (item: AudioItem | VideoItem) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
-  };
-
-  const hasActiveFilters = searchQuery !== '' || selectedPrimaryFilter !== 'All' || selectedSecondaryFilter !== 'All';
 
   return (
-    <div className="min-h-screen bg-vallenato-beige pt-8 pb-20 animate-fade-in-up">
+    <div className="min-h-screen bg-vallenato-beige pt-8 pb-32 animate-fade-in-up relative">
       <div className="container mx-auto px-6">
         
         {/* Header Section */}
@@ -123,11 +193,11 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
           <span className="text-vallenato-red font-bold uppercase tracking-widest text-xs">Archivo Histórico</span>
           <h1 className="text-4xl md:text-5xl font-serif text-vallenato-blue mb-4">La Memoria del Acordeón</h1>
           <p className="text-gray-600 max-w-2xl mx-auto font-light">
-            Explore nuestra colección preservada. Utilice los filtros para navegar
+            Explore nuestra colección preservada. Utilice los filtros para navegar.
           </p>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tab Navigation - Centered */}
         <div className="flex justify-center mb-8">
            <div className="bg-white p-1.5 rounded-full shadow-md border border-gray-100 inline-flex">
               <button 
@@ -146,69 +216,43 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
         </div>
 
         {/* Filters Section */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-museum mb-12 border border-vallenato-mustard/20 max-w-4xl mx-auto">
-           <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-              
-              {/* Search Bar (Title) */}
+        <div className="bg-white rounded-[2rem] p-6 shadow-museum mb-12 border border-vallenato-mustard/20 max-w-5xl mx-auto">
+           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
               <div className={`col-span-1 ${activeTab === 'audio' ? 'md:col-span-4' : 'md:col-span-8'}`}>
                  <div className="relative">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-vallenato-mustard" size={20} />
                     <input 
                       type="text"
                       placeholder="Buscar por título..."
-                      className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm text-gray-700 font-sans"
+                      className="w-full pl-12 pr-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm font-sans"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                  </div>
               </div>
-
-              {/* Primary Filter (Autor) */}
               <div className="col-span-1 md:col-span-4">
-                 <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-vallenato-mustard" size={20} />
-                    <select 
-                      className="w-full pl-12 pr-10 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm appearance-none text-gray-700 font-sans cursor-pointer hover:bg-gray-100"
-                      value={selectedPrimaryFilter}
-                      onChange={(e) => setSelectedPrimaryFilter(e.target.value)}
-                    >
-                       <option value="All">Todos los Autores</option>
-                       {uniquePrimaryList.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
-                    </select>
-                    <Filter className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                 </div>
+                 <select 
+                   className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm font-sans cursor-pointer"
+                   value={selectedPrimaryFilter}
+                   onChange={(e) => setSelectedPrimaryFilter(e.target.value)}
+                 >
+                    <option value="All">Todos los Autores</option>
+                    {uniquePrimaryList.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
+                 </select>
               </div>
-
-              {/* Secondary Filter (Acordeonero - Audio Only) */}
               {activeTab === 'audio' && (
                 <div className="col-span-1 md:col-span-4">
-                   <div className="relative">
-                      <ListMusic className="absolute left-4 top-1/2 -translate-y-1/2 text-vallenato-mustard" size={20} />
-                      <select 
-                        className="w-full pl-12 pr-10 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm appearance-none text-gray-700 font-sans cursor-pointer hover:bg-gray-100"
-                        value={selectedSecondaryFilter}
-                        onChange={(e) => setSelectedSecondaryFilter(e.target.value)}
-                      >
-                         <option value="All">Todos los Acordeoneros</option>
-                         {uniqueSecondaryList.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
-                      </select>
-                      <Filter className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                   </div>
+                   <select 
+                     className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm font-sans cursor-pointer"
+                     value={selectedSecondaryFilter}
+                     onChange={(e) => setSelectedSecondaryFilter(e.target.value)}
+                   >
+                      <option value="All">Todos los Acordeoneros</option>
+                      {uniqueSecondaryList.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
+                   </select>
                 </div>
               )}
            </div>
-           
-           {/* Active Filters & Clear Button */}
-           {hasActiveFilters && (
-             <div className="flex justify-end mt-4 animate-fade-in-down">
-               <button 
-                 onClick={clearFilters}
-                 className="text-xs font-bold text-vallenato-red flex items-center gap-1 hover:underline"
-               >
-                 <X size={14} /> Limpiar filtros
-               </button>
-             </div>
-           )}
         </div>
 
         {/* Content Area */}
@@ -218,118 +262,239 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio' }) => {
               <p className="font-serif italic text-lg animate-pulse">Consultando los archivos del Magdalena Grande...</p>
            </div>
         ) : error ? (
-           <div className="bg-red-50 border-l-4 border-vallenato-red p-8 rounded-r-xl max-w-2xl mx-auto flex flex-col items-center text-center">
-              <AlertCircle size={48} className="text-vallenato-red mb-4" />
-              <h3 className="text-xl font-bold text-red-800 mb-2">Error de Conexión</h3>
-              <p className="text-red-600 mb-6">No pudimos acceder a la base de datos de estampas. Por favor verifica tu conexión.</p>
-              <button 
-                onClick={loadData}
-                className="bg-vallenato-red text-white px-6 py-2 rounded-full font-bold uppercase text-xs tracking-widest hover:bg-red-800 transition-colors flex items-center gap-2"
-              >
-                <RefreshCw size={14} /> Reintentar Carga
-              </button>
-           </div>
-        ) : filteredItems.length === 0 ? (
-           <div className="text-center py-20 opacity-60">
-             <div className="inline-block p-6 bg-gray-100 rounded-full mb-4">
-               <Search size={48} className="text-gray-400" />
-             </div>
-             <p className="text-xl font-serif text-gray-500 mb-4">No se encontraron estampas con esos criterios.</p>
-             <button onClick={clearFilters} className="text-vallenato-blue underline font-bold text-sm">Ver todos los archivos</button>
+           <div className="text-center p-8">
+              <AlertCircle size={48} className="text-vallenato-red mx-auto mb-4" />
+              <p className="text-red-600">No pudimos conectar con el archivo. Intente de nuevo.</p>
+              <button onClick={loadData} className="mt-4 flex items-center gap-2 mx-auto text-vallenato-blue font-bold uppercase text-xs tracking-widest"><RefreshCw size={14}/> Reintentar</button>
            </div>
         ) : (
-          <div className={`grid gap-8 ${activeTab === 'audio' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
-            {filteredItems.map((item) => (
-              <div 
-                key={item.id} 
-                className={`group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-museum transition-all duration-300 border border-gray-100 flex flex-col ${activeTab === 'audio' ? 'hover:-translate-y-1' : ''} cursor-pointer`}
-                onClick={() => openMedia(item)}
-              >
-                {activeTab === 'video' ? (
-                  // Video Card Layout
-                  <div className="flex flex-col h-full">
-                     <div className="aspect-video relative overflow-hidden bg-black group-cursor-pointer">
-                        {/* Render Thumbnail URL if available */}
-                        {(item as VideoItem).thumbnail_url ? (
-                          <img 
-                            src={(item as VideoItem).thumbnail_url} 
-                            alt={item.titulo} 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                          />
-                        ) : (
-                          /* Fallback Placeholder */
-                          <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative">
-                             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-                             <Video size={48} className="text-white/50" />
-                          </div>
-                        )}
-                        
+          <>
+            {activeTab === 'audio' ? (
+              <div className="space-y-12">
+                <div className="flex justify-between items-center px-4">
+                  <span className="text-xs font-bold uppercase text-vallenato-blue/60 tracking-widest">Organización cronológica</span>
+                  <div className="flex bg-white rounded-lg p-1 border border-gray-200 shadow-sm">
+                    <button 
+                      onClick={() => setViewMode('grid')}
+                      className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-vallenato-mustard text-vallenato-blue shadow-inner' : 'text-gray-400 hover:text-vallenato-blue'}`}
+                      title="Vista de Grilla"
+                    >
+                      <LayoutGrid size={18} />
+                    </button>
+                    <button 
+                      onClick={() => setViewMode('list')}
+                      className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-vallenato-mustard text-vallenato-blue shadow-inner' : 'text-gray-400 hover:text-vallenato-blue'}`}
+                      title="Vista de Listado"
+                    >
+                      <List size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                {Object.keys(groupedAudios).length === 0 ? (
+                  <div className="text-center py-20 text-gray-400 font-serif">No se encontraron resultados para los filtros aplicados.</div>
+                ) : (
+                  Object.entries(groupedAudios).map(([groupName, items]: [string, AudioItem[]]) => (
+                    <div key={groupName} className="space-y-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-px bg-vallenato-mustard/30 flex-grow"></div>
+                        <h3 className="text-vallenato-blue font-serif text-xl md:text-2xl font-bold capitalize px-4 bg-vallenato-beige z-10">
+                          {groupName}
+                        </h3>
+                        <div className="h-px bg-vallenato-mustard/30 flex-grow"></div>
+                      </div>
+                      
+                      {viewMode === 'grid' ? (
+                        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                          {items.map((item: AudioItem) => (
+                            <div 
+                              key={item.id} 
+                              onClick={() => playAudio(item)}
+                              className={`group bg-white rounded-2xl p-6 shadow-sm hover:shadow-museum transition-all duration-300 border-l-4 ${currentAudio?.id === item.id ? 'border-vallenato-red bg-vallenato-cream/50' : 'border-vallenato-mustard hover:border-vallenato-red'} cursor-pointer flex flex-col`}
+                            >
+                              <div className="flex justify-between items-start mb-4">
+                                <div className="bg-vallenato-beige p-2 rounded-xl text-vallenato-blue">
+                                    <Music size={20} />
+                                </div>
+                                <div className="text-vallenato-blue/20">
+                                    <SombreroVueltiaoIcon size={40} />
+                                  </div>
+                              </div>
+                              <h4 className="text-lg font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors line-clamp-1">{item.titulo}</h4>
+                              <p className="text-vallenato-red text-xs font-bold uppercase tracking-widest mt-1 mb-3">{item.autor}</p>
+                              <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                                <span className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Acordeón: {item.acordeonero}</span>
+                                <div className={`p-2 rounded-full transition-all ${currentAudio?.id === item.id && isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red'}`}>
+                                    {currentAudio?.id === item.id && isPlaying ? <Pause size={14} fill="currentColor"/> : <Play size={14} fill="currentColor"/>}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 divide-y divide-gray-50 overflow-hidden">
+                          {items.map((item: AudioItem) => (
+                            <div 
+                              key={item.id}
+                              onClick={() => playAudio(item)}
+                              className={`flex items-center p-4 hover:bg-vallenato-cream transition-colors cursor-pointer group ${currentAudio?.id === item.id ? 'bg-vallenato-cream' : ''}`}
+                            >
+                              <div className={`p-3 rounded-full mr-4 ${currentAudio?.id === item.id ? 'bg-vallenato-red text-white' : 'bg-gray-100 text-vallenato-blue group-hover:bg-vallenato-mustard transition-colors'}`}>
+                                {currentAudio?.id === item.id && isPlaying ? <Pause size={16} fill="currentColor"/> : <Play size={16} fill="currentColor"/>}
+                              </div>
+                              <div className="flex-grow grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                  <h4 className="text-sm md:text-base font-serif font-bold text-vallenato-blue group-hover:text-vallenato-red transition-colors truncate">{item.titulo}</h4>
+                                  <p className="text-[10px] uppercase font-bold text-vallenato-red tracking-widest md:hidden">{item.autor}</p>
+                                </div>
+                                <div className="hidden md:flex flex-col">
+                                  <span className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-0.5">Autor</span>
+                                  <span className="text-sm font-sans text-gray-700">{item.autor}</span>
+                                </div>
+                                <div className="hidden md:flex flex-col">
+                                  <span className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-0.5">Acordeonero</span>
+                                  <span className="text-sm font-sans text-gray-700">{item.acordeonero}</span>
+                                </div>
+                              </div>
+                              <div className="ml-4 text-xs font-mono text-gray-400 hidden sm:block whitespace-nowrap">
+                                {formatDateWithoutYear(item.fecha_publicacion)}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            ) : (
+              <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
+                {filteredVideos.map((item: VideoItem) => (
+                  <div 
+                    key={item.id} 
+                    className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-museum transition-all cursor-pointer group"
+                    onClick={() => { setSelectedVideo(item); setIsModalOpen(true); }}
+                  >
+                     <div className="aspect-video relative overflow-hidden bg-black">
+                        {item.thumbnail_url && <img src={item.thumbnail_url} className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700" alt={item.titulo}/>}
                         <div className="absolute inset-0 flex items-center justify-center">
-                           <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/50 group-hover:scale-110 transition-transform shadow-xl">
+                           <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/50">
                               <Play size={32} className="text-white fill-white" />
                            </div>
                         </div>
                      </div>
-                     <div className="p-6 flex-grow">
-                        <h3 className="text-xl font-serif text-vallenato-blue font-bold mb-2 group-hover:text-vallenato-red transition-colors">
-                          {item.titulo}
-                        </h3>
-                        <p className="text-vallenato-mustard text-sm mb-4 font-bold flex items-center gap-2">
-                           <User size={14} /> {(item as VideoItem).autor}
-                        </p>
-                        <div className="flex items-center gap-1 text-gray-400 text-xs">
-                           <Calendar size={12} />
-                           <span>{(item as VideoItem).anio}</span>
-                        </div>
+                     <div className="p-6">
+                        <h3 className="text-xl font-serif text-vallenato-blue font-bold">{item.titulo}</h3>
+                        <p className="text-vallenato-red text-sm font-bold mt-1 uppercase tracking-widest">{item.autor}</p>
                      </div>
                   </div>
-                ) : (
-                  // Audio Card Layout
-                  <div className="flex flex-col h-full">
-                     <div className="p-6 flex-grow relative">
-                        <div className="absolute top-0 left-0 w-1 h-12 bg-vallenato-mustard rounded-br-full"></div>
-                        
-                        {/* Custom Icon for Estampa */}
-                        <div className="absolute top-4 right-4 text-vallenato-blue/10 group-hover:text-vallenato-mustard/40 transition-colors pointer-events-none">
-                            <SombreroVueltiaoIcon className="w-12 h-12" />
-                        </div>
-
-                        <h3 className="text-xl font-serif text-vallenato-blue font-bold mb-1 leading-tight group-hover:text-vallenato-red transition-colors">
-                           {item.titulo}
-                        </h3>
-                        <p className="text-vallenato-red text-xs font-bold uppercase tracking-wide mb-1 flex items-center gap-1">
-                           <User size={10} /> {(item as AudioItem).autor}
-                        </p>
-                        
-                        <div className="flex justify-between items-center mt-3 border-b border-gray-100 pb-3">
-                           <p className="text-gray-500 text-xs flex items-center gap-1">
-                              <ListMusic size={10} /> <span className="font-bold">Acordeón:</span> {(item as AudioItem).acordeonero}
-                           </p>
-                        </div>
-                        
-                        <p className="mt-3 text-gray-500 text-sm italic">
-                           {(item as AudioItem).fecha_publicacion}
-                        </p>
-                     </div>
-                     
-                     {/* Action Bar (Replaces inline player) */}
-                     <div className="bg-vallenato-blue p-4 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300">
-                        <span className="text-white text-xs font-bold uppercase tracking-widest">Reproducir Estampa</span>
-                        <div className="bg-white/20 p-1.5 rounded-full">
-                           <Play size={14} className="text-white fill-white" />
-                        </div>
-                     </div>
-                  </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
-
       </div>
 
+      {/* STICKY GLOBAL PLAYER */}
+      {currentAudio && (
+        <div className="fixed bottom-0 left-0 w-full bg-vallenato-blue text-white z-[60] shadow-[0_-10px_30px_rgba(0,0,0,0.3)] border-t-4 border-vallenato-mustard animate-fade-in-up">
+           <audio 
+             ref={audioRef}
+             src={currentAudio.url_audio}
+             onTimeUpdate={handleTimeUpdate}
+             onLoadedMetadata={handleTimeUpdate}
+             onEnded={() => setIsPlaying(false)}
+           />
+           
+           <div className="container mx-auto px-6 py-4">
+              {/* Progress Bar Container */}
+              <div className="flex flex-col gap-2">
+                 <div className="flex items-center gap-4">
+                    <span className="text-[10px] font-mono opacity-60 w-8">{formatTime(currentTime)}</span>
+                    <div className="flex-grow relative h-1.5 flex items-center">
+                       <input 
+                         type="range"
+                         min="0"
+                         max={duration || 0}
+                         step="0.1"
+                         value={currentTime}
+                         onChange={handleSeek}
+                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                       />
+                       <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                          <div 
+                            className="bg-vallenato-mustard h-full transition-all duration-100 shadow-[0_0_10px_rgba(234,170,0,0.8)]" 
+                            style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
+                          />
+                       </div>
+                       <div 
+                         className="absolute w-3 h-3 bg-white rounded-full border-2 border-vallenato-mustard shadow-md z-10 pointer-events-none"
+                         style={{ left: `calc(${(currentTime / duration) * 100 || 0}% - 6px)` }}
+                       />
+                    </div>
+                    <span className="text-[10px] font-mono opacity-60 w-10 text-right">-{formatTime(duration - currentTime)}</span>
+                 </div>
+
+                 <div className="flex items-center justify-between">
+                    {/* Track Info */}
+                    <div className="flex items-center gap-4 w-1/3">
+                       <div className="hidden sm:block bg-vallenato-mustard p-2 rounded-lg text-vallenato-blue">
+                          <Music size={16} />
+                       </div>
+                       <div className="overflow-hidden">
+                          <h5 className="text-sm font-serif font-bold truncate leading-none mb-1">{currentAudio.titulo}</h5>
+                          <p className="text-[10px] text-vallenato-mustard font-bold uppercase tracking-widest truncate">{currentAudio.autor}</p>
+                       </div>
+                    </div>
+
+                    {/* Controls */}
+                    <div className="flex items-center gap-6">
+                       <button className="opacity-50 hover:opacity-100 transition-opacity hidden sm:block"><SkipBack size={20}/></button>
+                       <button 
+                         onClick={() => setIsPlaying(!isPlaying)}
+                         className="bg-vallenato-mustard text-vallenato-blue p-3 rounded-full hover:scale-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(234,170,0,0.4)]"
+                       >
+                          {isPlaying ? <Pause size={24} fill="currentColor"/> : <Play size={24} fill="currentColor"/>}
+                       </button>
+                       <button className="opacity-50 hover:opacity-100 transition-opacity hidden sm:block"><SkipForward size={20}/></button>
+                    </div>
+
+                    {/* Secondary Controls - Functional Volume Slider */}
+                    <div className="hidden md:flex items-center justify-end gap-6 w-1/3">
+                       <div className="flex items-center gap-3">
+                          <Volume2 size={18} className="opacity-60" />
+                          <div className="w-24 h-1.5 relative flex items-center group">
+                             <input 
+                               type="range"
+                               min="0"
+                               max="1"
+                               step="0.01"
+                               value={volume}
+                               onChange={handleVolumeChange}
+                               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                             />
+                             <div className="w-full bg-white/20 h-1 rounded-full overflow-hidden">
+                                <div 
+                                  className="bg-white h-full transition-all duration-75" 
+                                  style={{ width: `${volume * 100}%` }}
+                                />
+                             </div>
+                             <div 
+                               className="absolute w-2 h-2 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                               style={{ left: `calc(${volume * 100}% - 4px)` }}
+                             />
+                          </div>
+                       </div>
+                       <button onClick={() => setCurrentAudio(null)} className="hover:text-vallenato-red transition-colors opacity-60 hover:opacity-100"><X size={18}/></button>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
       <MediaModal 
-        item={selectedItem} 
+        item={selectedVideo} 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
       />
