@@ -130,21 +130,21 @@ const App: React.FC = () => {
               isExpanded ? 'h-[320px] pb-24 opacity-100' : 'h-0 opacity-0 pointer-events-none'
             }`}
           >
-            <div className="container mx-auto px-6 py-10 flex flex-col md:flex-row gap-8 items-center h-full">
+            <div className="container mx-auto px-6 py-8 md:py-10 flex flex-col md:flex-row gap-4 md:gap-8 items-center h-full">
               <div className="hidden md:flex bg-white/10 p-6 rounded-2xl border border-white/10 items-center justify-center">
                 <MessageSquareQuote size={48} className="text-vallenato-mustard opacity-50" />
               </div>
-              <div className="flex-grow">
-                <h3 className="text-vallenato-mustard font-serif text-xl md:text-2xl mb-4 flex items-center gap-2">
+              <div className="flex-grow w-full overflow-y-auto max-h-full scrollbar-hide">
+                <h3 className="text-vallenato-mustard font-serif text-lg md:text-2xl mb-2 md:mb-4 flex items-center gap-2 sticky top-0 bg-vallenato-blue/5 backdrop-blur-sm md:bg-transparent py-1">
                   Comentario de Álvaro González Pimienta
                 </h3>
-                <p className="text-gray-200 font-serif italic text-lg md:text-xl leading-relaxed max-w-4xl">
+                <p className="text-gray-200 font-serif italic text-sm md:text-xl leading-relaxed max-w-4xl pb-4">
                   "{currentAudio.descripcion}"
                 </p>
               </div>
               <button 
                 onClick={() => setIsExpanded(false)}
-                className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
+                className="absolute top-4 right-4 text-white/40 hover:text-white transition-colors"
               >
                 <X size={24} />
               </button>
@@ -161,11 +161,11 @@ const App: React.FC = () => {
               onEnded={() => setIsPlaying(false)}
             />
             
-            <div className="container mx-auto px-6 py-4">
-              <div className="flex flex-col gap-2">
+            <div className="container mx-auto px-4 md:px-6 py-3 md:py-4">
+              <div className="flex flex-col gap-1.5 md:gap-2">
                 {/* Progress Bar */}
-                <div className="flex items-center gap-4">
-                  <span className="text-[10px] font-mono opacity-60 w-8">{formatTime(currentTime)}</span>
+                <div className="flex items-center gap-2 md:gap-4">
+                  <span className="text-[9px] md:text-[10px] font-mono opacity-60 w-7 md:w-8">{formatTime(currentTime)}</span>
                   <div className="flex-grow relative h-1.5 flex items-center">
                     <input 
                       type="range"
@@ -176,23 +176,23 @@ const App: React.FC = () => {
                       onChange={handleSeek}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                     />
-                    <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                    <div className="w-full bg-white/10 h-1 md:h-1.5 rounded-full overflow-hidden">
                       <div 
                         className="bg-vallenato-mustard h-full transition-all duration-100 shadow-[0_0_10px_rgba(234,170,0,0.8)]" 
                         style={{ width: `${(currentTime / duration) * 100 || 0}%` }}
                       />
                     </div>
                     <div 
-                      className="absolute w-3 h-3 bg-white rounded-full border-2 border-vallenato-mustard shadow-md z-10 pointer-events-none"
-                      style={{ left: `calc(${(currentTime / duration) * 100 || 0}% - 6px)` }}
+                      className="absolute w-2.5 h-2.5 md:w-3 md:h-3 bg-white rounded-full border-2 border-vallenato-mustard shadow-md z-10 pointer-events-none"
+                      style={{ left: `calc(${(currentTime / duration) * 100 || 0}% - 5px)` }}
                     />
                   </div>
-                  <span className="text-[10px] font-mono opacity-60 w-10 text-right">-{formatTime(duration - currentTime)}</span>
+                  <span className="text-[9px] md:text-[10px] font-mono opacity-60 w-9 md:w-10 text-right">-{formatTime(duration - currentTime)}</span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   {/* Track Info & Expand Button */}
-                  <div className="flex items-center gap-6 md:gap-10 w-1/2 md:w-5/12">
+                  <div className="flex items-center gap-3 md:gap-8 w-1/2 md:w-5/12 overflow-hidden">
                     <button 
                       onClick={() => setIsExpanded(!isExpanded)}
                       className="flex items-center gap-2 group transition-all duration-300 hover:scale-105 shrink-0"
@@ -200,27 +200,28 @@ const App: React.FC = () => {
                       <div className={`bg-vallenato-mustard p-1.5 rounded-lg text-vallenato-blue transition-transform duration-500 shadow-lg ${isExpanded ? 'rotate-180' : ''}`}>
                         <ChevronUp size={16} />
                       </div>
-                      <span className="text-[6.5px] md:text-[8px] font-bold uppercase tracking-[0.15em] text-vallenato-mustard animate-pulse whitespace-nowrap">
+                      <span className="hidden sm:block text-[6.5px] md:text-[8px] font-bold uppercase tracking-[0.15em] text-vallenato-mustard animate-pulse whitespace-nowrap">
                         {isExpanded ? 'Cerrar Comentario' : 'Ver Comentario'}
                       </span>
                     </button>
                     
-                    <div className="hidden xs:block w-px h-10 bg-white/10 mx-2 md:mx-4 shrink-0"></div>
+                    {/* Divider hidden on mobile to gain space */}
+                    <div className="hidden sm:block w-px h-10 bg-white/10 mx-1 md:mx-4 shrink-0"></div>
 
-                    <div className="overflow-hidden">
-                      <h5 className="text-xs md:text-sm font-serif font-bold truncate leading-none mb-1.5">{currentAudio.titulo}</h5>
-                      <p className="text-[9px] md:text-[10px] text-vallenato-mustard/80 font-bold uppercase tracking-widest truncate">{currentAudio.autor}</p>
+                    <div className="overflow-hidden flex flex-col justify-center min-w-0">
+                      <h5 className="text-[11px] md:text-sm font-serif font-bold truncate leading-tight mb-0.5 md:mb-1.5 text-white">{currentAudio.titulo}</h5>
+                      <p className="text-[8px] md:text-[10px] text-vallenato-mustard/90 font-bold uppercase tracking-widest truncate">{currentAudio.autor}</p>
                     </div>
                   </div>
 
                   {/* Controls */}
-                  <div className="flex items-center gap-4 md:gap-6">
+                  <div className="flex items-center gap-3 md:gap-6 shrink-0">
                     <button className="opacity-50 hover:opacity-100 transition-opacity hidden sm:block"><SkipBack size={20}/></button>
                     <button 
                       onClick={() => setIsPlaying(!isPlaying)}
-                      className="bg-vallenato-mustard text-vallenato-blue p-3 rounded-full hover:scale-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(234,170,0,0.4)]"
+                      className="bg-vallenato-mustard text-vallenato-blue p-2.5 md:p-3 rounded-full hover:scale-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(234,170,0,0.4)]"
                     >
-                      {isPlaying ? <Pause size={24} fill="currentColor"/> : <Play size={24} fill="currentColor"/>}
+                      {isPlaying ? <Pause size={20} md:size={24} fill="currentColor"/> : <Play size={20} md:size={24} fill="currentColor"/>}
                     </button>
                     <button className="opacity-50 hover:opacity-100 transition-opacity hidden sm:block"><SkipForward size={20}/></button>
                   </div>
