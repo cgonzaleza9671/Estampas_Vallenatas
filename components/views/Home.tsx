@@ -113,6 +113,16 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
     }
   };
 
+  // Label mapping for countdown
+  const labelMap: Record<string, string> = {
+    months: 'Meses',
+    weeks: 'Semanas',
+    days: 'Días',
+    hours: 'Horas',
+    minutes: 'Minutos',
+    seconds: 'Segundos',
+  };
+
   return (
     <div className="animate-fade-in-up">
       
@@ -168,7 +178,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                 {Object.entries(timeLeft).map(([label, value]) => (
                   <div key={label} className={`flex flex-col items-center justify-center bg-black/30 rounded-xl py-3 border border-white/10 transition-all duration-300 ${label === 'seconds' ? 'border-vallenato-mustard/60 scale-105 shadow-[0_0_15px_rgba(234,170,0,0.3)] bg-vallenato-mustard/5' : ''}`}>
                      <span className={`text-2xl md:text-3xl font-mono font-bold mb-1 text-vallenato-mustard ${label === 'seconds' ? 'drop-shadow-[0_0_8px_rgba(234,170,0,0.8)] animate-pulse' : ''}`}>{String(value).padStart(2, '0')}</span>
-                     <span className="text-[10px] md:text-xs uppercase tracking-widest font-bold opacity-90 text-white">{label}</span>
+                     <span className="text-[10px] md:text-xs uppercase tracking-widest font-bold opacity-90 text-white">{labelMap[label]}</span>
                   </div>
                 ))}
              </div>
