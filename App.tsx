@@ -7,6 +7,7 @@ import Home from './components/views/Home';
 import Archive from './components/views/Archive';
 import Bio from './components/views/Bio';
 import Locations from './components/views/Locations';
+import AudioStoryCard from './components/AudioStoryCard';
 import { Music, Play, Pause, SkipBack, SkipForward, Volume2, X, ChevronUp, ChevronDown, MessageSquareQuote } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -20,6 +21,7 @@ const App: React.FC = () => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showStoryCard, setShowStoryCard] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Ensure page scrolls to top on view change
@@ -35,10 +37,13 @@ const App: React.FC = () => {
   const handlePlayAudio = (audio: AudioItem) => {
     if (currentAudio?.id === audio.id) {
       setIsPlaying(!isPlaying);
+      // If we resumed and the card was closed, maybe show it again? 
+      // User said "cada vez que se reproduce", but usually means when started.
     } else {
       setCurrentAudio(audio);
       setIsPlaying(true);
       setCurrentTime(0);
+      setShowStoryCard(true); // Automatically show the story card for new audio
     }
   };
 
@@ -121,10 +126,18 @@ const App: React.FC = () => {
 
       <Footer />
 
+      {/* Floating Story Card (Parallel to Player) */}
+      {currentAudio && showStoryCard && (
+        <AudioStoryCard 
+          audio={currentAudio} 
+          onClose={() => setShowStoryCard(false)} 
+        />
+      )}
+
       {/* GLOBAL STICKY PLAYER */}
       {currentAudio && (
         <>
-          {/* Expanded Comments Panel */}
+          {/* Expanded Comments Panel (Keeping it for mobile full-screen option, but the floating card is the primary protagonista) */}
           <div 
             className={`fixed bottom-0 left-0 w-full bg-vallenato-blue/95 backdrop-blur-xl text-white z-[55] transition-all duration-500 ease-in-out border-t-2 border-vallenato-mustard/30 overflow-hidden ${
               isExpanded ? 'h-[320px] pb-24 opacity-100' : 'h-0 opacity-0 pointer-events-none'
@@ -138,8 +151,8 @@ const App: React.FC = () => {
                 <h3 className="text-vallenato-mustard font-serif text-lg md:text-2xl mb-2 md:mb-4 flex items-center gap-2 sticky top-0 bg-vallenato-blue/5 backdrop-blur-sm md:bg-transparent py-1">
                   Comentario de Álvaro González Pimienta
                 </h3>
-                <p className="text-gray-200 font-serif italic text-sm md:text-xl leading-relaxed max-w-4xl pb-4">
-                  "{currentAudio.descripcion}"
+                <p className="text-gray-200 font-serif text-sm md:text-xl leading-relaxed max-w-4xl pb-4">
+                  {currentAudio.descripcion}
                 </p>
               </div>
               <button 
@@ -191,21 +204,21 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between gap-2">
-                  {/* Track Info & Expand Button */}
+                  {/* Track Info & Story Toggle */}
                   <div className="flex items-center gap-3 md:gap-8 w-1/2 md:w-5/12 overflow-hidden">
                     <button 
-                      onClick={() => setIsExpanded(!isExpanded)}
+                      onClick={() => setShowStoryCard(!showStoryCard)}
                       className="flex items-center gap-2 group transition-all duration-300 hover:scale-105 shrink-0"
                     >
-                      <div className={`bg-vallenato-mustard p-1.5 rounded-lg text-vallenato-blue transition-transform duration-500 shadow-lg ${isExpanded ? 'rotate-180' : ''}`}>
-                        <ChevronUp size={16} />
+                      <div className={`bg-vallenato-mustard p-1.5 rounded-lg text-vallenato-blue transition-transform duration-500 shadow-lg ${showStoryCard ? 'bg-vallenato-red text-white scale-110' : ''}`}>
+                        <MessageSquareQuote size={16} />
                       </div>
                       <span className="hidden sm:block text-[6.5px] md:text-[8px] font-bold uppercase tracking-[0.15em] text-vallenato-mustard animate-pulse whitespace-nowrap">
-                        {isExpanded ? 'Cerrar Comentario' : 'Ver Comentario'}
+                        {showStoryCard ? 'Cerrar Historia' : 'Leer Historia'}
                       </span>
                     </button>
                     
-                    {/* Divider hidden on mobile to gain space */}
+                    {/* Divider hidden on mobile */}
                     <div className="hidden sm:block w-px h-10 bg-white/10 mx-1 md:mx-4 shrink-0"></div>
 
                     <div className="overflow-hidden flex flex-col justify-center min-w-0">
@@ -221,7 +234,7 @@ const App: React.FC = () => {
                       onClick={() => setIsPlaying(!isPlaying)}
                       className="bg-vallenato-mustard text-vallenato-blue p-2.5 md:p-3 rounded-full hover:scale-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(234,170,0,0.4)]"
                     >
-                      {isPlaying ? <Pause size={20} md:size={24} fill="currentColor"/> : <Play size={20} md:size={24} fill="currentColor"/>}
+                      {isPlaying ? <Pause size={20} fill="currentColor"/> : <Play size={20} fill="currentColor"/>}
                     </button>
                     <button className="opacity-50 hover:opacity-100 transition-opacity hidden sm:block"><SkipForward size={20}/></button>
                   </div>
@@ -252,7 +265,7 @@ const App: React.FC = () => {
                         />
                       </div>
                     </div>
-                    <button onClick={() => { setCurrentAudio(null); setIsExpanded(false); }} className="hover:text-vallenato-red transition-colors opacity-60 hover:opacity-100"><X size={18}/></button>
+                    <button onClick={() => { setCurrentAudio(null); setShowStoryCard(false); setIsExpanded(false); }} className="hover:text-vallenato-red transition-colors opacity-60 hover:opacity-100"><X size={18}/></button>
                   </div>
                 </div>
               </div>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { X, Calendar, User, Mic2, FileText, Music, Video, Tv, ListMusic, UserCheck } from 'lucide-react';
 import { AudioItem, VideoItem } from '../types';
@@ -134,8 +135,8 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                   <FileText className="text-vallenato-red w-4 h-4 md:w-5 md:h-5" />
                   {isVideo ? "Información" : "Comentario de Álvaro González Pimienta"}
                 </h3>
-                <p className="text-gray-700 font-serif leading-relaxed text-base md:text-lg italic">
-                   "{item.descripcion}"
+                <p className="text-gray-700 font-serif leading-relaxed text-base md:text-lg">
+                   {item.descripcion}
                 </p>
               </div>
             </div>
