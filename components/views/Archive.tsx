@@ -138,7 +138,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
         <div className="text-center mb-10">
           <span className="text-vallenato-red font-bold uppercase tracking-widest text-[10px] md:text-xs">Museo Digital Estampas Vallenatas</span>
           <h1 className="text-4xl md:text-6xl font-serif text-vallenato-blue mb-4 font-bold tracking-tight">La Memoria del Acordeón</h1>
-          <p className="text-gray-600 max-w-2xl mx-auto font-serif italic text-base md:text-lg">"Navegue por el índice histórico de nuestra música tradicional"</p>
+          <p className="text-gray-600 max-w-2xl mx-auto font-serif italic text-base md:text-lg">Navegue por nuestro museo. Utilice los filtros para mejorar la navegabilidad</p>
         </div>
 
         {/* Tab Selector */}
@@ -299,7 +299,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
                               <div className="col-span-4 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Canción</div>
                               <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Autor</div>
                               <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Voz</div>
-                              <div className="col-span-2 text-[10px) font-bold uppercase tracking-widest text-vallenato-blue/40">Acordeonero</div>
+                              <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Acordeonero</div>
                               <div className="col-span-1 text-right text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Mes</div>
                            </div>
                            
