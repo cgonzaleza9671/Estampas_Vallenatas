@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { saveQuestion } from '../../services/supabaseClient';
 import { getGeminiResponse } from '../../services/geminiService';
@@ -111,13 +112,13 @@ const Bio: React.FC = () => {
                </p>
              </div>
              
-             {/* Fixed Overlapping Quote by using Flexbox */}
+             {/* Text updated: removed quotes and italics as per user request */}
              <blockquote className="bg-vallenato-cream p-8 rounded-tr-[3rem] rounded-bl-[3rem] border-l-4 border-vallenato-red shadow-sm flex flex-col sm:flex-row gap-6">
                 <div className="flex-shrink-0">
                   <Quote className="text-vallenato-mustard/40 w-12 h-12 transform -scale-x-100" />
                 </div>
-                <p className="text-vallenato-blue font-serif italic text-lg lg:text-xl leading-relaxed">
-                  "Es una satisfacción personal enorme poder presentarle el país y al mundo un panorama amplio de la música vallenata interpretada por los verdaderos juglares de la época"
+                <p className="text-vallenato-blue font-serif text-lg lg:text-xl leading-relaxed">
+                  Es una satisfacción personal enorme poder presentarle el país y al mundo un panorama amplio de la música vallenata interpretada por los verdaderos juglares de la época
                 </p>
              </blockquote>
           </div>
