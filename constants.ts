@@ -1,3 +1,4 @@
+
 import { AudioItem, VideoItem } from './types';
 
 export const FESTIVAL_DATE = new Date('2026-04-29T08:00:00');
@@ -14,6 +15,8 @@ export const MOCK_AUDIOS: AudioItem[] = [
     id: 1,
     titulo: "La Gota Fría (Versión Histórica)",
     autor: "Emiliano Zuleta",
+    // Added missing property 'cantante'
+    cantante: "Emiliano Zuleta",
     acordeonero: "Emiliano Zuleta",
     fecha_publicacion: "1985",
     anio: 1985,
@@ -24,6 +27,8 @@ export const MOCK_AUDIOS: AudioItem[] = [
     id: 2,
     titulo: "Matilde Lina",
     autor: "Leandro Díaz",
+    // Added missing property 'cantante'
+    cantante: "Alejandro Durán",
     acordeonero: "Toño Salas",
     fecha_publicacion: "1978",
     anio: 1978,
@@ -34,6 +39,8 @@ export const MOCK_AUDIOS: AudioItem[] = [
     id: 3,
     titulo: "El Cantor de Fonseca",
     autor: "Carlos Huertas",
+    // Added missing property 'cantante'
+    cantante: "Carlos Huertas",
     acordeonero: "Carlos Huertas",
     fecha_publicacion: "1980",
     anio: 1980,
@@ -47,6 +54,8 @@ export const MOCK_VIDEOS: VideoItem[] = [
     id: 1,
     titulo: "Parranda en el Patio de Pimienta",
     autor: "Canal Vallenato",
+    // Added missing property 'interprete'
+    interprete: "Varios Juglares",
     anio: 1995,
     url_video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     thumbnail_url: "https://i.imgur.com/CyzoY4Y.jpeg",
@@ -56,6 +65,8 @@ export const MOCK_VIDEOS: VideoItem[] = [
     id: 2,
     titulo: "Historia del Son",
     autor: "Telecaribe",
+    // Added missing property 'interprete'
+    interprete: "Historiadores Folclóricos",
     anio: 1988,
     url_video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     thumbnail_url: "https://i.imgur.com/egByYqx.jpeg",

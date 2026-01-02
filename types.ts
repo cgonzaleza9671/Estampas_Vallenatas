@@ -9,21 +9,23 @@ export enum ViewState {
 export interface AudioItem {
   id: number;
   titulo: string;
-  autor: string;          // Direct from DB 'autor'
-  acordeonero: string;    // Direct from DB 'acordeonero'
-  fecha_publicacion: string; // Formatted date string from 'fecha'
-  anio: number;           // Kept for sorting logic
-  url_audio: string;      // Direct from DB 'audio_url'
-  descripcion: string;    // Direct from DB 'descripcion'
+  autor: string;
+  cantante: string;       // New field
+  acordeonero: string;
+  fecha_publicacion: string;
+  anio: number;
+  url_audio: string;
+  descripcion: string;
 }
 
 export interface VideoItem {
   id: number;
   titulo: string;
-  autor: string;      // Changed from 'canal' to 'autor'
+  autor: string;      
+  interprete: string;     // New field
   anio: number;       
   url_video: string;  
-  thumbnail_url?: string; // Direct from DB 'thumbnail_url'
+  thumbnail_url?: string;
   descripcion?: string;
 }
 

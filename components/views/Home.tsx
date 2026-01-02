@@ -4,9 +4,9 @@ import { ViewState, AudioItem, VideoItem } from '../../types';
 import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants';
 import Button from '../Button';
 import MediaModal from '../MediaModal';
-import { Play, Sparkles, ArrowRight, Music, Youtube, Globe, User, ListMusic, Video, Calendar, Pause } from 'lucide-react';
+import { Play, Sparkles, ArrowRight, User, ListMusic, Video, Calendar, Pause, Mic2, Globe } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../services/supabaseClient';
-import { SombreroVueltiaoIcon, YouTubeLogo, SpotifyLogo, AppleMusicLogo } from '../CustomIcons';
+import { SombreroVueltiaoIcon } from '../CustomIcons';
 
 interface HomeProps {
   setViewState: (view: ViewState) => void;
@@ -35,7 +35,6 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
-  // Carousel Logic - 7 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setHeroIndex((prev) => (prev + 1) % HERO_GALLERY.length);
@@ -43,7 +42,6 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
     return () => clearInterval(interval);
   }, []);
 
-  // Data Fetching
   useEffect(() => {
     const loadData = async () => {
       setLoadingData(true);
@@ -65,18 +63,13 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
     loadData();
   }, []);
 
-  // Countdown Logic
   useEffect(() => {
     const calculateTimeLeft = () => {
       const difference = +FESTIVAL_DATE - +new Date();
       let timeLeft: TimeLeft = { months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
-
       if (difference > 0) {
         const totalSeconds = Math.floor(difference / 1000);
-        const totalMinutes = Math.floor(totalSeconds / 60);
-        const totalHours = Math.floor(totalMinutes / 60);
-        const totalDays = Math.floor(totalHours / 24);
-        
+        const totalDays = Math.floor(totalSeconds / (3600 * 24));
         timeLeft = {
           months: Math.floor(totalDays / 30),
           weeks: Math.floor((totalDays % 30) / 7),
@@ -88,32 +81,19 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       }
       return timeLeft;
     };
-
-    const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
+    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
     return () => clearInterval(timer);
   }, []);
 
   const openMedia = (item: AudioItem | VideoItem) => {
-    if ('url_video' in item) {
+    if ('interprete' in item) {
       setSelectedMedia(item);
       setIsModalOpen(true);
     } else {
-      // Audio is played through global player
-      onPlayAudio?.(item);
+      onPlayAudio?.(item as AudioItem);
     }
   };
 
-  const goToArchive = (tab: 'audio' | 'video') => {
-    if (onNavigateArchive) {
-      onNavigateArchive(tab);
-    } else {
-      setViewState(ViewState.ARCHIVE);
-    }
-  };
-
-  // Label mapping for countdown
   const labelMap: Record<string, string> = {
     months: 'Meses',
     weeks: 'Semanas',
@@ -125,8 +105,6 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
 
   return (
     <div className="animate-fade-in-up">
-      
-      {/* 1. Feature: Banner Novedad Exclusiva */}
       {!loadingData && latestAudio && (
         <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -137,18 +115,14 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                  </div>
                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
                     <span className="text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap">Novedad Exclusiva:</span>
-                    <span className="font-serif italic text-lg line-clamp-1">"{latestAudio.titulo}" - {latestAudio.autor}</span>
+                    <span className="font-serif italic text-lg line-clamp-1">"{latestAudio.titulo}" - Autor: {latestAudio.autor}</span>
                  </div>
               </div>
               <button 
                 onClick={() => onPlayAudio?.(latestAudio)}
                 className={`bg-white/10 hover:bg-white text-white hover:text-vallenato-blue px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border border-white/20 shadow-lg flex-shrink-0 ${currentAudioId === latestAudio.id && isPlaying ? 'bg-vallenato-red border-vallenato-red' : ''}`}
               >
-                {currentAudioId === latestAudio.id && isPlaying ? (
-                  <>Pausar <Pause size={12} fill="currentColor" /></>
-                ) : (
-                  <>Reproducir <Play size={12} fill="currentColor" /></>
-                )}
+                {currentAudioId === latestAudio.id && isPlaying ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
               </button>
            </div>
         </div>
@@ -157,11 +131,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       {/* Hero Section */}
       <section className="relative min-h-[85vh] md:min-h-[90vh] w-full overflow-hidden flex items-center justify-center pt-12 pb-8 md:pb-12">
         {HERO_GALLERY.map((img, index) => (
-          <div 
-            key={index}
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`}
-            style={{ backgroundImage: `url("${img}")` }}
-          />
+          <div key={index} className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundImage: `url("${img}")` }} />
         ))}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/90 z-10"></div>
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
@@ -197,31 +167,26 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
              </div>
              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-10">
                 {recentAudios.map((item) => (
-                   <div 
-                     key={item.id} 
-                     onClick={() => onPlayAudio?.(item)}
-                     className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}
-                   >
+                   <div key={item.id} onClick={() => onPlayAudio?.(item)} className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}>
                       <div className="p-6 relative flex-grow">
-                         <div className="absolute top-4 right-4 text-vallenato-blue/20 group-hover:text-vallenato-mustard transition-colors">
-                            <SombreroVueltiaoIcon className="w-16 h-16" />
-                         </div>
+                         <div className="absolute top-4 right-4 text-vallenato-blue/20 group-hover:text-vallenato-mustard transition-colors"><SombreroVueltiaoIcon className="w-16 h-16" /></div>
                          <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate pr-8 group-hover:text-vallenato-red transition-colors">{item.titulo}</h3>
-                         <p className="text-vallenato-red text-sm font-bold uppercase mt-1 flex items-center gap-1"><User size={12} /> {item.autor}</p>
-                         <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
+                         <div className="space-y-1 mt-2">
+                            <p className="text-vallenato-red text-xs font-bold uppercase flex items-center gap-1.5"><User size={12} /> {item.autor}</p>
+                            <p className="text-vallenato-blue/70 text-xs font-bold uppercase flex items-center gap-1.5"><Mic2 size={12} /> {item.cantante}</p>
+                         </div>
+                         <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-500">
                            <ListMusic size={12} /> <span className="uppercase tracking-wide font-bold">Acordeón: {item.acordeonero}</span>
                          </div>
                       </div>
                       <div className={`mt-auto p-4 border-t border-vallenato-mustard/20 flex items-center justify-between transition-colors duration-300 ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-cream group-hover:bg-vallenato-blue group-hover:text-white'}`}>
                          <span className="text-xs font-bold uppercase tracking-widest">{currentAudioId === item.id && isPlaying ? 'Reproduciendo...' : 'Reproducir Estampa'}</span>
-                         <div className="bg-white/20 p-2 rounded-full">
-                           {currentAudioId === item.id && isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}
-                         </div>
+                         <div className="bg-white/20 p-2 rounded-full">{currentAudioId === item.id && isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}</div>
                       </div>
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => goToArchive('audio')} className="group">Ver todos los Audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-center"><Button variant="outline" onClick={() => setViewState(ViewState.ARCHIVE)} className="group">Ver todos los Audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
       </section>
 
@@ -234,48 +199,24 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 md:mb-10">
                 {recentVideos.map((item) => (
-                   <div 
-                     key={item.id} 
-                     onClick={() => openMedia(item)}
-                     className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
-                   >
+                   <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
                       <div className="aspect-video relative overflow-hidden bg-black">
                         {item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}
                         <div className="absolute inset-0 flex items-center justify-center"><div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/50 group-hover:scale-110 transition-transform"><Play size={24} className="text-white fill-white" /></div></div>
                       </div>
                       <div className="p-6 flex-grow">
                          <h3 className="text-xl font-serif text-vallenato-blue font-bold mb-2 group-hover:text-vallenato-red transition-colors">{item.titulo}</h3>
-                         <div className="flex justify-between items-center"><p className="text-vallenato-mustard text-sm font-bold flex items-center gap-2"><User size={14} /> {item.autor}</p><div className="flex items-center gap-1 text-gray-400 text-xs"><Calendar size={12} /><span>{item.anio}</span></div></div>
+                         <div className="space-y-1 mb-4">
+                            <p className="text-vallenato-mustard text-xs font-bold flex items-center gap-2 uppercase"><User size={14} /> Autor: {item.autor}</p>
+                            <p className="text-vallenato-red text-xs font-bold flex items-center gap-2 uppercase"><Mic2 size={14} /> Interprete: {item.interprete}</p>
+                         </div>
+                         <div className="flex items-center gap-1 text-gray-400 text-[10px] uppercase font-bold"><Calendar size={12} /><span>Año: {item.anio}</span></div>
                       </div>
                       <div className="mt-auto bg-vallenato-blue p-4 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-widest">Ver Video</span><div className="bg-white/20 p-1.5 rounded-full"><Play size={14} className="text-white fill-white" /></div></div>
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => goToArchive('video')} className="group">Ver todos los Videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
-         </div>
-      </section>
-
-      {/* Playlist Section */}
-      <section className="py-24 bg-vallenato-beige relative border-t border-vallenato-mustard/10">
-         <div className="container mx-auto px-6">
-            <div className="text-center mb-16"><h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mb-4">Parranda Digital</h2><div className="h-1 w-20 bg-vallenato-red mx-auto"></div><p className="mt-6 text-gray-600 max-w-xl mx-auto font-light">Listas de reproducción <span className="font-bold text-vallenato-red">recomendadas</span> para que lleves lo mejor del Vallenato en tu <span className="font-bold text-vallenato-blue">plataforma preferida</span></p></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-               {/* YouTube Card */}
-               <div className="group bg-white rounded-3xl shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border-t-8 border-[#FF0000]">
-                  <div className="bg-red-50 p-8 flex flex-col items-center relative overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube Logo" className="h-16 w-auto relative z-10 mb-4 drop-shadow-md"/><h3 className="text-2xl font-bold text-gray-800 relative z-10">YouTube</h3><p className="text-sm text-gray-500 uppercase tracking-widest relative z-10">Vallenatos clásicos</p></div>
-                  <div className="p-8 text-center"><p className="text-gray-600 mb-6 font-serif italic">"Sumérgete en los temas que perduran en el tiempo"</p><a href="https://www.youtube.com/watch?app=desktop&v=MC1qqYo2fHk&list=PLGwRpZ4OHjUsyQVLJa0ao0Cz3qc5ri1OR" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-[#FF0000] font-bold uppercase text-xs tracking-widest group-hover:underline">Abrir Canal <YouTubeLogo className="w-5 h-5" /></a></div>
-               </div>
-               {/* Spotify Card */}
-               <div className="group bg-white rounded-3xl shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border-t-8 border-[#1DB954]">
-                  <div className="bg-green-50 p-8 flex flex-col items-center relative overflow-hidden"><img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg" alt="Spotify Logo" className="h-16 w-auto relative z-10 mb-4 drop-shadow-md"/><h3 className="text-2xl font-bold text-gray-800 relative z-10">Spotify</h3><p className="text-sm text-gray-500 uppercase tracking-widest relative z-10">Clásicos del Vallenato</p></div>
-                  <div className="p-8 text-center"><p className="text-gray-600 mb-6 font-serif italic">"Pasado y presente para que la parranda perdure con los clásicos"</p><a href="https://open.spotify.com/playlist/37i9dQZF1DXbUPnz12C5bA" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-[#1DB954] font-bold uppercase text-xs tracking-widest group-hover:underline">Escuchar Playlist <SpotifyLogo className="w-5 h-5" /></a></div>
-               </div>
-               {/* Apple Music Card */}
-               <div className="group bg-white rounded-3xl shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border-t-8 border-[#FA243C]">
-                  <div className="bg-pink-50 p-8 flex flex-col items-center relative overflow-hidden"><div className="h-16 flex items-center justify-center relative z-10 mb-4"><AppleMusicLogo className="h-full w-auto text-[#FA243C] drop-shadow-sm" /></div><h3 className="text-2xl font-bold text-gray-800 relative z-10">Apple Music</h3><p className="text-sm text-gray-500 uppercase tracking-widest relative z-10">Vallenato Essentials</p></div>
-                  <div className="p-8 text-center"><p className="text-gray-600 mb-6 font-serif italic">"Lo esencial para enamorarse del Vallenato clásico y el nuevo"</p><a href="https://music.apple.com/us/playlist/vallenato-essentials/pl.4463cdc654a9494f8d933923e91b3a22" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 text-[#FA243C] font-bold uppercase text-xs tracking-widest group-hover:underline">Abrir Álbum <AppleMusicLogo className="w-5 h-5" /></a></div>
-               </div>
-            </div>
+             <div className="flex justify-center"><Button variant="outline" onClick={() => {if(onNavigateArchive) onNavigateArchive('video'); else setViewState(ViewState.ARCHIVE);}} className="group">Ver todos los Videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
       </section>
       
