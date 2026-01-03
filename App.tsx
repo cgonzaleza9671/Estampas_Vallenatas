@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { ViewState, AudioItem } from './types';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import Home from './components/views/Home';
-import Archive from './components/views/Archive';
-import Bio from './components/views/Bio';
-import Locations from './components/views/Locations';
-import AudioStoryCard from './components/AudioStoryCard';
+import { ViewState, AudioItem } from './types.ts';
+import Header from './components/Header.tsx';
+import Footer from './components/Footer.tsx';
+import Home from './components/views/Home.tsx';
+import Archive from './components/views/Archive.tsx';
+import Bio from './components/views/Bio.tsx';
+import Locations from './components/views/Locations.tsx';
+import AudioStoryCard from './components/AudioStoryCard.tsx';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, MessageSquareQuote, User, Mic2 } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -39,10 +39,26 @@ const App: React.FC = () => {
     }
   };
 
+  /**
+   * Detiene la reproducción de audio global.
+   * Se invoca cuando se abre cualquier video en la aplicación.
+   */
+  const handleVideoOpen = () => {
+    setIsPlaying(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+  };
+
   useEffect(() => {
     if (audioRef.current) {
-      if (isPlaying) audioRef.current.play().catch(() => {});
-      else audioRef.current.pause();
+      if (isPlaying) {
+        audioRef.current.play().catch((err) => {
+          console.warn("Auto-play blocked by browser, wait for user interaction.", err);
+        });
+      } else {
+        audioRef.current.pause();
+      }
     }
   }, [isPlaying, currentAudio]);
 
@@ -68,8 +84,25 @@ const App: React.FC = () => {
       
       {/* Contenido principal con padding inferior dinámico para el player */}
       <main className={`flex-grow relative transition-all duration-300 ${currentAudio ? 'pb-52 md:pb-40' : 'pb-0'}`}>
-        {currentView === ViewState.HOME && <Home setViewState={setCurrentView} onNavigateArchive={navigateToArchive} onPlayAudio={handlePlayAudio} currentAudioId={currentAudio?.id} isPlaying={isPlaying} />}
-        {currentView === ViewState.ARCHIVE && <Archive initialTab={archiveInitialTab} onPlayAudio={handlePlayAudio} currentAudioId={currentAudio?.id} isPlaying={isPlaying} />}
+        {currentView === ViewState.HOME && (
+          <Home 
+            setViewState={setCurrentView} 
+            onNavigateArchive={navigateToArchive} 
+            onPlayAudio={handlePlayAudio} 
+            onVideoOpen={handleVideoOpen}
+            currentAudioId={currentAudio?.id} 
+            isPlaying={isPlaying} 
+          />
+        )}
+        {currentView === ViewState.ARCHIVE && (
+          <Archive 
+            initialTab={archiveInitialTab} 
+            onPlayAudio={handlePlayAudio} 
+            onVideoOpen={handleVideoOpen}
+            currentAudioId={currentAudio?.id} 
+            isPlaying={isPlaying} 
+          />
+        )}
         {currentView === ViewState.BIO && <Bio />}
         {currentView === ViewState.LOCATIONS && <Locations />}
       </main>
@@ -79,8 +112,8 @@ const App: React.FC = () => {
       {currentAudio && showStoryCard && <AudioStoryCard audio={currentAudio} onClose={() => setShowStoryCard(false)} />}
 
       {currentAudio && (
-        <div className="fixed bottom-0 left-0 w-full z-[99999] animate-fade-in-up shadow-[0_-20px_60px_rgba(0,0,0,0.5)]">
-          {/* Main Player Bar - Solid background for max visibility in Mobile */}
+        <div className="fixed bottom-0 left-0 w-full z-[90] animate-fade-in-up shadow-[0_-20px_60px_rgba(0,0,0,0.5)]">
+          {/* Main Player Bar */}
           <div className="bg-vallenato-blue text-white border-t-4 border-vallenato-mustard relative">
             <audio 
               ref={audioRef} 
@@ -115,7 +148,7 @@ const App: React.FC = () => {
 
                 <div className="flex items-center justify-between gap-3">
                   
-                  {/* Metadata: Vertical Layout always for longer names */}
+                  {/* Metadata */}
                   <div className="flex items-center gap-3 md:gap-6 w-8/12 md:w-5/12 overflow-hidden">
                     <button 
                       onClick={() => setShowStoryCard(!showStoryCard)} 

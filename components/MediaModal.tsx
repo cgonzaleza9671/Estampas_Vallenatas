@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { X, Calendar, User, Mic2, FileText, Music, Video, ListMusic } from 'lucide-react';
-import { AudioItem, VideoItem } from '../types';
-import { SombreroVueltiaoIcon } from './CustomIcons';
+import { AudioItem, VideoItem } from '../types.ts';
+import { SombreroVueltiaoIcon } from './CustomIcons.tsx';
 
 interface MediaModalProps {
   item: AudioItem | VideoItem | null;
@@ -18,108 +18,124 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
   const videoItem = isVideo ? (item as VideoItem) : null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 md:pt-10 overflow-hidden">
+      {/* Overlay inmersivo con desenfoque profundo */}
       <div 
-        className="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity duration-300"
+        className="absolute inset-0 bg-black/95 backdrop-blur-md transition-opacity duration-500"
         onClick={onClose}
       ></div>
 
-      <div className="relative bg-vallenato-beige w-full max-w-4xl rounded-2xl md:rounded-[2rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] md:max-h-[90vh] animate-fade-in-up">
+      {/* Contenedor del Modal posicionado en la parte alta */}
+      <div className="relative bg-vallenato-beige w-full max-w-4xl rounded-2xl md:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[85vh] md:max-h-[90vh] animate-fade-in-down border border-white/10">
         
+        {/* Cabecera Estilizada */}
         <div className="p-4 md:p-6 bg-vallenato-cream border-b border-vallenato-mustard/20 flex justify-between items-center shrink-0">
-           <div className="flex items-center gap-3 md:gap-4">
-             <div className="bg-vallenato-cream p-2 md:p-3 rounded-xl border border-vallenato-mustard/50 shadow-sm">
-                {isVideo ? <Video className="text-vallenato-blue w-5 h-5 md:w-6 md:h-6" /> : <Music className="text-vallenato-blue w-5 h-5 md:w-6 md:h-6" />}
+           <div className="flex items-center gap-3 md:gap-5">
+             <div className="bg-vallenato-blue p-2.5 md:p-3.5 rounded-2xl shadow-lg transform -rotate-3">
+                {isVideo ? <Video className="text-vallenato-mustard w-5 h-5 md:w-6 md:h-6" /> : <Music className="text-vallenato-mustard w-5 h-5 md:w-6 md:h-6" />}
              </div>
-             <div>
-               <h2 className="text-xl md:text-3xl font-serif text-vallenato-blue leading-none line-clamp-1 max-w-[200px] md:max-w-none">{item.titulo}</h2>
-               <p className="text-vallenato-red font-bold uppercase text-[10px] md:text-xs tracking-widest mt-1">
-                  {isVideo ? 'Archivo Fílmico' : 'Fonoteca Histórica'}
-               </p>
+             <div className="min-w-0">
+               <h2 className="text-xl md:text-3xl font-serif text-vallenato-blue leading-none font-bold line-clamp-1">{item.titulo}</h2>
+               <div className="flex items-center gap-2 mt-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red animate-pulse"></span>
+                  <p className="text-vallenato-red font-bold uppercase text-[9px] md:text-xs tracking-[0.2em]">
+                    {isVideo ? 'Archivo Fílmico Exclusivo' : 'Tesoro Sonoro Digital'}
+                  </p>
+               </div>
              </div>
            </div>
            <button 
              onClick={onClose}
-             className="text-gray-400 hover:text-vallenato-red transition-colors p-2 bg-white rounded-full shadow-sm hover:shadow-md"
+             className="text-vallenato-blue hover:text-white hover:bg-vallenato-red transition-all p-2.5 bg-white rounded-full shadow-md hover:shadow-xl shrink-0 ml-4 group"
            >
-             <X size={20} className="md:w-6 md:h-6" />
+             <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
            </button>
         </div>
 
-        <div className="overflow-y-auto p-4 md:p-8 space-y-6 md:space-y-8">
-          <div className="w-full bg-black rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border-2 border-vallenato-blue/20 shrink-0">
+        {/* Contenido con Scroll si es necesario */}
+        <div className="overflow-y-auto p-4 md:p-8 space-y-8 flex-grow custom-scrollbar">
+          
+          {/* Reproductor / Visualizador */}
+          <div className="w-full bg-black rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl border-2 border-vallenato-blue/30 relative group/video">
             {isVideo && videoItem ? (
-               <video 
-                 controls 
-                 autoPlay
-                 className="w-full aspect-video object-cover"
-                 src={videoItem.url_video}
-                 poster={videoItem.thumbnail_url}
-               />
+               <div className="relative pt-[56.25%] w-full h-0">
+                 <video 
+                   controls 
+                   autoPlay
+                   className="absolute top-0 left-0 w-full h-full object-contain"
+                   src={videoItem.url_video}
+                   poster={videoItem.thumbnail_url}
+                 />
+               </div>
             ) : audioItem ? (
-               <div className="p-6 md:p-12 flex flex-col items-center justify-center bg-vallenato-blue text-white aspect-video md:aspect-[21/9] relative overflow-hidden">
+               <div className="p-10 md:p-16 flex flex-col items-center justify-center bg-vallenato-blue text-white aspect-video md:aspect-[21/9] relative overflow-hidden">
                  <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                  <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
-                    <div className="mb-4 md:mb-6 bg-white/10 p-3 md:p-4 rounded-full backdrop-blur-md border border-white/20 shadow-xl animate-pulse">
-                       <SombreroVueltiaoIcon size={32} className="text-vallenato-mustard md:w-12 md:h-12" />
+                    <div className="mb-6 bg-white/10 p-5 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl animate-pulse">
+                       <SombreroVueltiaoIcon size={48} className="text-vallenato-mustard md:w-16 md:h-16" />
                     </div>
-                    <audio controls autoPlay className="w-full h-8 md:h-12" src={audioItem.url_audio} />
-                    <p className="mt-4 text-[10px] md:text-xs font-light tracking-[0.2em] uppercase text-vallenato-mustard opacity-80 hidden md:block">Archivo Digital de Estampas Vallenatas</p>
+                    <audio controls autoPlay className="w-full h-10 md:h-14" src={audioItem.url_audio} />
+                    <p className="mt-5 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-vallenato-mustard/60">Sello de Calidad Estampas Vallenatas</p>
                  </div>
                </div>
             ) : null}
           </div>
 
-          <div className="flex flex-col md:flex-row gap-6 md:gap-8">
-            <div className="md:w-1/3 space-y-3 md:space-y-4">
-               {/* Autor */}
-               <div className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
-                  <div className="flex items-center gap-2 md:gap-3 mb-1">
-                    <User className="text-vallenato-mustard w-3 h-3 md:w-4 md:h-4" />
-                    <p className="text-[10px] md:text-xs text-gray-500 uppercase font-bold">Autor de la obra</p>
+          {/* Información Detallada */}
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="md:w-1/3 space-y-4">
+               {/* Fichas de Metadatos Limpias */}
+               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-mustard hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-1 opacity-60">
+                    <User size={14} className="text-vallenato-blue" />
+                    <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">Compositor</p>
                   </div>
-                  <p className="font-serif text-base md:text-lg text-vallenato-blue leading-tight">{item.autor}</p>
+                  <p className="font-serif text-lg md:text-xl text-vallenato-blue font-bold">{item.autor}</p>
                </div>
                
-               {/* Intérprete (Video) / Cantante (Audio) */}
-               <div className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
-                  <div className="flex items-center gap-2 md:gap-3 mb-1">
-                    <Mic2 className="text-vallenato-red w-3 h-3 md:w-4 md:h-4" />
-                    <p className="text-[10px] md:text-xs text-gray-500 uppercase font-bold">{isVideo ? 'Intérprete' : 'Voz Principal'}</p>
+               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-red hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-1 opacity-60">
+                    <Mic2 size={14} className="text-vallenato-red" />
+                    <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">{isVideo ? 'Interpretación' : 'Voz Líder'}</p>
                   </div>
-                  <p className="font-serif text-base md:text-lg text-vallenato-blue leading-tight">{isVideo ? videoItem?.interprete : audioItem?.cantante}</p>
+                  <p className="font-serif text-lg md:text-xl text-vallenato-blue font-bold">{isVideo ? videoItem?.interprete : audioItem?.cantante}</p>
                </div>
 
-               {/* Acordeonero (Solo Audio) */}
                {audioItem && (
-                 <div className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
-                    <div className="flex items-center gap-2 md:gap-3 mb-1">
-                      <ListMusic className="text-vallenato-mustard w-3 h-3 md:w-4 md:h-4" />
-                      <p className="text-[10px] md:text-xs text-gray-500 uppercase font-bold">Acordeón</p>
+                 <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-blue hover:shadow-md transition-shadow">
+                    <div className="flex items-center gap-3 mb-1 opacity-60">
+                      <ListMusic size={14} className="text-vallenato-blue" />
+                      <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">Maestro Acordeonero</p>
                     </div>
-                    <p className="font-serif text-base md:text-lg text-vallenato-blue leading-tight">{audioItem.acordeonero}</p>
+                    <p className="font-serif text-lg md:text-xl text-vallenato-blue font-bold">{audioItem.acordeonero}</p>
                  </div>
                )}
 
-               {/* Año / Fecha */}
-               <div className="bg-white p-3 md:p-4 rounded-xl md:rounded-2xl shadow-sm border border-gray-100">
-                  <div className="flex items-center gap-2 md:gap-3 mb-1">
-                    <Calendar className="text-vallenato-mustard w-3 h-3 md:w-4 md:h-4" />
-                    <p className="text-[10px] md:text-xs text-gray-500 uppercase font-bold">{isVideo ? 'Año' : 'Fecha de Publicación'}</p>
+               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-mustard/40 hover:shadow-md transition-shadow">
+                  <div className="flex items-center gap-3 mb-1 opacity-60">
+                    <Calendar size={14} className="text-vallenato-blue" />
+                    <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">Registro</p>
                   </div>
-                  <p className="font-serif text-base md:text-lg text-vallenato-blue leading-tight">{isVideo ? videoItem?.anio : audioItem?.fecha_publicacion}</p>
+                  <p className="font-serif text-lg md:text-xl text-vallenato-blue font-bold">{isVideo ? `Año ${videoItem?.anio}` : audioItem?.fecha_publicacion}</p>
                </div>
             </div>
 
-            <div className="md:w-2/3 pb-4 md:pb-0">
-              <div className="h-full bg-vallenato-cream p-4 md:p-6 rounded-xl md:rounded-2xl border-l-4 border-vallenato-mustard">
-                <h3 className="font-serif text-xl md:text-2xl text-vallenato-blue mb-3 md:mb-4 flex items-center gap-2">
-                  <FileText className="text-vallenato-red w-4 h-4 md:w-5 md:h-5" />
-                  {isVideo ? "Descripción" : "Comentario de Álvaro González Pimienta"}
-                </h3>
-                <p className="text-gray-900 font-serif leading-relaxed text-base md:text-lg">
-                   {item.descripcion}
-                </p>
+            {/* Descripción / Contexto Histórico */}
+            <div className="md:w-2/3">
+              <div className="h-full bg-vallenato-cream/60 backdrop-blur-sm p-6 md:p-10 rounded-[2rem] border-2 border-dashed border-vallenato-mustard/30 relative">
+                <div className="absolute -top-4 -left-4 bg-vallenato-blue text-white p-3 rounded-2xl shadow-lg">
+                   <FileText size={20} />
+                </div>
+                <h3 className="font-serif text-2xl md:text-3xl text-vallenato-blue mb-5 font-bold">Descripción</h3>
+                <div className="prose prose-vallenato">
+                  <p className="text-gray-800 font-serif leading-relaxed text-lg md:text-xl italic">
+                     {item.descripcion || "Este tesoro del folclor vallenato forma parte del archivo vivo del Maestro Álvaro González Pimienta, preservado para las futuras generaciones."}
+                  </p>
+                </div>
+                <div className="mt-8 pt-6 border-t border-vallenato-mustard/20 flex items-center justify-between opacity-40">
+                   <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Estampas Vallenatas &copy;</span>
+                   <SombreroVueltiaoIcon size={24} />
+                </div>
               </div>
             </div>
           </div>

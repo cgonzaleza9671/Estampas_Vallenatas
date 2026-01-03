@@ -1,17 +1,18 @@
 
 import React, { useEffect, useState } from 'react';
-import { ViewState, AudioItem, VideoItem } from '../../types';
-import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants';
-import Button from '../Button';
-import MediaModal from '../MediaModal';
+import { ViewState, AudioItem, VideoItem } from '../../types.ts';
+import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
+import Button from '../Button.tsx';
+import MediaModal from '../MediaModal.tsx';
 import { Play, Sparkles, ArrowRight, User, ListMusic, Video, Calendar, Pause, Mic2, Globe } from 'lucide-react';
-import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../services/supabaseClient';
-import { SombreroVueltiaoIcon } from '../CustomIcons';
+import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../services/supabaseClient.ts';
+import { SombreroVueltiaoIcon } from '../CustomIcons.tsx';
 
 interface HomeProps {
   setViewState: (view: ViewState) => void;
   onNavigateArchive?: (tab: 'audio' | 'video') => void;
   onPlayAudio?: (audio: AudioItem) => void;
+  onVideoOpen?: () => void;
   currentAudioId?: number;
   isPlaying?: boolean;
 }
@@ -25,7 +26,7 @@ interface TimeLeft {
   seconds: number;
 }
 
-const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudio, currentAudioId, isPlaying }) => {
+const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudio, onVideoOpen, currentAudioId, isPlaying }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [latestAudio, setLatestAudio] = useState<AudioItem | null>(null);
   const [recentAudios, setRecentAudios] = useState<AudioItem[]>([]);
@@ -87,6 +88,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
 
   const openMedia = (item: AudioItem | VideoItem) => {
     if ('interprete' in item) {
+      onVideoOpen?.(); // Pausar audio global
       setSelectedMedia(item);
       setIsModalOpen(true);
     } else {
@@ -115,7 +117,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                  </div>
                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
                     <span className="text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap">Novedad Exclusiva:</span>
-                    <span className="font-serif italic text-lg line-clamp-1">"{latestAudio.titulo}" - Autor: {latestAudio.autor}</span>
+                    <span className="font-serif italic text-lg line-clamp-1">"{latestAudio.titulo}" - {latestAudio.autor}</span>
                  </div>
               </div>
               <button 
@@ -152,7 +154,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                   </div>
                 ))}
              </div>
-             <p className="text-white text-xs md:text-sm mt-5 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center">Cuenta regresiva para el inicio del 59° Festival de la Leyenda</p>
+             <p className="text-white text-xs md:text-sm mt-5 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center">Cuenta regresiva para el inicio del 59° Festival de la Leyenda Vallenata</p>
              <a href="https://festivalvallenato.com/" target="_blank" rel="noopener noreferrer" className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-8 py-3 rounded-full font-bold uppercase text-xs md:text-sm tracking-widest transition-all duration-300 shadow-2xl flex items-center gap-3 border border-vallenato-mustard/20">Sitio oficial del Festival <Globe size={18} /></a>
           </div>
         </div>
@@ -176,17 +178,17 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                             <p className="text-vallenato-blue/70 text-xs font-bold uppercase flex items-center gap-1.5"><Mic2 size={12} /> {item.cantante}</p>
                          </div>
                          <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-500">
-                           <ListMusic size={12} /> <span className="uppercase tracking-wide font-bold">Acordeón: {item.acordeonero}</span>
+                           <ListMusic size={12} /> <span className="uppercase tracking-wide font-bold">{item.acordeonero}</span>
                          </div>
                       </div>
                       <div className={`mt-auto p-4 border-t border-vallenato-mustard/20 flex items-center justify-between transition-colors duration-300 ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-cream group-hover:bg-vallenato-blue group-hover:text-white'}`}>
-                         <span className="text-xs font-bold uppercase tracking-widest">{currentAudioId === item.id && isPlaying ? 'Reproduciendo...' : 'Reproducir Estampa'}</span>
+                         <span className="text-xs font-bold uppercase tracking-widest">{currentAudioId === item.id && isPlaying ? 'Reproduciendo' : 'Escuchar'}</span>
                          <div className="bg-white/20 p-2 rounded-full">{currentAudioId === item.id && isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}</div>
                       </div>
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => setViewState(ViewState.ARCHIVE)} className="group">Ver todos los Audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-center"><Button variant="outline" onClick={() => setViewState(ViewState.ARCHIVE)} className="group">Ver todo <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
       </section>
 
@@ -207,16 +209,16 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                       <div className="p-6 flex-grow">
                          <h3 className="text-xl font-serif text-vallenato-blue font-bold mb-2 group-hover:text-vallenato-red transition-colors">{item.titulo}</h3>
                          <div className="space-y-1 mb-4">
-                            <p className="text-vallenato-mustard text-xs font-bold flex items-center gap-2 uppercase"><User size={14} /> Autor: {item.autor}</p>
-                            <p className="text-vallenato-red text-xs font-bold flex items-center gap-2 uppercase"><Mic2 size={14} /> Interprete: {item.interprete}</p>
+                            <p className="text-vallenato-mustard text-xs font-bold flex items-center gap-2 uppercase"><User size={14} /> {item.autor}</p>
+                            <p className="text-vallenato-red text-xs font-bold flex items-center gap-2 uppercase"><Mic2 size={14} /> {item.interprete}</p>
                          </div>
-                         <div className="flex items-center gap-1 text-gray-400 text-[10px] uppercase font-bold"><Calendar size={12} /><span>Año: {item.anio}</span></div>
+                         <div className="flex items-center gap-1 text-gray-400 text-[10px] uppercase font-bold"><Calendar size={12} /><span>Año {item.anio}</span></div>
                       </div>
                       <div className="mt-auto bg-vallenato-blue p-4 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-widest">Ver Video</span><div className="bg-white/20 p-1.5 rounded-full"><Play size={14} className="text-white fill-white" /></div></div>
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => {if(onNavigateArchive) onNavigateArchive('video'); else setViewState(ViewState.ARCHIVE);}} className="group">Ver todos los Videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-center"><Button variant="outline" onClick={() => {if(onNavigateArchive) onNavigateArchive('video'); else setViewState(ViewState.ARCHIVE);}} className="group">Ver todo <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
       </section>
       

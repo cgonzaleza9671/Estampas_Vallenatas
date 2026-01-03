@@ -1,19 +1,20 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { fetchAudios, fetchVideos } from '../../services/supabaseClient';
-import { AudioItem, VideoItem } from '../../types';
-import MediaModal from '../MediaModal';
+import { fetchAudios, fetchVideos } from '../../services/supabaseClient.ts';
+import { AudioItem, VideoItem } from '../../types.ts';
+import MediaModal from '../MediaModal.tsx';
 import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar } from 'lucide-react';
-import { SombreroVueltiaoIcon } from '../CustomIcons';
+import { SombreroVueltiaoIcon } from '../CustomIcons.tsx';
 
 interface ArchiveProps {
   initialTab?: 'audio' | 'video';
   onPlayAudio?: (audio: AudioItem) => void;
+  onVideoOpen?: () => void;
   currentAudioId?: number;
   isPlaying?: boolean;
 }
 
-const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, currentAudioId, isPlaying }) => {
+const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, onVideoOpen, currentAudioId, isPlaying }) => {
   const [activeTab, setActiveTab] = useState<'audio' | 'video'>(initialTab);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [audios, setAudios] = useState<AudioItem[]>([]);
@@ -224,11 +225,8 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
               <div className="space-y-16">
                 
                 {/* Visualizer Controls */}
-                <div className="flex justify-between items-end px-4 border-b border-vallenato-mustard/20 pb-4">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase text-vallenato-red tracking-[0.3em]">Modo de consulta</span>
-                    <h2 className="text-vallenato-blue font-serif text-2xl font-bold">Fonoteca Histórica</h2>
-                  </div>
+                <div className="flex justify-end items-center px-4 border-b border-vallenato-mustard/20 pb-4 gap-3">
+                  <span className="text-[10px] font-bold uppercase text-vallenato-red tracking-[0.3em] opacity-80 mr-1">Modo de consulta</span>
                   
                   <div className="flex bg-vallenato-blue/5 rounded-xl p-1 gap-1">
                     <div className="relative group">
@@ -238,10 +236,6 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
                       >
                         <LayoutGrid size={20} />
                       </button>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-vallenato-blue text-white text-[9px] font-bold uppercase tracking-widest rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap z-[100] shadow-2xl pointer-events-none border border-white/10">
-                        Vista de cuadrícula
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-vallenato-blue"></div>
-                      </div>
                     </div>
 
                     <div className="relative group">
@@ -251,10 +245,6 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
                       >
                         <List size={20} />
                       </button>
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-vallenato-blue text-white text-[9px] font-bold uppercase tracking-widest rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 whitespace-nowrap z-[100] shadow-2xl pointer-events-none border border-white/10">
-                        Vista en listado
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-vallenato-blue"></div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -291,9 +281,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
                           ))}
                         </div>
                       ) : (
-                        /* RE-DISEÑO DE LISTA TIPO FONOTECA EDITORIAL MODERNA */
                         <div className="bg-white/70 backdrop-blur-md rounded-[2rem] shadow-sm border border-vallenato-mustard/10 overflow-hidden">
-                           {/* Header de columnas actualizado */}
                            <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-5 bg-vallenato-blue/5 border-b border-vallenato-mustard/20">
                               <div className="col-span-1 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">#</div>
                               <div className="col-span-4 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Canción</div>
@@ -310,7 +298,6 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
                                   onClick={() => onPlayAudio?.(item)} 
                                   className={`group grid grid-cols-1 lg:grid-cols-12 items-center gap-4 px-6 md:px-8 py-5 transition-all duration-300 cursor-pointer border-l-8 ${currentAudioId === item.id ? 'bg-vallenato-cream/60 border-vallenato-red' : 'hover:bg-vallenato-cream/30 hover:border-vallenato-mustard/50 border-transparent'}`}
                                 >
-                                  {/* Visual Status / Number */}
                                   <div className="col-span-1 hidden lg:flex items-center">
                                      {currentAudioId === item.id && isPlaying ? (
                                         <div className="flex gap-0.5 items-end h-3">
@@ -329,15 +316,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
                                      </div>
                                      <div className="min-w-0">
                                         <h4 className={`text-sm md:text-base font-serif font-bold truncate leading-tight transition-colors ${currentAudioId === item.id ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
-                                        <div className="lg:hidden flex items-center gap-3 mt-1 opacity-60">
-                                           <span className="text-[9px] font-bold uppercase tracking-tighter truncate max-w-[80px]">{item.autor}</span>
-                                           <span className="w-1 h-1 rounded-full bg-current opacity-30"></span>
-                                           <span className="text-[9px] font-bold uppercase tracking-tighter truncate max-w-[80px]">{item.cantante}</span>
-                                        </div>
                                      </div>
                                   </div>
 
-                                  {/* Desktop Metadatos - Clean & Spaced */}
                                   <div className="hidden lg:block col-span-2">
                                      <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
                                         <User size={12} className="text-vallenato-mustard shrink-0" />
@@ -372,7 +353,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
             ) : (
               <div className="grid gap-10 grid-cols-1 md:grid-cols-2">
                 {filteredVideos.map((item) => (
-                  <div key={item.id} className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-museum transition-all duration-500 cursor-pointer group relative border border-white" onClick={() => { setSelectedVideo(item); setIsModalOpen(true); }}>
+                  <div key={item.id} className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-museum transition-all duration-500 cursor-pointer group relative border border-white" onClick={() => { onVideoOpen?.(); setSelectedVideo(item); setIsModalOpen(true); }}>
                      <div className="aspect-video relative overflow-hidden bg-black">
                         {item.thumbnail_url && <img src={item.thumbnail_url} className="w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-[2s]" alt={item.titulo}/>}
                         <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -412,7 +393,6 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, cu
       </div>
       <MediaModal item={selectedVideo} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       
-      {/* Wave animation style refinement */}
       <style>{`
         @keyframes wave {
           0%, 100% { height: 4px; transform: scaleY(1); }
