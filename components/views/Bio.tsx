@@ -83,10 +83,10 @@ const Bio: React.FC = () => {
       {/* B. BIOGRAPHY (Split Layout) */}
       <section className="py-20 container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Image with Antique Effect and Golden Border */}
+          {/* Left: Image with Antique Effect and Interative Golden Border */}
           <div className="relative group cursor-pointer">
              <div className="absolute inset-0 bg-vallenato-blue rounded-3xl transform translate-x-4 translate-y-4 transition-transform group-hover:translate-x-2 group-hover:translate-y-2"></div>
-             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-vallenato-mustard sepia-[.15] group-hover:sepia-0 transition-all duration-700">
+             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-transparent group-hover:border-vallenato-mustard sepia-[.15] group-hover:sepia-0 transition-all duration-700">
                 <img 
                   src="https://i.imgur.com/cJhXAof.jpeg" 
                   alt="Álvaro González Pimienta junto al maestro Rafael Escalona" 
@@ -224,7 +224,7 @@ const Bio: React.FC = () => {
                         Sin poder ocultar la nostalgia al recordar el recorrido folclórico que 'Estampas Vallenatas' protagonizó en la radio nacional, Álvaro González afirma que la mayor satisfacción fue llevarle a la población campesina y rural de Colombia un deleite espiritual con música que no habían escuchado anteriormente.
                      </p>
                      <p>
-                        En cierta ocasión, programó la canción 'El accidente de Lisandro' y, casi de inmediato, recibió la llamada de un oyente conmovedido: "Doctor González, yo pensé que ese tema no lo tenía nadie en Colombia". Años atrás, incluso Eloy 'Chichi' Quintero, desde su rol como Cónsul en Maracaibo, se comunicó con el programa para destacar la inmensa sintonía de 'Estampas Vallenatas' en territorio venezolano.
+                        En cierta ocasión, programó la canción 'El accidente de Lisandro' y, casi de inmediato, recibió la llamada de un oyente conmovido: "Doctor González, yo pensé que ese tema no lo tenía nadie en Colombia". Años atrás, incluso Eloy 'Chichi' Quintero, desde su rol como Cónsul en Maracaibo, se comunicó con el programa para destacar la inmensa sintonía de 'Estampas Vallenatas' en territorio venezolano.
                      </p>
                      <p>
                         "De la amistad entrañable con 'El Pollo Vallenato', Luís Enrique Martínez, González Pimienta recuerda que durante la residencia del acordeonero en el sector de Fontibón, Luís Enrique salía de correduría y le dejaba instrucciones precisas a su esposa Rosa para que llamara al Doctor González, quien le solucionaría lo del arriendo (diez mil pesos de la época) mientras durara su recorrido musical. Cuando Luís Enrique regresaba, iba sagradamente a mi oficina a entregarme el valor de los arriendos que le había prestado a Rosa; nunca me aceptó que se los regalara"
