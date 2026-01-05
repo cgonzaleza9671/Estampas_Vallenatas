@@ -1,7 +1,18 @@
-import React from 'react';
-import { Music, MapPin } from 'lucide-react';
 
-const Footer: React.FC = () => {
+import React from 'react';
+import { ViewState } from '../types.ts';
+import { MapPin } from 'lucide-react';
+
+interface FooterProps {
+  onNavigate: (view: ViewState) => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+  const handleNav = (e: React.MouseEvent, view: ViewState) => {
+    e.preventDefault();
+    onNavigate(view);
+  };
+
   return (
     <footer className="bg-vallenato-blue text-white border-t-8 border-vallenato-red pt-16 pb-8">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -25,7 +36,7 @@ const Footer: React.FC = () => {
                  </div>
              </div>
              
-             <div>
+             <div className="cursor-pointer" onClick={(e) => handleNav(e, ViewState.HOME)}>
                 <h2 className="text-xl font-serif leading-none">Estampas</h2>
                 <span className="text-sm font-sans font-light text-white tracking-[0.05em]">Vallenatas</span>
              </div>
@@ -40,10 +51,18 @@ const Footer: React.FC = () => {
         <div className="md:pl-10">
           <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Navegación</h3>
           <ul className="space-y-3 font-sans text-sm tracking-wide">
-            <li><a href="#" className="hover:text-vallenato-mustard transition-colors">Inicio</a></li>
-            <li><a href="#" className="hover:text-vallenato-mustard transition-colors">La Memoria del Acordeón</a></li>
-            <li><a href="#" className="hover:text-vallenato-mustard transition-colors">Acerca del autor</a></li>
-            <li><a href="#" className="hover:text-vallenato-mustard transition-colors">El Vallenato cerca a ti</a></li>
+            <li>
+              <button onClick={(e) => handleNav(e, ViewState.HOME)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Inicio</button>
+            </li>
+            <li>
+              <button onClick={(e) => handleNav(e, ViewState.ARCHIVE)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">La Memoria del Acordeón</button>
+            </li>
+            <li>
+              <button onClick={(e) => handleNav(e, ViewState.BIO)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Acerca del autor</button>
+            </li>
+            <li>
+              <button onClick={(e) => handleNav(e, ViewState.LOCATIONS)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">El Vallenato cerca a ti</button>
+            </li>
           </ul>
         </div>
 

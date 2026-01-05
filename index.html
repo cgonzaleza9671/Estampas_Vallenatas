@@ -1,10 +1,11 @@
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="color-scheme: light !important;">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light">
     <title>Estampas Vallenatas | Museo Digital</title>
     
     <!-- Google tag (gtag.js) -->
@@ -66,8 +67,12 @@
       }
     </script>
     <style>
+      :root {
+        color-scheme: light !important;
+      }
       body {
-        background-color: #F5F5DC;
+        background-color: #F5F5DC !important;
+        color: #1a1a1a;
       }
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
@@ -86,6 +91,10 @@
       /* Fix for mobile dynamic toolbars */
       .player-safe-area {
         padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      }
+      /* Resistance against "Force Dark" browser extensions */
+      * {
+        scrollbar-color: #EAAA00 #F5F5DC;
       }
     </style>
   <script type="importmap">

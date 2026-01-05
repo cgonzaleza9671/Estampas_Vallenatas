@@ -107,7 +107,7 @@ const App: React.FC = () => {
         {currentView === ViewState.LOCATIONS && <Locations />}
       </main>
 
-      <Footer />
+      <Footer onNavigate={setCurrentView} />
 
       {currentAudio && showStoryCard && <AudioStoryCard audio={currentAudio} onClose={() => setShowStoryCard(false)} />}
 
