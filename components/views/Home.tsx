@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { ViewState, AudioItem, VideoItem } from '../../types.ts';
 import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
@@ -35,6 +35,37 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
   const [selectedMedia, setSelectedMedia] = useState<AudioItem | VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+
+  // Lógica para efecto de escritura
+  const [charCount, setCharCount] = useState(0);
+  const segments = useMemo(() => [
+    { text: "Una ", bold: false },
+    { text: "colección digital", bold: true },
+    { text: " recopilada por el estudioso vallenato ", bold: false },
+    { text: "Álvaro González", bold: true },
+    { text: ", conformada por ", bold: false },
+    { text: "grabaciones", bold: true },
+    { text: " y materiales basados en años de ", bold: false },
+    { text: "aprendizaje del folclor", bold: true },
+    { text: ". Cada descripción de canción es un ", bold: false },
+    { text: "comentario personal", bold: true },
+    { text: " de Álvaro, fruto de su ", bold: false },
+    { text: "experiencia", bold: true },
+    { text: " y ", bold: false },
+    { text: "pasión", bold: true },
+    { text: " por la ", bold: false },
+    { text: "música vallenata", bold: true },
+    { text: ".", bold: false },
+  ], []);
+
+  const totalChars = segments.reduce((acc, s) => acc + s.text.length, 0);
+
+  useEffect(() => {
+    if (charCount < totalChars) {
+      const timer = setTimeout(() => setCharCount(prev => prev + 1), 25);
+      return () => clearTimeout(timer);
+    }
+  }, [charCount, totalChars]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -88,7 +119,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
 
   const openMedia = (item: AudioItem | VideoItem) => {
     if ('interprete' in item) {
-      onVideoOpen?.(); // Pausar audio global
+      onVideoOpen?.(); 
       setSelectedMedia(item);
       setIsModalOpen(true);
     } else {
@@ -103,6 +134,21 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
     hours: 'Horas',
     minutes: 'Minutos',
     seconds: 'Segundos',
+  };
+
+  const renderTypedDescription = () => {
+    let currentPos = 0;
+    return segments.map((seg, i) => {
+      const start = currentPos;
+      currentPos += seg.text.length;
+      if (charCount <= start) return null;
+      const visibleText = seg.text.substring(0, charCount - start);
+      return (
+        <span key={i} className={seg.bold ? "font-bold text-white drop-shadow-sm" : ""}>
+          {visibleText}
+        </span>
+      );
+    });
   };
 
   return (
@@ -138,14 +184,18 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/90 z-10"></div>
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
           <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-md">Estampas Vallenatas</span>
-          <h1 className="text-5xl md:text-7xl font-serif text-white mb-8 drop-shadow-2xl leading-[1.1]">
-            <span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-3">El Museo Digital del</span>
+          <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-2xl leading-[1.1]">
+            <span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-2">El Museo Digital del</span>
             <span className="text-vallenato-red">Folclor Vallenato</span>
           </h1>
-          <h2 className="text-gray-100 text-lg md:text-2xl font-light mb-12 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-lg">
-            Un archivo que preserva la riqueza musical de los grandes juglares de Colombia
+          
+          {/* Descripción con efecto de escritura - Margen inferior reducido a mb-6 */}
+          <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-lg min-h-[5em] md:min-h-[4em]">
+            {renderTypedDescription()}
+            <span className={`inline-block w-1.5 h-4 md:h-5 bg-vallenato-mustard ml-1 ${charCount < totalChars ? 'animate-pulse' : 'hidden'}`}></span>
           </h2>
-          <div className="mt-4 w-full max-w-4xl flex flex-col items-center">
+
+          <div className="mt-2 w-full max-w-4xl flex flex-col items-center">
              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
                 {Object.entries(timeLeft).map(([label, value]) => (
                   <div key={label} className={`flex flex-col items-center justify-center bg-black/30 rounded-xl py-3 border border-white/10 transition-all duration-300 ${label === 'seconds' ? 'border-vallenato-mustard/60 scale-105 shadow-[0_0_15px_rgba(234,170,0,0.3)] bg-vallenato-mustard/5' : ''}`}>
@@ -154,7 +204,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                   </div>
                 ))}
              </div>
-             <p className="text-white text-xs md:text-sm mt-5 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center">Cuenta regresiva para el inicio del 59° Festival de la Leyenda Vallenata</p>
+             <p className="text-white text-xs md:text-sm mt-4 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center">Cuenta regresiva para el inicio del 59° Festival de la Leyenda Vallenata</p>
              <a href="https://festivalvallenato.com/" target="_blank" rel="noopener noreferrer" className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-8 py-3 rounded-full font-bold uppercase text-xs md:text-sm tracking-widest transition-all duration-300 shadow-2xl flex items-center gap-3 border border-vallenato-mustard/20">Sitio oficial del Festival <Globe size={18} /></a>
           </div>
         </div>
