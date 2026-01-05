@@ -4,7 +4,7 @@ import { saveQuestion } from '../../services/supabaseClient';
 import { getGeminiResponse } from '../../services/geminiService';
 import { ChatMessage } from '../../types';
 import Button from '../Button';
-import { Send, User, Sparkles, Award, Mic, Quote, History, Loader2 } from 'lucide-react';
+import { Send, User, Sparkles, Award, Mic, Quote, History, Loader2, Camera } from 'lucide-react';
 
 const Bio: React.FC = () => {
   // AI State
@@ -83,19 +83,25 @@ const Bio: React.FC = () => {
       {/* B. BIOGRAPHY (Split Layout) */}
       <section className="py-20 container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Image with Antique Effect */}
+          {/* Left: Image with Antique Effect and Zoom on Hover */}
           <div className="relative group">
              <div className="absolute inset-0 bg-vallenato-blue rounded-3xl transform translate-x-4 translate-y-4 transition-transform group-hover:translate-x-2 group-hover:translate-y-2"></div>
              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white sepia-[.15] group-hover:sepia-0 transition-all duration-700">
                 <img 
                   src="https://i.imgur.com/cJhXAof.jpeg" 
                   alt="Álvaro González Pimienta junto al maestro Rafael Escalona" 
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-6 pt-12">
-                   <p className="text-white font-sans text-xs uppercase tracking-widest text-center">
-                     Álvaro González Pimienta junto al maestro Rafael Escalona
-                   </p>
+                {/* Modern Caption Label */}
+                <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur-md border border-white/20 p-3 md:p-4 rounded-xl transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-xl">
+                   <div className="flex items-center gap-3">
+                      <div className="bg-vallenato-mustard p-1.5 rounded-lg text-vallenato-blue">
+                         <Camera size={14} />
+                      </div>
+                      <p className="text-white font-sans text-[10px] md:text-xs uppercase font-bold tracking-[0.2em] leading-tight">
+                         Álvaro González <span className="text-vallenato-mustard">junto al maestro</span> Rafael Escalona
+                      </p>
+                   </div>
                 </div>
              </div>
           </div>
@@ -112,7 +118,6 @@ const Bio: React.FC = () => {
                </p>
              </div>
              
-             {/* Text updated: removed quotes and italics as per user request */}
              <blockquote className="bg-vallenato-cream p-8 rounded-tr-[3rem] rounded-bl-[3rem] border-l-4 border-vallenato-red shadow-sm flex flex-col sm:flex-row gap-6">
                 <div className="flex-shrink-0">
                   <Quote className="text-vallenato-mustard/40 w-12 h-12 transform -scale-x-100" />
@@ -175,10 +180,16 @@ const Bio: React.FC = () => {
                  alt="Álvaro González Pimienta junto al gran Luis Enrique Martínez" 
                  className="max-w-full md:max-w-3xl h-auto object-cover transition-transform duration-700 group-hover:scale-105"
                />
-               <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/80 to-transparent p-6 pt-12">
-                  <p className="text-white font-sans text-xs uppercase tracking-widest text-center">
-                    Álvaro González Pimienta junto al gran Luis Enrique Martínez
-                  </p>
+               {/* Modern Caption Label */}
+               <div className="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-xl border border-white/30 p-3 md:p-4 rounded-xl transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-2xl">
+                  <div className="flex items-center gap-3">
+                     <div className="bg-vallenato-red p-1.5 rounded-lg text-white">
+                        <Camera size={14} />
+                     </div>
+                     <p className="text-white font-sans text-[10px] md:text-xs uppercase font-bold tracking-[0.2em] leading-tight text-left">
+                        Álvaro González <span className="text-vallenato-red">junto al gran</span> Luis Enrique Martínez
+                     </p>
+                  </div>
                </div>
             </div>
          </div>
