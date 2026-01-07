@@ -19,6 +19,7 @@ const App: React.FC = () => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [showStoryCard, setShowStoryCard] = useState(false);
+  
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => { window.scrollTo(0, 0); }, [currentView]);
@@ -39,10 +40,6 @@ const App: React.FC = () => {
     }
   };
 
-  /**
-   * Detiene la reproducción de audio global.
-   * Se invoca cuando se abre cualquier video en la aplicación.
-   */
   const handleVideoOpen = () => {
     setIsPlaying(false);
     if (audioRef.current) {
@@ -79,10 +76,12 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-vallenato-beige selection:bg-vallenato-mustard selection:text-vallenato-blue overflow-x-hidden">
-      <Header currentView={currentView} onNavigate={setCurrentView} />
+    <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-vallenato-beige selection:bg-vallenato-mustard selection:text-vallenato-blue transition-colors duration-300 overflow-x-hidden">
+      <Header 
+        currentView={currentView} 
+        onNavigate={setCurrentView} 
+      />
       
-      {/* Contenido principal con padding inferior dinámico para el player */}
       <main className={`flex-grow relative transition-all duration-300 ${currentAudio ? 'pb-52 md:pb-40' : 'pb-0'}`}>
         {currentView === ViewState.HOME && (
           <Home 
@@ -113,7 +112,6 @@ const App: React.FC = () => {
 
       {currentAudio && (
         <div className="fixed bottom-0 left-0 w-full z-[90] animate-fade-in-up shadow-[0_-20px_60px_rgba(0,0,0,0.5)]">
-          {/* Main Player Bar */}
           <div className="bg-vallenato-blue text-white border-t-4 border-vallenato-mustard relative">
             <audio 
               ref={audioRef} 
@@ -126,7 +124,6 @@ const App: React.FC = () => {
             <div className="container mx-auto px-4 md:px-6 py-3 pb-[calc(16px+env(safe-area-inset-bottom,0px))] md:pb-4">
               <div className="flex flex-col gap-2.5">
                 
-                {/* Progress Bar (Interactive) */}
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] font-mono opacity-50 w-8">{formatTime(currentTime)}</span>
                   <div className="flex-grow relative h-2 flex items-center group">
@@ -147,8 +144,6 @@ const App: React.FC = () => {
                 </div>
 
                 <div className="flex items-center justify-between gap-3">
-                  
-                  {/* Metadata */}
                   <div className="flex items-center gap-3 md:gap-6 w-8/12 md:w-5/12 overflow-hidden">
                     <button 
                       onClick={() => setShowStoryCard(!showStoryCard)} 
@@ -181,7 +176,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Playback Controls */}
                   <div className="flex items-center gap-2 md:gap-8 shrink-0">
                     <button className="opacity-30 hover:opacity-100 hover:text-vallenato-mustard hidden sm:block transition-all transform hover:scale-110"><SkipBack size={22}/></button>
                     <button 
@@ -193,7 +187,6 @@ const App: React.FC = () => {
                     <button className="opacity-30 hover:opacity-100 hover:text-vallenato-mustard hidden sm:block transition-all transform hover:scale-110"><SkipForward size={22}/></button>
                   </div>
 
-                  {/* Volume & Exit (Desktop) */}
                   <div className="hidden md:flex items-center justify-end gap-6 w-1/4">
                     <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10">
                       <Volume2 size={18} className="opacity-40" />
@@ -209,7 +202,6 @@ const App: React.FC = () => {
                     </button>
                   </div>
 
-                  {/* Exit (Mobile) */}
                   <div className="md:hidden flex items-center ml-2">
                     <button 
                       onClick={() => { setCurrentAudio(null); setShowStoryCard(false); }} 

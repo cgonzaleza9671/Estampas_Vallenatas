@@ -19,16 +19,13 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center p-4 md:pt-10 overflow-hidden">
-      {/* Overlay inmersivo con desenfoque profundo */}
       <div 
         className="absolute inset-0 bg-black/95 backdrop-blur-md transition-opacity duration-500"
         onClick={onClose}
       ></div>
 
-      {/* Contenedor del Modal posicionado en la parte alta */}
-      <div className="relative bg-vallenato-beige w-full max-w-4xl rounded-2xl md:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[85vh] md:max-h-[90vh] animate-fade-in-down border border-white/10">
+      <div className="relative bg-vallenato-beige w-full max-w-4xl rounded-2xl md:rounded-[2.5rem] shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[85vh] md:max-h-[90vh] animate-fade-in-down border border-white/10 transition-colors duration-300">
         
-        {/* Cabecera Estilizada */}
         <div className="p-4 md:p-6 bg-vallenato-cream border-b border-vallenato-mustard/20 flex justify-between items-center shrink-0">
            <div className="flex items-center gap-3 md:gap-5">
              <div className="bg-vallenato-blue p-2.5 md:p-3.5 rounded-2xl shadow-lg transform -rotate-3">
@@ -52,10 +49,8 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
            </button>
         </div>
 
-        {/* Contenido con Scroll si es necesario */}
         <div className="overflow-y-auto p-4 md:p-8 space-y-8 flex-grow custom-scrollbar">
           
-          {/* Reproductor / Visualizador */}
           <div className="w-full bg-black rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl border-2 border-vallenato-blue/30 relative group/video">
             {isVideo && videoItem ? (
                <div className="relative pt-[56.25%] w-full h-0">
@@ -81,11 +76,9 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
             ) : null}
           </div>
 
-          {/* Información Detallada */}
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-1/3 space-y-4">
-               {/* Fichas de Metadatos Limpias */}
-               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-mustard hover:shadow-md transition-shadow">
+               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-mustard hover:shadow-md transition-all">
                   <div className="flex items-center gap-3 mb-1 opacity-60">
                     <User size={14} className="text-vallenato-blue" />
                     <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">Compositor</p>
@@ -93,7 +86,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                   <p className="font-serif text-lg md:text-xl text-vallenato-blue font-bold">{item.autor}</p>
                </div>
                
-               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-red hover:shadow-md transition-shadow">
+               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-red hover:shadow-md transition-all">
                   <div className="flex items-center gap-3 mb-1 opacity-60">
                     <Mic2 size={14} className="text-vallenato-red" />
                     <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">{isVideo ? 'Interpretación' : 'Voz Líder'}</p>
@@ -102,7 +95,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                </div>
 
                {audioItem && (
-                 <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-blue hover:shadow-md transition-shadow">
+                 <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-blue hover:shadow-md transition-all">
                     <div className="flex items-center gap-3 mb-1 opacity-60">
                       <ListMusic size={14} className="text-vallenato-blue" />
                       <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">Maestro Acordeonero</p>
@@ -111,7 +104,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                  </div>
                )}
 
-               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-mustard/40 hover:shadow-md transition-shadow">
+               <div className="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-vallenato-mustard/40 hover:shadow-md transition-all">
                   <div className="flex items-center gap-3 mb-1 opacity-60">
                     <Calendar size={14} className="text-vallenato-blue" />
                     <p className="text-[10px] md:text-xs uppercase font-bold tracking-widest">Registro</p>
@@ -120,9 +113,8 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                </div>
             </div>
 
-            {/* Descripción / Contexto Histórico */}
             <div className="md:w-2/3">
-              <div className="h-full bg-vallenato-cream/60 backdrop-blur-sm p-6 md:p-10 rounded-[2rem] border-2 border-dashed border-vallenato-mustard/30 relative">
+              <div className="h-full bg-vallenato-cream/60 backdrop-blur-sm p-6 md:p-10 rounded-[2rem] border-2 border-dashed border-vallenato-mustard/30 relative transition-colors">
                 <div className="absolute -top-4 -left-4 bg-vallenato-blue text-white p-3 rounded-2xl shadow-lg">
                    <FileText size={20} />
                 </div>

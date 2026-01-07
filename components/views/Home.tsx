@@ -189,7 +189,6 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
             <span className="text-vallenato-red">Folclor Vallenato</span>
           </h1>
           
-          {/* Descripción con efecto de escritura - Margen inferior reducido a mb-6 */}
           <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-lg min-h-[5em] md:min-h-[4em]">
             {renderTypedDescription()}
             <span className={`inline-block w-1.5 h-4 md:h-5 bg-vallenato-mustard ml-1 ${charCount < totalChars ? 'animate-pulse' : 'hidden'}`}></span>
@@ -219,15 +218,19 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
              </div>
              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-10">
                 {recentAudios.map((item) => (
-                   <div key={item.id} onClick={() => onPlayAudio?.(item)} className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}>
-                      <div className="p-6 relative flex-grow">
-                         <div className="absolute top-4 right-4 text-vallenato-blue/20 group-hover:text-vallenato-mustard transition-colors"><SombreroVueltiaoIcon className="w-16 h-16" /></div>
-                         <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate pr-8 group-hover:text-vallenato-red transition-colors">{item.titulo}</h3>
-                         <div className="space-y-1 mt-2">
+                   <div key={item.id} onClick={() => onPlayAudio?.(item)} className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-500 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}>
+                      <div className="p-6 relative flex-grow overflow-hidden">
+                         
+                         <div className="absolute top-4 right-4 text-vallenato-blue/30 group-hover:text-vallenato-red group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-125 z-10">
+                           <SombreroVueltiaoIcon className="w-16 h-16" />
+                         </div>
+
+                         <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate pr-16 group-hover:text-vallenato-red transition-colors relative z-20">{item.titulo}</h3>
+                         <div className="space-y-1 mt-2 relative z-20">
                             <p className="text-vallenato-red text-xs font-bold uppercase flex items-center gap-1.5"><User size={12} /> {item.autor}</p>
                             <p className="text-vallenato-blue/70 text-xs font-bold uppercase flex items-center gap-1.5"><Mic2 size={12} /> {item.cantante}</p>
                          </div>
-                         <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-500">
+                         <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-500 relative z-20">
                            <ListMusic size={12} /> <span className="uppercase tracking-wide font-bold">{item.acordeonero}</span>
                          </div>
                       </div>
@@ -253,7 +256,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                 {recentVideos.map((item) => (
                    <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
                       <div className="aspect-video relative overflow-hidden bg-black">
-                        {item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}
+                        {item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}
                         <div className="absolute inset-0 flex items-center justify-center"><div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/50 group-hover:scale-110 transition-transform"><Play size={24} className="text-white fill-white" /></div></div>
                       </div>
                       <div className="p-6 flex-grow">

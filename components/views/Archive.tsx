@@ -151,7 +151,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
            </div>
         </div>
 
-        {/* Filtros Modernos - Espaciado mb-6 para mayor cercanía al contenido */}
+        {/* Filtros Modernos */}
         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-museum mb-6 border border-vallenato-mustard/10 max-w-7xl mx-auto">
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5 items-center">
               
@@ -171,7 +171,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
               {activeTab === 'audio' ? (
                 <>
                   <div className="col-span-1 lg:col-span-3">
-                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold uppercase tracking-tighter cursor-pointer overflow-hidden text-ellipsis" value={selectedAudioAuthor} onChange={(e) => setSelectedAudioAuthor(e.target.value)}>
+                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold uppercase tracking-tighter cursor-pointer" value={selectedAudioAuthor} onChange={(e) => setSelectedAudioAuthor(e.target.value)}>
                         <option value="All">Todos los autores</option>
                         {uniqueAudioAuthors.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
                     </select>
@@ -225,28 +225,22 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
             {activeTab === 'audio' ? (
               <div className="space-y-10">
                 
-                {/* Visualizer Controls - Reducción de padding inferior pb-2 */}
                 <div className="flex justify-end items-center px-4 border-b border-vallenato-mustard/20 pb-3 gap-3">
                   <span className="text-[10px] font-bold uppercase text-vallenato-red tracking-[0.3em] opacity-80 mr-1">Modo de consulta</span>
                   
                   <div className="flex bg-vallenato-blue/5 rounded-xl p-1 gap-1">
-                    <div className="relative group">
-                      <button 
-                        onClick={() => setViewMode('grid')} 
-                        className={`p-2.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-vallenato-blue text-white shadow-lg' : 'text-vallenato-blue/40 hover:text-vallenato-blue hover:bg-white'}`}
-                      >
-                        <LayoutGrid size={18} />
-                      </button>
-                    </div>
-
-                    <div className="relative group">
-                      <button 
-                        onClick={() => setViewMode('list')} 
-                        className={`p-2.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-vallenato-blue text-white shadow-lg' : 'text-vallenato-blue/40 hover:text-vallenato-blue hover:bg-white'}`}
-                      >
-                        <List size={18} />
-                      </button>
-                    </div>
+                    <button 
+                      onClick={() => setViewMode('grid')} 
+                      className={`p-2.5 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-vallenato-blue text-white shadow-lg' : 'text-vallenato-blue/40 hover:text-vallenato-blue hover:bg-white'}`}
+                    >
+                      <LayoutGrid size={18} />
+                    </button>
+                    <button 
+                      onClick={() => setViewMode('list')} 
+                      className={`p-2.5 rounded-lg transition-all ${viewMode === 'list' ? 'bg-vallenato-blue text-white shadow-xl' : 'text-vallenato-blue/40 hover:text-vallenato-blue hover:bg-white'}`}
+                    >
+                      <List size={18} />
+                    </button>
                   </div>
                 </div>
 
@@ -267,14 +261,22 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                           {items.map((item) => (
                             <div key={item.id} onClick={() => onPlayAudio?.(item)} className={`group bg-white rounded-[2rem] p-7 shadow-sm hover:shadow-museum transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-transparent hover:border-vallenato-mustard/30'} cursor-pointer flex flex-col relative overflow-hidden`}>
-                              {currentAudioId === item.id && isPlaying && <div className="absolute top-0 right-0 p-4"><div className="flex gap-0.5 items-end h-4"><div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
-                              <div className="flex justify-between items-start mb-6"><div className="bg-vallenato-blue/5 p-3 rounded-2xl text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white transition-colors"><Music size={24} /></div><SombreroVueltiaoIcon size={44} className="text-vallenato-blue/10 group-hover:text-vallenato-mustard transition-colors" /></div>
-                              <h4 className="text-xl font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors mb-3 leading-tight">{item.titulo}</h4>
-                              <div className="space-y-2 mb-6">
+                              
+                              {currentAudioId === item.id && isPlaying && <div className="absolute top-0 right-0 p-4 z-30"><div className="flex gap-0.5 items-end h-4"><div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
+                              
+                              <div className="flex justify-between items-start mb-6 relative z-10">
+                                <div className="bg-vallenato-blue/5 p-3 rounded-2xl text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white transition-colors"><Music size={24} /></div>
+                                <div className="text-vallenato-blue/30 group-hover:text-vallenato-red group-hover:opacity-100 transition-all transform group-hover:scale-125">
+                                  <SombreroVueltiaoIcon size={44} />
+                                </div>
+                              </div>
+
+                              <h4 className="text-xl font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors mb-3 leading-tight relative z-20">{item.titulo}</h4>
+                              <div className="space-y-2 mb-6 relative z-20">
                                 <div className="flex items-center gap-2"><User size={12} className="text-vallenato-mustard" /><span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/70">{item.autor}</span></div>
                                 <div className="flex items-center gap-2"><Mic2 size={12} className="text-vallenato-red" /><span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/70">{item.cantante}</span></div>
                               </div>
-                              <div className="mt-auto pt-5 border-t border-gray-100 flex items-center justify-between">
+                              <div className="mt-auto pt-5 border-t border-gray-100 flex items-center justify-between relative z-20">
                                 <div className="flex flex-col"><span className="text-[8px] uppercase font-bold text-gray-400">Acordeonero</span><span className="text-[11px] font-bold text-vallenato-blue">{item.acordeonero}</span></div>
                                 <div className={`p-3 rounded-full transition-all duration-300 ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110 shadow-lg' : 'bg-vallenato-blue text-white hover:scale-110 hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor" className="ml-0.5"/>}</div>
                               </div>

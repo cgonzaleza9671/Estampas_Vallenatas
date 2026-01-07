@@ -11,7 +11,7 @@ interface AudioStoryCardProps {
 const AudioStoryCard: React.FC<AudioStoryCardProps> = ({ audio, onClose }) => {
   return (
     <div className="fixed bottom-28 md:bottom-32 left-4 right-4 md:left-8 md:right-auto md:max-w-md z-[70] animate-fade-in-up">
-      <div className="bg-[#E5E2D0] backdrop-blur-2xl border-l-8 border-vallenato-mustard shadow-[0_25px_60px_rgba(0,0,0,0.45)] rounded-r-2xl overflow-hidden relative group border border-white/10">
+      <div className="bg-[#E5E2D0] backdrop-blur-2xl border-l-8 border-vallenato-mustard shadow-[0_25px_60px_rgba(0,0,0,0.45)] rounded-r-2xl overflow-hidden relative group border border-white/10 transition-colors duration-300">
         
         <div className="absolute -right-4 -bottom-4 opacity-[0.07] text-vallenato-blue transform rotate-12 group-hover:rotate-0 transition-transform duration-700">
           <Quote size={120} />
@@ -25,7 +25,6 @@ const AudioStoryCard: React.FC<AudioStoryCardProps> = ({ audio, onClose }) => {
         </button>
 
         <div className="p-5 md:p-7 relative z-0">
-          {/* Metadata Header with Singer Included */}
           <div className="flex flex-col gap-1 mb-4">
             <div className="flex items-center gap-2 text-vallenato-blue/70">
               <User size={12} className="shrink-0" />
@@ -47,7 +46,7 @@ const AudioStoryCard: React.FC<AudioStoryCardProps> = ({ audio, onClose }) => {
               {audio.titulo}
             </h4>
             <div className="max-h-48 md:max-h-60 overflow-y-auto scrollbar-hide pr-2">
-              <p className="text-gray-900 font-serif text-base md:text-lg leading-relaxed font-medium">
+              <p className="text-gray-900 font-serif text-base md:text-lg leading-relaxed font-medium italic">
                 {audio.descripcion}
               </p>
             </div>
