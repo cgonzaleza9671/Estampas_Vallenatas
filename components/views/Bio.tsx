@@ -6,6 +6,12 @@ import { ChatMessage } from '../../types';
 import Button from '../Button';
 import { Send, User, Sparkles, Award, Mic, Quote, History, Loader2, Camera } from 'lucide-react';
 
+const ANECDOTAS_TEXT = {
+  p1: "Sin poder ocultar la nostalgia al recordar el recorrido folclórico que 'Estampas Vallenatas' protagonizó en la radio nacional, Álvaro González afirma que la mayor satisfacción fue llevarle a la población campesina y rural de Colombia un deleite espiritual con música que no habían escuchado anteriormente.",
+  p2: "En cierta ocasión, programó la canción 'El accidente de Lisandro' y, casi de inmediato, recibió la llamada de un oyente conmovido: \"Doctor González, yo pensé que ese tema no lo tenía nadie en Colombia\". Años atrás, incluso Eloy 'Chichi' Quintero, desde su rol como Cónsul en Maracaibo, se comunicó con el programa para destacar la inmensa sintonía de 'Estampas Vallenatas' en territorio venezolano.",
+  p3: "De la amistad entrañable con 'El Pollo Vallenato', Luís Enrique Martínez, González Pimienta recuerda que durante la residencia del acordeonero en el sector de Fontibón, Luís Enrique salía de correduría y le dejaba instrucciones precisas a su esposa Rosa para que llamara al Doctor González, quien le solucionaría lo del arriendo (diez mil pesos de la época) mientras durara su recorrido musical. Cuando Luís Enrique regresaba, iba sagradamente a mi oficina a entregarme el valor de los arriendos que le había prestado a Rosa; nunca me aceptó que se los regalara."
+};
+
 const Bio: React.FC = () => {
   // AI State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -198,18 +204,18 @@ const Bio: React.FC = () => {
                      <span className="text-vallenato-red font-bold uppercase tracking-widest text-xs mb-2 block">El Legado</span>
                      <h3 className="text-3xl font-serif text-gray-900 mb-4">Anécdotas de una vida Vallenata</h3>
                      <p className="text-sm text-gray-500 italic leading-relaxed">
-                        Extracto de entrevista para el 42° Festival de la Leyenda Vallenata.
+                        Extracto de entrevista para la revista del 42° Festival de la Leyenda Vallenata.
                      </p>
                   </div>
-                  <div className="md:col-span-2 prose prose-lg text-gray-700 font-serif leading-relaxed space-y-4 italic">
+                  <div className="md:col-span-2 prose prose-lg text-gray-700 font-serif leading-relaxed space-y-6 italic">
                      <p>
-                        Sin poder ocultar la nostalgia al recordar el recorrido folclórico que 'Estampas Vallenatas' protagonizó en la radio nacional...
+                        {ANECDOTAS_TEXT.p1}
                      </p>
                      <p>
-                        En cierta ocasión, programó la canción 'El accidente de Lisandro' y, casi de inmediato, recibió la llamada de un oyente conmovido...
+                        {ANECDOTAS_TEXT.p2}
                      </p>
                      <p>
-                        "De la amistad entrañable con 'El Pollo Vallenato', Luís Enrique Martínez, González Pimienta recuerda..."
+                        {ANECDOTAS_TEXT.p3}
                      </p>
                   </div>
                </div>

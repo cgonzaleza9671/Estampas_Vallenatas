@@ -79,7 +79,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       try {
         const [latest, audios, videos] = await Promise.all([
           fetchLatestAudio(),
-          fetchRecentAudios(3),
+          fetchRecentAudios(6), // Cambiado de 3 a 6 para mostrar dos filas
           fetchRecentVideos(2)
         ]);
         setLatestAudio(latest);
