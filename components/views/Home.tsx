@@ -168,9 +168,22 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
               </div>
               <button 
                 onClick={() => onPlayAudio?.(latestAudio)}
-                className={`bg-white/10 hover:bg-white text-white hover:text-vallenato-blue px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border border-white/20 shadow-lg flex-shrink-0 ${currentAudioId === latestAudio.id && isPlaying ? 'bg-vallenato-red border-vallenato-red' : ''}`}
+                className={`relative overflow-hidden px-6 py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn
+                  ${currentAudioId === latestAudio.id && isPlaying 
+                    ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' 
+                    : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue shadow-[0_10px_20px_-4px_rgba(184,134,11,0.5),inset_0_1px_2px_rgba(255,255,255,0.7)] hover:scale-105 hover:shadow-[0_15px_30px_-5px_rgba(184,134,11,0.6)] active:scale-95 active:brightness-90'
+                  }`}
               >
-                {currentAudioId === latestAudio.id && isPlaying ? <Pause size={12} fill="currentColor" /> : <Play size={12} fill="currentColor" />}
+                {/* Shine Sweep Overlay */}
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-shimmer transition-transform duration-1000 pointer-events-none"></div>
+                
+                <span className="relative z-10 flex items-center gap-2">
+                  {currentAudioId === latestAudio.id && isPlaying 
+                    ? <Pause size={14} fill="currentColor" /> 
+                    : <Play size={14} fill="currentColor" className="ml-0.5" />
+                  }
+                  <span>{currentAudioId === latestAudio.id && isPlaying ? 'Pausar' : 'Reproducir'}</span>
+                </span>
               </button>
            </div>
         </div>
