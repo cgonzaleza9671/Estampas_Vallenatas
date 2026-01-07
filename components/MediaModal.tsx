@@ -2,7 +2,6 @@
 import React from 'react';
 import { X, Calendar, User, Mic2, FileText, Music, Video, ListMusic } from 'lucide-react';
 import { AudioItem, VideoItem } from '../types.ts';
-import { SombreroVueltiaoIcon } from './CustomIcons.tsx';
 
 interface MediaModalProps {
   item: AudioItem | VideoItem | null;
@@ -66,8 +65,8 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                <div className="p-10 md:p-16 flex flex-col items-center justify-center bg-vallenato-blue text-white aspect-video md:aspect-[21/9] relative overflow-hidden">
                  <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                  <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
-                    <div className="mb-6 bg-white/10 p-5 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl animate-pulse">
-                       <SombreroVueltiaoIcon size={48} className="text-vallenato-mustard md:w-16 md:h-16" />
+                    <div className="mb-6 bg-white/10 p-5 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl animate-pulse text-vallenato-mustard">
+                       <Music size={48} className="md:w-16 md:h-16" />
                     </div>
                     <audio controls autoPlay className="w-full h-10 md:h-14" src={audioItem.url_audio} />
                     <p className="mt-5 text-[10px] md:text-xs font-bold tracking-[0.3em] uppercase text-vallenato-mustard/60">Sello de Calidad Estampas Vallenatas</p>
@@ -126,7 +125,6 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                 </div>
                 <div className="mt-8 pt-6 border-t border-vallenato-mustard/20 flex items-center justify-between opacity-40">
                    <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Estampas Vallenatas &copy;</span>
-                   <SombreroVueltiaoIcon size={24} />
                 </div>
               </div>
             </div>

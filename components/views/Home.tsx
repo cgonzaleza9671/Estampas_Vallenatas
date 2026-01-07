@@ -6,7 +6,6 @@ import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
 import { Play, Sparkles, ArrowRight, User, ListMusic, Video, Calendar, Pause, Mic2, Globe } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../services/supabaseClient.ts';
-import { SombreroVueltiaoIcon } from '../CustomIcons.tsx';
 
 interface HomeProps {
   setViewState: (view: ViewState) => void;
@@ -233,12 +232,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                 {recentAudios.map((item) => (
                    <div key={item.id} onClick={() => onPlayAudio?.(item)} className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-500 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}>
                       <div className="p-6 relative flex-grow overflow-hidden">
-                         
-                         <div className="absolute top-4 right-4 text-vallenato-blue/30 group-hover:text-vallenato-red group-hover:opacity-100 transition-all duration-500 transform group-hover:scale-125 z-10">
-                           <SombreroVueltiaoIcon className="w-16 h-16" />
-                         </div>
-
-                         <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate pr-16 group-hover:text-vallenato-red transition-colors relative z-20">{item.titulo}</h3>
+                         <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate group-hover:text-vallenato-red transition-colors relative z-20">{item.titulo}</h3>
                          <div className="space-y-1 mt-2 relative z-20">
                             <p className="text-vallenato-red text-xs font-bold uppercase flex items-center gap-1.5"><User size={12} /> {item.autor}</p>
                             <p className="text-vallenato-blue/70 text-xs font-bold uppercase flex items-center gap-1.5"><Mic2 size={12} /> {item.cantante}</p>

@@ -4,7 +4,6 @@ import { fetchAudios, fetchVideos } from '../../services/supabaseClient.ts';
 import { AudioItem, VideoItem } from '../../types.ts';
 import MediaModal from '../MediaModal.tsx';
 import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar } from 'lucide-react';
-import { SombreroVueltiaoIcon } from '../CustomIcons.tsx';
 
 interface ArchiveProps {
   initialTab?: 'audio' | 'video';
@@ -208,7 +207,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
            <div className="flex flex-col justify-center items-center h-80 text-vallenato-blue">
              <div className="relative">
                 <Loader2 size={64} className="animate-spin text-vallenato-mustard mb-6" />
-                <SombreroVueltiaoIcon size={24} className="absolute inset-0 m-auto text-vallenato-red" />
+                <Music size={24} className="absolute inset-0 m-auto text-vallenato-red" />
              </div>
              <p className="font-serif italic text-xl animate-pulse">Abriendo el archivo del Magdalena Grande...</p>
            </div>
@@ -265,9 +264,8 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                               {currentAudioId === item.id && isPlaying && <div className="absolute top-0 right-0 p-4 z-30"><div className="flex gap-0.5 items-end h-4"><div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
                               
                               <div className="flex justify-between items-start mb-6 relative z-10">
-                                <div className="bg-vallenato-blue/5 p-3 rounded-2xl text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white transition-colors"><Music size={24} /></div>
-                                <div className="text-vallenato-blue/30 group-hover:text-vallenato-red group-hover:opacity-100 transition-all transform group-hover:scale-125">
-                                  <SombreroVueltiaoIcon size={44} />
+                                <div className="bg-vallenato-blue/5 p-3 rounded-2xl text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white transition-colors">
+                                  <Music size={24} />
                                 </div>
                               </div>
 
