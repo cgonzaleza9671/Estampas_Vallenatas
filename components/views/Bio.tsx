@@ -1,10 +1,8 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { saveQuestion } from '../../services/supabaseClient';
-import { getGeminiResponse } from '../../services/geminiService';
-import { ChatMessage } from '../../types';
 import Button from '../Button';
-import { Send, User, Sparkles, Award, Mic, Quote, History, Loader2, Camera } from 'lucide-react';
+import { User, Sparkles, Award, Mic, Quote, History, Loader2, Camera, CheckCircle2, RotateCcw } from 'lucide-react';
 
 const ANECDOTAS_TEXT = {
   p1: "Sin poder ocultar la nostalgia al recordar el recorrido folclórico que 'Estampas Vallenatas' protagonizó en la radio nacional, Álvaro González afirma que la mayor satisfacción fue llevarle a la población campesina y rural de Colombia un deleite espiritual con música que no habían escuchado anteriormente.",
@@ -13,58 +11,48 @@ const ANECDOTAS_TEXT = {
 };
 
 const Bio: React.FC = () => {
-  // AI State
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // Form State
   const [questionInput, setQuestionInput] = useState('');
   const [userData, setUserData] = useState({ name: '', city: '' });
   const [loading, setLoading] = useState(false);
-  const [interactionStarted, setInteractionStarted] = useState(false);
-  
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(scrollToBottom, [messages, loading]);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleConsultation = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!questionInput.trim() || !userData.name || !userData.city) return;
 
     setLoading(true);
-    setInteractionStarted(true);
-
-    const currentQuestion = questionInput;
-    const userMsg: ChatMessage = { sender: 'user', text: currentQuestion, timestamp: new Date() };
-    setMessages([userMsg]);
     
-    setQuestionInput('');
-
     try {
-      await saveQuestion({
+      // Guardar en Supabase (id, nombre_apellido, ciudad, pregunta, fecha_envio)
+      const isSaved = await saveQuestion({
         nombre_apellido: userData.name,
         ciudad: userData.city,
-        pregunta: currentQuestion
+        pregunta: questionInput
       });
 
-      const aiResponseText = await getGeminiResponse(currentQuestion, userData.name, userData.city);
-      
-      const aiMsg: ChatMessage = { sender: 'ai', text: aiResponseText, timestamp: new Date() };
-      setMessages(prev => [...prev, aiMsg]);
-
+      if (isSaved) {
+        setShowSuccess(true);
+        setQuestionInput(''); // Limpiar la pregunta para la próxima vez
+      } else {
+        throw new Error("No se pudo guardar la pregunta");
+      }
     } catch (error) {
       console.error("Error en consulta:", error);
-      const errorMsg: ChatMessage = { sender: 'ai', text: "Disculpa compañero, hubo una interferencia en la señal. Intenta de nuevo.", timestamp: new Date() };
-      setMessages(prev => [...prev, errorMsg]);
+      alert("Lo siento, compañero. Hubo un problema al registrar tu pregunta. Por favor intenta de nuevo.");
     } finally {
       setLoading(false);
     }
   };
 
+  const resetForm = () => {
+    setShowSuccess(false);
+  };
+
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 animate-fade-in-up font-sans selection:bg-vallenato-mustard selection:text-vallenato-blue">
       
+      {/* Hero Section */}
       <section className="relative bg-vallenato-blue py-24 overflow-hidden">
          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-vallenato-mustard/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-vallenato-red/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
@@ -80,6 +68,7 @@ const Bio: React.FC = () => {
          </div>
       </section>
 
+      {/* Bio Image and Quote */}
       <section className="py-20 container mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="relative group cursor-pointer">
@@ -95,7 +84,7 @@ const Bio: React.FC = () => {
                       <div className="bg-vallenato-mustard p-2 rounded-xl text-vallenato-blue shadow-lg">
                          <Camera size={16} />
                       </div>
-                      <div className="flex flex-col">
+                      <div className="flex flex-col text-left">
                          <p className="text-white font-sans text-[10px] md:text-xs uppercase font-extrabold tracking-[0.25em] leading-tight">
                             Álvaro González <span className="text-vallenato-mustard">junto al maestro</span>
                          </p>
@@ -131,6 +120,7 @@ const Bio: React.FC = () => {
         </div>
       </section>
 
+      {/* Merit Badges */}
       <section className="py-12 bg-gray-50 border-y border-gray-100 transition-colors">
          <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -161,6 +151,7 @@ const Bio: React.FC = () => {
          </div>
       </section>
 
+      {/* Mission Section */}
       <section className="py-20 bg-white transition-colors">
          <div className="container mx-auto px-6 text-center max-w-4xl">
             <h2 className="text-3xl md:text-4xl font-serif text-vallenato-blue mb-8">Nuestra Misión Cultural</h2>
@@ -194,6 +185,7 @@ const Bio: React.FC = () => {
          </div>
       </section>
 
+      {/* Anecdotes Section */}
       <section className="bg-white pb-24 border-b-8 border-vallenato-red transition-colors">
          <div className="container mx-auto px-6">
             <div className="bg-gray-50 max-w-5xl mx-auto p-10 md:p-16 rounded-3xl shadow-inner relative overflow-hidden transition-colors">
@@ -208,21 +200,16 @@ const Bio: React.FC = () => {
                      </p>
                   </div>
                   <div className="md:col-span-2 prose prose-lg text-gray-700 font-serif leading-relaxed space-y-6 italic">
-                     <p>
-                        {ANECDOTAS_TEXT.p1}
-                     </p>
-                     <p>
-                        {ANECDOTAS_TEXT.p2}
-                     </p>
-                     <p>
-                        {ANECDOTAS_TEXT.p3}
-                     </p>
+                     <p>{ANECDOTAS_TEXT.p1}</p>
+                     <p>{ANECDOTAS_TEXT.p2}</p>
+                     <p>{ANECDOTAS_TEXT.p3}</p>
                   </div>
                </div>
             </div>
          </div>
       </section>
 
+      {/* Ask the Maestro Section (Updated Flow) */}
       <section className="py-24 container mx-auto px-6 max-w-5xl">
          <div className="bg-vallenato-cream rounded-[2.5rem] shadow-2xl border border-vallenato-mustard/20 overflow-hidden relative transition-colors">
             <div className="bg-vallenato-blue p-8 md:p-10 text-center relative overflow-hidden">
@@ -236,7 +223,7 @@ const Bio: React.FC = () => {
             </div>
 
             <div className="p-8 md:p-12">
-              {!interactionStarted ? (
+              {!showSuccess ? (
                 <form onSubmit={handleConsultation} className="max-w-2xl mx-auto space-y-6">
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
@@ -276,63 +263,23 @@ const Bio: React.FC = () => {
                    </div>
 
                    <Button type="submit" fullWidth disabled={loading} className="mt-4">
-                      {loading ? <span className="flex items-center gap-2"><Loader2 className="animate-spin" /> Conectando...</span> : 'Enviar Consulta'}
+                      {loading ? <span className="flex items-center gap-2"><Loader2 className="animate-spin" /> Registrando...</span> : 'Enviar Consulta'}
                    </Button>
                 </form>
               ) : (
-                <div className="flex flex-col h-[500px]">
-                   <div className="flex-1 overflow-y-auto pr-4 space-y-6 mb-6 custom-scrollbar">
-                      {messages.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                           <div className={`max-w-[85%] p-6 rounded-2xl text-lg leading-relaxed shadow-sm ${
-                              msg.sender === 'user' 
-                                ? 'bg-white text-gray-800 border border-gray-100 rounded-br-none' 
-                                : 'bg-vallenato-blue text-white rounded-bl-none'
-                           }`}>
-                              {msg.sender === 'ai' && (
-                                <div className="flex items-center gap-2 mb-2 border-b border-white/20 pb-2">
-                                   <div className="w-6 h-6 rounded-full bg-vallenato-mustard flex items-center justify-center">
-                                      <User size={14} className="text-vallenato-blue" />
-                                   </div>
-                                   <span className="text-xs font-bold uppercase tracking-widest text-vallenato-mustard">Respuesta del Maestro</span>
-                                </div>
-                              )}
-                              <p className="font-serif italic">{msg.text}</p>
-                           </div>
-                        </div>
-                      ))}
-                      {loading && (
-                        <div className="flex justify-start">
-                           <div className="bg-vallenato-blue p-6 rounded-2xl rounded-bl-none shadow-sm flex items-center gap-3">
-                              <span className="text-white font-serif text-sm">Pensando respuesta...</span>
-                              <div className="flex gap-1">
-                                <div className="w-2 h-2 bg-vallenato-mustard rounded-full animate-bounce"></div>
-                                <div className="w-2 h-2 bg-vallenato-mustard rounded-full animate-bounce delay-75"></div>
-                                <div className="w-2 h-2 bg-vallenato-mustard rounded-full animate-bounce delay-150"></div>
-                              </div>
-                           </div>
-                        </div>
-                      )}
-                      <div ref={messagesEndRef} />
+                <div className="max-w-md mx-auto py-12 text-center animate-fade-in-up">
+                   <div className="flex justify-center mb-6">
+                      <div className="bg-green-100 p-4 rounded-full text-green-600 shadow-inner">
+                         <CheckCircle2 size={64} />
+                      </div>
                    </div>
-                   
-                   <form onSubmit={handleConsultation} className="relative">
-                      <input 
-                         type="text" 
-                         className="w-full p-4 pr-14 rounded-full border border-gray-300 bg-white text-gray-800 focus:border-vallenato-blue outline-none shadow-sm"
-                         placeholder="Haz otra pregunta..."
-                         value={questionInput}
-                         onChange={(e) => setQuestionInput(e.target.value)}
-                         disabled={loading}
-                      />
-                      <button 
-                        type="submit"
-                        disabled={loading || !questionInput.trim()}
-                        className="absolute right-2 top-2 p-2 bg-vallenato-red text-white rounded-full hover:bg-red-700 transition-colors disabled:opacity-50"
-                      >
-                         <Send size={20} />
-                      </button>
-                   </form>
+                   <h3 className="text-3xl font-serif text-vallenato-blue font-bold mb-4">¡Pregunta Registrada!</h3>
+                   <p className="text-gray-600 font-serif italic text-lg mb-8">
+                     Estimado {userData.name}, su inquietud ha sido guardada con éxito en los archivos del Magdalena Grande. El Maestro revisará su consulta pronto.
+                   </p>
+                   <Button onClick={resetForm} fullWidth variant="secondary" className="flex items-center gap-3">
+                     <RotateCcw size={20} /> Realizar otra consulta
+                   </Button>
                 </div>
               )}
             </div>

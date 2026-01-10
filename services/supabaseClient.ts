@@ -165,9 +165,15 @@ export const saveQuestion = async (question: Question): Promise<boolean> => {
       pregunta: question.pregunta,
       fecha_envio: new Date().toISOString()
     };
+    // La tabla Preguntas tiene: id, nombre_apellido, ciudad, pregunta, fecha_envio
     const { error } = await supabase.from('Preguntas').insert([payload]);
-    return !error;
+    if (error) {
+      console.error("Supabase insert error:", error);
+      return false;
+    }
+    return true;
   } catch (e) {
+    console.error("Supabase connection error:", e);
     return false;
   }
 };
