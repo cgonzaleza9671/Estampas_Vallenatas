@@ -52,17 +52,17 @@ const Bio: React.FC = () => {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 animate-fade-in-up font-sans selection:bg-vallenato-mustard selection:text-vallenato-blue">
       
-      {/* Hero Section */}
-      <section className="relative bg-vallenato-blue py-24 overflow-hidden">
-         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-vallenato-mustard/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
-         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-vallenato-red/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
+      {/* Hero Section - Reduced height an additional 50% (py-12 to py-6) */}
+      <section className="relative bg-vallenato-blue py-6 md:py-10 overflow-hidden">
+         <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-vallenato-mustard/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
+         <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-vallenato-red/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
          
          <div className="container mx-auto px-6 relative z-10 text-center">
-            <h1 className="text-5xl md:text-7xl font-serif font-bold mb-6 tracking-tight drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] bg-clip-text text-transparent bg-gradient-to-b from-[#FDE68A] via-[#EAAA00] to-[#B45309] py-2">
+            <h1 className="text-3xl md:text-5xl font-serif font-bold mb-2 tracking-tight drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] bg-clip-text text-transparent bg-gradient-to-b from-[#FDE68A] via-[#EAAA00] to-[#B45309] py-0.5">
               Álvaro González Pimienta
             </h1>
-            <div className="h-1 w-24 bg-vallenato-mustard mx-auto mb-6"></div>
-            <p className="text-xl md:text-2xl text-gray-200 font-light font-serif italic max-w-3xl mx-auto">
+            <div className="h-0.5 w-12 bg-vallenato-mustard mx-auto mb-3"></div>
+            <p className="text-base md:text-lg text-gray-200 font-light font-serif italic max-w-xl mx-auto leading-tight">
               "El guardián de las melodías y la memoria del Magdalena Grande"
             </p>
          </div>
