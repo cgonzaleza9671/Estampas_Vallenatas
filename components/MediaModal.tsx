@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, Calendar, User, Mic2, FileText, Music, Video, ListMusic } from 'lucide-react';
 import { AudioItem, VideoItem } from '../types.ts';
 
@@ -10,6 +10,28 @@ interface MediaModalProps {
 }
 
 const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen && item) {
+      // Reiniciar el scroll al principio del contenedor al abrir
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+      }
+      
+      // Si es un video, asegurar que se desplace a la altura del reproductor
+      // Usamos un pequeño timeout para asegurar que el DOM se haya renderizado
+      const timer = setTimeout(() => {
+        if (playerRef.current) {
+          playerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, item]);
+
   if (!isOpen || !item) return null;
 
   const isVideo = 'interprete' in item;
@@ -48,9 +70,9 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
            </button>
         </div>
 
-        <div className="overflow-y-auto p-4 md:p-8 space-y-8 flex-grow custom-scrollbar">
+        <div ref={scrollContainerRef} className="overflow-y-auto p-4 md:p-8 space-y-8 flex-grow custom-scrollbar">
           
-          <div className="w-full bg-black rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl border-2 border-vallenato-blue/30 relative group/video">
+          <div ref={playerRef} className="w-full bg-black rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl border-2 border-vallenato-blue/30 relative group/video">
             {isVideo && videoItem ? (
                <div className="relative pt-[56.25%] w-full h-0">
                  <video 

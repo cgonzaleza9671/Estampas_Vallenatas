@@ -10,7 +10,7 @@ import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../se
 interface HomeProps {
   setViewState: (view: ViewState) => void;
   onNavigateArchive?: (tab: 'audio' | 'video') => void;
-  onPlayAudio?: (audio: AudioItem) => void;
+  onPlayAudio?: (audio: AudioItem, list?: AudioItem[]) => void;
   onVideoOpen?: () => void;
   currentAudioId?: number;
   isPlaying?: boolean;
@@ -79,7 +79,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       try {
         const [latest, audios, videos] = await Promise.all([
           fetchLatestAudio(),
-          fetchRecentAudios(6), // Cambiado de 3 a 6 para mostrar dos filas
+          fetchRecentAudios(6),
           fetchRecentVideos(2)
         ]);
         setLatestAudio(latest);
@@ -122,7 +122,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       setSelectedMedia(item);
       setIsModalOpen(true);
     } else {
-      onPlayAudio?.(item as AudioItem);
+      onPlayAudio?.(item as AudioItem, recentAudios);
     }
   };
 
@@ -166,7 +166,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                  </div>
               </div>
               <button 
-                onClick={() => onPlayAudio?.(latestAudio)}
+                onClick={() => onPlayAudio?.(latestAudio, [latestAudio])}
                 className={`relative overflow-hidden px-6 py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn
                   ${currentAudioId === latestAudio.id && isPlaying 
                     ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' 
@@ -230,7 +230,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
              </div>
              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-10">
                 {recentAudios.map((item) => (
-                   <div key={item.id} onClick={() => onPlayAudio?.(item)} className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-500 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}>
+                   <div key={item.id} onClick={() => onPlayAudio?.(item, recentAudios)} className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-500 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}>
                       <div className="p-6 relative flex-grow overflow-hidden">
                          <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate group-hover:text-vallenato-red transition-colors relative z-20">{item.titulo}</h3>
                          <div className="space-y-1 mt-2 relative z-20">

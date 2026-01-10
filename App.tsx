@@ -14,6 +14,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>(ViewState.HOME);
   const [archiveInitialTab, setArchiveInitialTab] = useState<'audio' | 'video'>('audio');
   const [currentAudio, setCurrentAudio] = useState<AudioItem | null>(null);
+  const [playlist, setPlaylist] = useState<AudioItem[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -29,7 +30,13 @@ const App: React.FC = () => {
     setCurrentView(ViewState.ARCHIVE);
   };
 
-  const handlePlayAudio = (audio: AudioItem) => {
+  const handlePlayAudio = (audio: AudioItem, list?: AudioItem[]) => {
+    if (list) {
+      setPlaylist(list);
+    } else if (playlist.length === 0 || !playlist.find(a => a.id === audio.id)) {
+      setPlaylist([audio]);
+    }
+
     if (currentAudio?.id === audio.id) {
       setIsPlaying(!isPlaying);
     } else {
@@ -44,6 +51,31 @@ const App: React.FC = () => {
     setIsPlaying(false);
     if (audioRef.current) {
       audioRef.current.pause();
+    }
+  };
+
+  const goToNext = () => {
+    if (!currentAudio || playlist.length <= 1) return;
+    const currentIndex = playlist.findIndex(a => a.id === currentAudio.id);
+    if (currentIndex !== -1 && currentIndex < playlist.length - 1) {
+      handlePlayAudio(playlist[currentIndex + 1]);
+    }
+  };
+
+  const goToPrev = () => {
+    if (!currentAudio || !audioRef.current) return;
+    
+    // Si la canción ya avanzó más de 3 segundos, reiniciamos la misma canción
+    if (audioRef.current.currentTime > 3) {
+      audioRef.current.currentTime = 0;
+      if (!isPlaying) setIsPlaying(true);
+      return;
+    }
+
+    // Si no, vamos a la anterior de la playlist
+    const currentIndex = playlist.findIndex(a => a.id === currentAudio.id);
+    if (currentIndex > 0) {
+      handlePlayAudio(playlist[currentIndex - 1]);
     }
   };
 
@@ -74,6 +106,9 @@ const App: React.FC = () => {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
+
+  const canGoNext = currentAudio && playlist.findIndex(a => a.id === currentAudio.id) < playlist.length - 1;
+  const canGoPrev = currentAudio && (playlist.findIndex(a => a.id === currentAudio.id) > 0 || currentTime > 3);
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-vallenato-beige selection:bg-vallenato-mustard selection:text-vallenato-blue transition-colors duration-300 overflow-x-hidden">
@@ -118,7 +153,7 @@ const App: React.FC = () => {
               src={currentAudio.url_audio} 
               onTimeUpdate={handleTimeUpdate} 
               onLoadedMetadata={handleTimeUpdate} 
-              onEnded={() => setIsPlaying(false)} 
+              onEnded={goToNext} 
             />
             
             <div className="container mx-auto px-4 md:px-6 py-3 pb-[calc(16px+env(safe-area-inset-bottom,0px))] md:pb-4">
@@ -177,14 +212,26 @@ const App: React.FC = () => {
                   </div>
 
                   <div className="flex items-center gap-2 md:gap-8 shrink-0">
-                    <button className="opacity-30 hover:opacity-100 hover:text-vallenato-mustard hidden sm:block transition-all transform hover:scale-110"><SkipBack size={22}/></button>
+                    <button 
+                      onClick={goToPrev}
+                      disabled={!canGoPrev}
+                      className={`transition-all transform hover:scale-110 hidden sm:block ${canGoPrev ? 'text-white hover:text-vallenato-mustard' : 'opacity-20 cursor-not-allowed'}`}
+                    >
+                      <SkipBack size={22}/>
+                    </button>
                     <button 
                       onClick={() => setIsPlaying(!isPlaying)} 
                       className="bg-vallenato-mustard text-vallenato-blue p-3 md:p-4 rounded-full hover:scale-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(234,170,0,0.4)]"
                     >
                       {isPlaying ? <Pause size={24} fill="currentColor"/> : <Play size={24} fill="currentColor" className="ml-1" />}
                     </button>
-                    <button className="opacity-30 hover:opacity-100 hover:text-vallenato-mustard hidden sm:block transition-all transform hover:scale-110"><SkipForward size={22}/></button>
+                    <button 
+                      onClick={goToNext}
+                      disabled={!canGoNext}
+                      className={`transition-all transform hover:scale-110 hidden sm:block ${canGoNext ? 'text-white hover:text-vallenato-mustard' : 'opacity-20 cursor-not-allowed'}`}
+                    >
+                      <SkipForward size={22}/>
+                    </button>
                   </div>
 
                   <div className="hidden md:flex items-center justify-end gap-6 w-1/4">

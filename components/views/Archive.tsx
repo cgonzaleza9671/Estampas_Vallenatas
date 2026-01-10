@@ -7,7 +7,7 @@ import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, Lay
 
 interface ArchiveProps {
   initialTab?: 'audio' | 'video';
-  onPlayAudio?: (audio: AudioItem) => void;
+  onPlayAudio?: (audio: AudioItem, list?: AudioItem[]) => void;
   onVideoOpen?: () => void;
   currentAudioId?: number;
   isPlaying?: boolean;
@@ -259,7 +259,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                       {viewMode === 'grid' ? (
                         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                           {items.map((item) => (
-                            <div key={item.id} onClick={() => onPlayAudio?.(item)} className={`group bg-white rounded-[2rem] p-7 shadow-sm hover:shadow-museum transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-transparent hover:border-vallenato-mustard/30'} cursor-pointer flex flex-col relative overflow-hidden`}>
+                            <div key={item.id} onClick={() => onPlayAudio?.(item, items)} className={`group bg-white rounded-[2rem] p-7 shadow-sm hover:shadow-museum transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-transparent hover:border-vallenato-mustard/30'} cursor-pointer flex flex-col relative overflow-hidden`}>
                               
                               {currentAudioId === item.id && isPlaying && <div className="absolute top-0 right-0 p-4 z-30"><div className="flex gap-0.5 items-end h-4"><div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
                               
@@ -296,7 +296,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                               {items.map((item, index) => (
                                 <div 
                                   key={item.id} 
-                                  onClick={() => onPlayAudio?.(item)} 
+                                  onClick={() => onPlayAudio?.(item, items)} 
                                   className={`group grid grid-cols-1 lg:grid-cols-12 items-center gap-4 px-6 md:px-8 py-5 transition-all duration-300 cursor-pointer border-l-8 ${currentAudioId === item.id ? 'bg-vallenato-cream/60 border-vallenato-red' : 'hover:bg-vallenato-cream/30 hover:border-vallenato-mustard/50 border-transparent'}`}
                                 >
                                   <div className="col-span-1 hidden lg:flex items-center">
