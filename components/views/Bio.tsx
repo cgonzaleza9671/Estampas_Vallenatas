@@ -6,7 +6,7 @@ import { User, Sparkles, Award, Mic, Quote, History, Loader2, Camera, CheckCircl
 
 const ANECDOTAS_TEXT = {
   p1: "Sin poder ocultar la nostalgia al recordar el recorrido folclórico que 'Estampas Vallenatas' protagonizó en la radio nacional, Álvaro González afirma que la mayor satisfacción fue llevarle a la población campesina y rural de Colombia un deleite espiritual con música que no habían escuchado anteriormente.",
-  p2: "En cierta ocasión, programó la canción 'El accidente de Lisandro' y, casi de inmediato, recibió la llamada de un oyente conmovido: \"Doctor González, yo pensé que ese tema no lo tenía nadie en Colombia\". Años atrás, incluso Eloy 'Chichi' Quintero, desde su rol como Cónsul en Maracaibo, se comunicó con el programa para destacar la inmensa sintonía de 'Estampas Vallenatas' en territorio venezolano.",
+  p2: "En cierta ocasión, programó la canción 'El accidente de Lisandro' y, casi de inmediato, recibió la llamada de un oyente conmovedido: \"Doctor González, yo pensé que ese tema no lo tenía nadie en Colombia\". Años atrás, incluso Eloy 'Chichi' Quintero, desde su rol como Cónsul en Maracaibo, se comunicó con el programa para destacar la inmensa sintonía de 'Estampas Vallenatas' en territorio venezolano.",
   p3: "De la amistad entrañable con 'El Pollo Vallenato', Luís Enrique Martínez, González Pimienta recuerda que durante la residencia del acordeonero en el sector de Fontibón, Luís Enrique salía de correduría y le dejaba instrucciones precisas a su esposa Rosa para que llamara al Doctor González, quien le solucionaría lo del arriendo (diez mil pesos de la época) mientras durara su recorrido musical. Cuando Luís Enrique regresaba, iba sagradamente a mi oficina a entregarme el valor de los arriendos que le había prestado a Rosa; nunca me aceptó que se los regalara."
 };
 
@@ -24,7 +24,6 @@ const Bio: React.FC = () => {
     setLoading(true);
     
     try {
-      // Guardar en Supabase (id, nombre_apellido, ciudad, pregunta, fecha_envio)
       const isSaved = await saveQuestion({
         nombre_apellido: userData.name,
         ciudad: userData.city,
@@ -33,7 +32,7 @@ const Bio: React.FC = () => {
 
       if (isSaved) {
         setShowSuccess(true);
-        setQuestionInput(''); // Limpiar la pregunta para la próxima vez
+        setQuestionInput('');
       } else {
         throw new Error("No se pudo guardar la pregunta");
       }
@@ -52,7 +51,7 @@ const Bio: React.FC = () => {
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 animate-fade-in-up font-sans selection:bg-vallenato-mustard selection:text-vallenato-blue">
       
-      {/* Hero Section - Reduced height an additional 30% (py-6/10 to py-4/7) */}
+      {/* Hero Section - Compact size preserved (py-4/7) */}
       <section className="relative bg-vallenato-blue py-4 md:py-7 overflow-hidden">
          <div className="absolute top-0 right-0 w-[250px] h-[250px] bg-vallenato-mustard/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4"></div>
          <div className="absolute bottom-0 left-0 w-[150px] h-[150px] bg-vallenato-red/10 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
@@ -209,7 +208,7 @@ const Bio: React.FC = () => {
          </div>
       </section>
 
-      {/* Ask the Maestro Section (Updated Flow) */}
+      {/* Ask the Maestro Section */}
       <section className="py-24 container mx-auto px-6 max-w-5xl">
          <div className="bg-vallenato-cream rounded-[2.5rem] shadow-2xl border border-vallenato-mustard/20 overflow-hidden relative transition-colors">
             <div className="bg-vallenato-blue p-8 md:p-10 text-center relative overflow-hidden">

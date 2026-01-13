@@ -7,12 +7,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Tiempo de vida de la caché: 24 horas (en milisegundos)
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 
-/**
- * Función simple para guardar datos en el navegador
- */
 const setCache = (key: string, data: any) => {
   const cacheEntry = {
     timestamp: Date.now(),
@@ -21,20 +17,20 @@ const setCache = (key: string, data: any) => {
   localStorage.setItem(key, JSON.stringify(cacheEntry));
 };
 
-/**
- * Función simple para recuperar datos si no han pasado más de 24 horas
- */
 const getCache = (key: string) => {
   const entry = localStorage.getItem(key);
   if (!entry) return null;
-
   const { timestamp, data } = JSON.parse(entry);
   if (Date.now() - timestamp > CACHE_TTL) {
-    localStorage.removeItem(key); // Borrar si es vieja
+    localStorage.removeItem(key);
     return null;
   }
   return data;
 };
+
+// Restauramos a '*' para evitar errores de Schema Mismatch si faltan columnas
+const AUDIO_COLUMNS = '*';
+const VIDEO_COLUMNS = '*';
 
 const mapDatabaseAudio = (dbItem: any): AudioItem => {
   let anio = 0;
@@ -58,7 +54,7 @@ const mapDatabaseAudio = (dbItem: any): AudioItem => {
     acordeonero: dbItem.acordeonero || 'Sin Acordeonero Registrado',
     fecha_publicacion: fechaFormatted,
     anio: anio,
-    url_audio: dbItem.audio_url,
+    url_audio: dbItem.audio_url || dbItem.url_audio || '',
     descripcion: dbItem.descripcion || "Sin comentarios adicionales."
   };
 };
@@ -70,31 +66,52 @@ const mapDatabaseVideo = (dbItem: any): VideoItem => {
     anio = !isNaN(date.getTime()) ? date.getFullYear() : 0;
   }
 
+  // Buscamos la URL en cualquier columna posible
+  let rawUrl = dbItem.video_url || dbItem.url_video || dbItem.url || '';
+  
+  // Si la URL es solo una ruta (no empieza con http), construimos la URL pública de Supabase
+  // Asumiendo que el bucket se llama 'Videos' o similar. 
+  // Si ya es una URL completa (http...), se deja como está.
+  if (rawUrl && !rawUrl.startsWith('http')) {
+    rawUrl = `${SUPABASE_URL}/storage/v1/object/public/Videos/${rawUrl}`;
+  }
+
   return {
     id: dbItem.id,
     titulo: dbItem.titulo,
     autor: dbItem.autor || 'Autor Desconocido',
     interprete: dbItem.interprete || 'Intérprete Desconocido',
     anio: anio,
-    url_video: dbItem.url_video || dbItem.video_url,
+    url_video: rawUrl,
     thumbnail_url: dbItem.thumbnail_url,
     descripcion: dbItem.descripcion
   };
 };
 
-export const fetchAudios = async (): Promise<AudioItem[]> => {
-  const cached = getCache('ev_all_audios');
-  if (cached) return cached;
+export const fetchAudios = async (page: number = 0, limit: number = 50): Promise<AudioItem[]> => {
+  const cacheKey = `ev_audios_p${page}_v6`;
+  if (page === 0) {
+    const cached = getCache(cacheKey);
+    if (cached) return cached;
+  }
 
   try {
+    const from = page * limit;
+    const to = from + limit - 1;
+
     const { data, error } = await supabase
       .from('Audios')
-      .select('*')
-      .order('fecha', { ascending: false });
+      .select(AUDIO_COLUMNS)
+      .order('fecha', { ascending: false })
+      .range(from, to);
       
-    if (error) return [];
+    if (error) {
+      console.error("Error fetching audios:", error);
+      return [];
+    }
     const results = data.map(mapDatabaseAudio);
-    setCache('ev_all_audios', results);
+    
+    if (page === 0) setCache(cacheKey, results);
     return results;
   } catch (e) {
     return [];
@@ -102,14 +119,10 @@ export const fetchAudios = async (): Promise<AudioItem[]> => {
 };
 
 export const fetchRecentAudios = async (limit: number = 3): Promise<AudioItem[]> => {
-  // Para los recientes, usamos la caché general y filtramos para ahorrar llamadas
-  const allCached = getCache('ev_all_audios');
-  if (allCached) return allCached.slice(0, limit);
-
   try {
     const { data, error } = await supabase
       .from('Audios')
-      .select('*')
+      .select(AUDIO_COLUMNS)
       .order('fecha', { ascending: false })
       .limit(limit);
       
@@ -121,18 +134,21 @@ export const fetchRecentAudios = async (limit: number = 3): Promise<AudioItem[]>
 };
 
 export const fetchVideos = async (): Promise<VideoItem[]> => {
-  const cached = getCache('ev_all_videos');
+  const cached = getCache('ev_all_videos_v6');
   if (cached) return cached;
 
   try {
     const { data, error } = await supabase
       .from('Videos')
-      .select('*')
+      .select(VIDEO_COLUMNS)
       .order('fecha', { ascending: false });
 
-    if (error) return [];
+    if (error) {
+      console.error("Error fetching videos:", error);
+      return [];
+    }
     const results = data.map(mapDatabaseVideo);
-    setCache('ev_all_videos', results);
+    setCache('ev_all_videos_v6', results);
     return results;
   } catch (e) {
     return [];
@@ -140,13 +156,10 @@ export const fetchVideos = async (): Promise<VideoItem[]> => {
 };
 
 export const fetchRecentVideos = async (limit: number = 2): Promise<VideoItem[]> => {
-  const allCached = getCache('ev_all_videos');
-  if (allCached) return allCached.slice(0, limit);
-
   try {
     const { data, error } = await supabase
       .from('Videos')
-      .select('*')
+      .select(VIDEO_COLUMNS)
       .order('fecha', { ascending: false })
       .limit(limit);
 
@@ -165,23 +178,14 @@ export const saveQuestion = async (question: Question): Promise<boolean> => {
       pregunta: question.pregunta,
       fecha_envio: new Date().toISOString()
     };
-    // La tabla Preguntas tiene: id, nombre_apellido, ciudad, pregunta, fecha_envio
     const { error } = await supabase.from('Preguntas').insert([payload]);
-    if (error) {
-      console.error("Supabase insert error:", error);
-      return false;
-    }
-    return true;
+    return !error;
   } catch (e) {
-    console.error("Supabase connection error:", e);
     return false;
   }
 };
 
 export const fetchLatestAudio = async (): Promise<AudioItem | null> => {
-    const allCached = getCache('ev_all_audios');
-    if (allCached && allCached.length > 0) return allCached[0];
-
     try {
       const audios = await fetchRecentAudios(1);
       return audios.length > 0 ? audios[0] : null;

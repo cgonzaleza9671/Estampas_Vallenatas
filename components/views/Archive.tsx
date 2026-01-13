@@ -3,7 +3,8 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { fetchAudios, fetchVideos } from '../../services/supabaseClient.ts';
 import { AudioItem, VideoItem } from '../../types.ts';
 import MediaModal from '../MediaModal.tsx';
-import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar } from 'lucide-react';
+import Button from '../Button.tsx';
+import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar, ChevronDown } from 'lucide-react';
 
 interface ArchiveProps {
   initialTab?: 'audio' | 'video';
@@ -19,8 +20,11 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
   const [audios, setAudios] = useState<AudioItem[]>([]);
   const [videos, setVideos] = useState<VideoItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   
   // Audio Filters
   const [selectedAudioAuthor, setSelectedAudioAuthor] = useState('All'); 
@@ -36,13 +40,18 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
 
   useEffect(() => { setActiveTab(initialTab); }, [initialTab]);
 
-  const loadData = async () => {
+  const loadInitialData = async () => {
     setLoading(true);
     setError(false);
+    setCurrentPage(0);
     try {
-      const [fetchedAudios, fetchedVideos] = await Promise.all([fetchAudios(), fetchVideos()]);
+      const [fetchedAudios, fetchedVideos] = await Promise.all([
+        fetchAudios(0, 24),
+        fetchVideos()
+      ]);
       setAudios(fetchedAudios);
       setVideos(fetchedVideos);
+      setHasMore(fetchedAudios.length === 24);
     } catch (e) {
       setError(true);
     } finally {
@@ -50,7 +59,23 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
     }
   };
 
-  useEffect(() => { loadData(); }, []);
+  const loadMoreAudios = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = currentPage + 1;
+    try {
+      const moreAudios = await fetchAudios(nextPage, 24);
+      if (moreAudios.length < 24) setHasMore(false);
+      setAudios(prev => [...prev, ...moreAudios]);
+      setCurrentPage(nextPage);
+    } catch (e) {
+      console.error("Error loading more audios", e);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => { loadInitialData(); }, []);
 
   const formatDateLabel = (fullDate: string) => {
     const parts = fullDate.split(' de ');
@@ -215,7 +240,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
            <div className="text-center p-12 bg-white rounded-3xl shadow-lg">
              <AlertCircle size={64} className="text-vallenato-red mx-auto mb-6" />
              <p className="text-xl font-serif text-vallenato-blue mb-4">No pudimos conectar con la fonoteca en este momento.</p>
-             <button onClick={loadData} className="inline-flex items-center gap-3 bg-vallenato-blue text-white px-8 py-3 rounded-full font-bold uppercase text-xs tracking-widest hover:bg-vallenato-red transition-colors shadow-lg">
+             <button onClick={loadInitialData} className="inline-flex items-center gap-3 bg-vallenato-blue text-white px-8 py-3 rounded-full font-bold uppercase text-xs tracking-widest hover:bg-vallenato-red transition-colors shadow-lg">
                <RefreshCw size={18}/> Reintentar conexión
              </button>
            </div>
@@ -249,106 +274,126 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                     <p className="font-serif italic text-gray-400">No se encontraron estampas con esos criterios...</p>
                   </div>
                 ) : (
-                  (Object.entries(groupedAudios) as [string, AudioItem[]][]).map(([groupName, items]) => (
-                    <div key={groupName} className="space-y-6">
-                      <div className="flex items-center gap-6">
-                        <h3 className="text-vallenato-blue font-serif text-2xl md:text-3xl font-bold capitalize whitespace-nowrap">{groupName}</h3>
-                        <div className="h-[1px] bg-gradient-to-r from-vallenato-mustard/40 to-transparent flex-grow"></div>
+                  <>
+                    {(Object.entries(groupedAudios) as [string, AudioItem[]][]).map(([groupName, items]) => (
+                      <div key={groupName} className="space-y-6">
+                        <div className="flex items-center gap-6">
+                          <h3 className="text-vallenato-blue font-serif text-2xl md:text-3xl font-bold capitalize whitespace-nowrap">{groupName}</h3>
+                          <div className="h-[1px] bg-gradient-to-r from-vallenato-mustard/40 to-transparent flex-grow"></div>
+                        </div>
+                        
+                        {viewMode === 'grid' ? (
+                          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                            {items.map((item) => (
+                              <div key={item.id} onClick={() => onPlayAudio?.(item, items)} className={`group bg-white rounded-[2rem] p-7 shadow-sm hover:shadow-museum transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-transparent hover:border-vallenato-mustard/30'} cursor-pointer flex flex-col relative overflow-hidden`}>
+                                
+                                {currentAudioId === item.id && isPlaying && <div className="absolute top-0 right-0 p-4 z-30"><div className="flex gap-0.5 items-end h-4"><div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
+                                
+                                <div className="flex justify-between items-start mb-6 relative z-10">
+                                  <div className="bg-vallenato-blue/5 p-3 rounded-2xl text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white transition-colors">
+                                    <Music size={24} />
+                                  </div>
+                                </div>
+
+                                <h4 className="text-xl font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors mb-3 leading-tight relative z-20">{item.titulo}</h4>
+                                <div className="space-y-2 mb-6 relative z-20">
+                                  <div className="flex items-center gap-2"><User size={12} className="text-vallenato-mustard" /><span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/70">{item.autor}</span></div>
+                                  <div className="flex items-center gap-2"><Mic2 size={12} className="text-vallenato-red" /><span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/70">{item.cantante}</span></div>
+                                </div>
+                                <div className="mt-auto pt-5 border-t border-gray-100 flex items-center justify-between relative z-20">
+                                  <div className="flex flex-col"><span className="text-[8px] uppercase font-bold text-gray-400">Acordeonero</span><span className="text-[11px] font-bold text-vallenato-blue">{item.acordeonero}</span></div>
+                                  <div className={`p-3 rounded-full transition-all duration-300 ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110 shadow-lg' : 'bg-vallenato-blue text-white hover:scale-110 hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor" className="ml-0.5"/>}</div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="bg-white/70 backdrop-blur-md rounded-[2rem] shadow-sm border border-vallenato-mustard/10 overflow-hidden">
+                             <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-5 bg-vallenato-blue/5 border-b border-vallenato-mustard/20">
+                                <div className="col-span-1 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">#</div>
+                                <div className="col-span-4 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Canción</div>
+                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Autor</div>
+                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Voz</div>
+                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Acordeonero</div>
+                                <div className="col-span-1 text-right text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Mes</div>
+                             </div>
+                             
+                             <div className="divide-y divide-gray-100/50">
+                                {items.map((item, index) => (
+                                  <div 
+                                    key={item.id} 
+                                    onClick={() => onPlayAudio?.(item, items)} 
+                                    className={`group grid grid-cols-1 lg:grid-cols-12 items-center gap-4 px-6 md:px-8 py-5 transition-all duration-300 cursor-pointer border-l-8 ${currentAudioId === item.id ? 'bg-vallenato-cream/60 border-vallenato-red' : 'hover:bg-vallenato-cream/30 hover:border-vallenato-mustard/50 border-transparent'}`}
+                                  >
+                                    <div className="col-span-1 hidden lg:flex items-center">
+                                       {currentAudioId === item.id && isPlaying ? (
+                                          <div className="flex gap-0.5 items-end h-3">
+                                            <div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div>
+                                            <div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div>
+                                            <div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div>
+                                          </div>
+                                       ) : (
+                                          <span className="font-mono text-xs opacity-30 group-hover:opacity-100 transition-opacity">{(index + 1).toString().padStart(2, '0')}</span>
+                                       )}
+                                    </div>
+                                    
+                                    <div className="col-span-1 lg:col-span-4 flex items-center gap-4">
+                                       <div className={`p-2.5 rounded-xl flex-shrink-0 transition-all duration-300 ${currentAudioId === item.id ? 'bg-vallenato-red text-white rotate-0' : 'bg-vallenato-blue/5 text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white -rotate-3 group-hover:rotate-0'}`}>
+                                          {currentAudioId === item.id && isPlaying ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor" className="ml-0.5"/>}
+                                       </div>
+                                       <div className="min-w-0">
+                                          <h4 className={`text-sm md:text-base font-serif font-bold truncate leading-tight transition-colors ${currentAudioId === item.id ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
+                                       </div>
+                                    </div>
+
+                                    <div className="hidden lg:block col-span-2">
+                                       <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                                          <User size={12} className="text-vallenato-mustard shrink-0" />
+                                          <span className="text-[11px] font-bold uppercase tracking-tighter truncate">{item.autor}</span>
+                                       </div>
+                                    </div>
+                                    <div className="hidden lg:block col-span-2">
+                                       <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                                          <Mic2 size={12} className="text-vallenato-red shrink-0" />
+                                          <span className="text-[11px] font-bold uppercase tracking-tighter truncate">{item.cantante}</span>
+                                       </div>
+                                    </div>
+                                    <div className="hidden lg:block col-span-2">
+                                       <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                                          <ListMusic size={12} className="text-vallenato-blue shrink-0" />
+                                          <span className="text-[11px] font-bold uppercase tracking-tighter truncate">{item.acordeonero}</span>
+                                       </div>
+                                    </div>
+
+                                    <div className="col-span-1 text-right hidden lg:block">
+                                       <span className="text-[10px] font-bold uppercase tracking-tighter opacity-40 group-hover:opacity-100 transition-all">{formatDateLabel(item.fecha_publicacion)}</span>
+                                    </div>
+                                  </div>
+                                ))}
+                             </div>
+                          </div>
+                        )}
                       </div>
-                      
-                      {viewMode === 'grid' ? (
-                        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                          {items.map((item) => (
-                            <div key={item.id} onClick={() => onPlayAudio?.(item, items)} className={`group bg-white rounded-[2rem] p-7 shadow-sm hover:shadow-museum transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-transparent hover:border-vallenato-mustard/30'} cursor-pointer flex flex-col relative overflow-hidden`}>
-                              
-                              {currentAudioId === item.id && isPlaying && <div className="absolute top-0 right-0 p-4 z-30"><div className="flex gap-0.5 items-end h-4"><div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
-                              
-                              <div className="flex justify-between items-start mb-6 relative z-10">
-                                <div className="bg-vallenato-blue/5 p-3 rounded-2xl text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white transition-colors">
-                                  <Music size={24} />
-                                </div>
-                              </div>
+                    ))}
 
-                              <h4 className="text-xl font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors mb-3 leading-tight relative z-20">{item.titulo}</h4>
-                              <div className="space-y-2 mb-6 relative z-20">
-                                <div className="flex items-center gap-2"><User size={12} className="text-vallenato-mustard" /><span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/70">{item.autor}</span></div>
-                                <div className="flex items-center gap-2"><Mic2 size={12} className="text-vallenato-red" /><span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/70">{item.cantante}</span></div>
-                              </div>
-                              <div className="mt-auto pt-5 border-t border-gray-100 flex items-center justify-between relative z-20">
-                                <div className="flex flex-col"><span className="text-[8px] uppercase font-bold text-gray-400">Acordeonero</span><span className="text-[11px] font-bold text-vallenato-blue">{item.acordeonero}</span></div>
-                                <div className={`p-3 rounded-full transition-all duration-300 ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110 shadow-lg' : 'bg-vallenato-blue text-white hover:scale-110 hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor" className="ml-0.5"/>}</div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="bg-white/70 backdrop-blur-md rounded-[2rem] shadow-sm border border-vallenato-mustard/10 overflow-hidden">
-                           <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-5 bg-vallenato-blue/5 border-b border-vallenato-mustard/20">
-                              <div className="col-span-1 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">#</div>
-                              <div className="col-span-4 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Canción</div>
-                              <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Autor</div>
-                              <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Voz</div>
-                              <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Acordeonero</div>
-                              <div className="col-span-1 text-right text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Mes</div>
-                           </div>
-                           
-                           <div className="divide-y divide-gray-100/50">
-                              {items.map((item, index) => (
-                                <div 
-                                  key={item.id} 
-                                  onClick={() => onPlayAudio?.(item, items)} 
-                                  className={`group grid grid-cols-1 lg:grid-cols-12 items-center gap-4 px-6 md:px-8 py-5 transition-all duration-300 cursor-pointer border-l-8 ${currentAudioId === item.id ? 'bg-vallenato-cream/60 border-vallenato-red' : 'hover:bg-vallenato-cream/30 hover:border-vallenato-mustard/50 border-transparent'}`}
-                                >
-                                  <div className="col-span-1 hidden lg:flex items-center">
-                                     {currentAudioId === item.id && isPlaying ? (
-                                        <div className="flex gap-0.5 items-end h-3">
-                                          <div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div>
-                                          <div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div>
-                                          <div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div>
-                                        </div>
-                                     ) : (
-                                        <span className="font-mono text-xs opacity-30 group-hover:opacity-100 transition-opacity">{(index + 1).toString().padStart(2, '0')}</span>
-                                     )}
-                                  </div>
-                                  
-                                  <div className="col-span-1 lg:col-span-4 flex items-center gap-4">
-                                     <div className={`p-2.5 rounded-xl flex-shrink-0 transition-all duration-300 ${currentAudioId === item.id ? 'bg-vallenato-red text-white rotate-0' : 'bg-vallenato-blue/5 text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white -rotate-3 group-hover:rotate-0'}`}>
-                                        {currentAudioId === item.id && isPlaying ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor" className="ml-0.5"/>}
-                                     </div>
-                                     <div className="min-w-0">
-                                        <h4 className={`text-sm md:text-base font-serif font-bold truncate leading-tight transition-colors ${currentAudioId === item.id ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
-                                     </div>
-                                  </div>
-
-                                  <div className="hidden lg:block col-span-2">
-                                     <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                                        <User size={12} className="text-vallenato-mustard shrink-0" />
-                                        <span className="text-[11px] font-bold uppercase tracking-tighter truncate">{item.autor}</span>
-                                     </div>
-                                  </div>
-                                  <div className="hidden lg:block col-span-2">
-                                     <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                                        <Mic2 size={12} className="text-vallenato-red shrink-0" />
-                                        <span className="text-[11px] font-bold uppercase tracking-tighter truncate">{item.cantante}</span>
-                                     </div>
-                                  </div>
-                                  <div className="hidden lg:block col-span-2">
-                                     <div className="flex items-center gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
-                                        <ListMusic size={12} className="text-vallenato-blue shrink-0" />
-                                        <span className="text-[11px] font-bold uppercase tracking-tighter truncate">{item.acordeonero}</span>
-                                     </div>
-                                  </div>
-
-                                  <div className="col-span-1 text-right hidden lg:block">
-                                     <span className="text-[10px] font-bold uppercase tracking-tighter opacity-40 group-hover:opacity-100 transition-all">{formatDateLabel(item.fecha_publicacion)}</span>
-                                  </div>
-                                </div>
-                              ))}
-                           </div>
-                        </div>
-                      )}
-                    </div>
-                  ))
+                    {/* Botón Cargar Más Restaurado */}
+                    {hasMore && (
+                      <div className="flex justify-center pt-8">
+                         <Button 
+                           variant="outline" 
+                           onClick={loadMoreAudios} 
+                           disabled={loadingMore}
+                           className="min-w-[200px]"
+                         >
+                           {loadingMore ? (
+                             <span className="flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> Cargando...</span>
+                           ) : (
+                             <span className="flex items-center gap-2">Cargar más tesoros <ChevronDown size={18} /></span>
+                           )}
+                         </Button>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             ) : (

@@ -80,7 +80,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         const [latest, audios, videos] = await Promise.all([
           fetchLatestAudio(),
           fetchRecentAudios(6),
-          fetchRecentVideos(2)
+          fetchRecentVideos(3) // Cambiado de 2 a 3 para balancear la visual
         ]);
         setLatestAudio(latest);
         setRecentAudios(audios);
@@ -259,7 +259,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
                 <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Videos</h2>
              </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 md:mb-10">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 md:mb-10">
                 {recentVideos.map((item) => (
                    <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
                       <div className="aspect-video relative overflow-hidden bg-black">

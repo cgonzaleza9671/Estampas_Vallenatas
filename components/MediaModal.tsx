@@ -15,13 +15,10 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen && item) {
-      // Reiniciar el scroll al principio del contenedor al abrir
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTop = 0;
       }
       
-      // Si es un video, asegurar que se desplace a la altura del reproductor
-      // Usamos un pequeño timeout para asegurar que el DOM se haya renderizado
       const timer = setTimeout(() => {
         if (playerRef.current) {
           playerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -72,19 +69,22 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
 
         <div ref={scrollContainerRef} className="overflow-y-auto p-4 md:p-8 space-y-8 flex-grow custom-scrollbar">
           
-          <div ref={playerRef} className="w-full bg-black rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl border-2 border-vallenato-blue/30 relative group/video">
+          <div ref={playerRef} className="w-full bg-black rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl border-2 border-vallenato-blue/30 relative aspect-video">
             {isVideo && videoItem ? (
-               <div className="relative pt-[56.25%] w-full h-0">
-                 <video 
-                   controls 
-                   autoPlay
-                   className="absolute top-0 left-0 w-full h-full object-contain"
-                   src={videoItem.url_video}
-                   poster={videoItem.thumbnail_url}
-                 />
-               </div>
+               <video 
+                 key={videoItem.url_video}
+                 controls 
+                 autoPlay 
+                 playsInline
+                 preload="auto"
+                 className="w-full h-full object-contain" 
+                 poster={videoItem.thumbnail_url}
+               >
+                 <source src={videoItem.url_video} type="video/mp4" />
+                 Tu navegador no soporta la reproducción de video MP4 o la URL es inválida.
+               </video>
             ) : audioItem ? (
-               <div className="p-10 md:p-16 flex flex-col items-center justify-center bg-vallenato-blue text-white aspect-video md:aspect-[21/9] relative overflow-hidden">
+               <div className="p-10 md:p-16 flex flex-col items-center justify-center bg-vallenato-blue text-white w-full h-full relative overflow-hidden">
                  <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                  <div className="relative z-10 flex flex-col items-center w-full max-w-lg">
                     <div className="mb-6 bg-white/10 p-5 rounded-full backdrop-blur-xl border border-white/20 shadow-2xl animate-pulse text-vallenato-mustard">
