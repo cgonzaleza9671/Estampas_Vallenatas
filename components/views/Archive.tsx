@@ -388,7 +388,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                            {loadingMore ? (
                              <span className="flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> Cargando...</span>
                            ) : (
-                             <span className="flex items-center gap-2">Cargar más tesoros <ChevronDown size={18} /></span>
+                             <span className="flex items-center gap-2">Cargar más estampas <ChevronDown size={18} /></span>
                            )}
                          </Button>
                       </div>
