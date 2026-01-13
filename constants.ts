@@ -55,7 +55,9 @@ export const MOCK_VIDEOS: VideoItem[] = [
     anio: 1995,
     url_video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     thumbnail_url: "https://i.imgur.com/CyzoY4Y.jpeg",
-    descripcion: "Documento inédito de una parranda de tres días."
+    descripcion: "Documento inédito de una parranda de tres días.",
+    // Added missing fecha_publicacion property to satisfy VideoItem interface
+    fecha_publicacion: "Mayo de 1995"
   },
   {
     id: 2,
@@ -65,6 +67,8 @@ export const MOCK_VIDEOS: VideoItem[] = [
     anio: 1988,
     url_video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     thumbnail_url: "https://i.imgur.com/egByYqx.jpeg",
-    descripcion: "Análisis rítmico del aire de Son."
+    descripcion: "Análisis rítmico del aire de Son.",
+    // Added missing fecha_publicacion property to satisfy VideoItem interface
+    fecha_publicacion: "Octubre de 1988"
   }
 ];

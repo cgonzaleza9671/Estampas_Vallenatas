@@ -61,17 +61,22 @@ const mapDatabaseAudio = (dbItem: any): AudioItem => {
 
 const mapDatabaseVideo = (dbItem: any): VideoItem => {
   let anio = 0;
+  let fechaFormatted = "Fecha desconocida";
+  
   if (dbItem.fecha) {
     const date = new Date(dbItem.fecha);
-    anio = !isNaN(date.getTime()) ? date.getFullYear() : 0;
+    if (!isNaN(date.getTime())) {
+      anio = date.getFullYear();
+      const month = date.toLocaleDateString('es-CO', { month: 'long' });
+      // Formato: "Mes Año" (ej: Enero 2026)
+      fechaFormatted = `${month.charAt(0).toUpperCase() + month.slice(1)} ${anio}`;
+    }
   }
 
   // Buscamos la URL en cualquier columna posible
   let rawUrl = dbItem.video_url || dbItem.url_video || dbItem.url || '';
   
   // Si la URL es solo una ruta (no empieza con http), construimos la URL pública de Supabase
-  // Asumiendo que el bucket se llama 'Videos' o similar. 
-  // Si ya es una URL completa (http...), se deja como está.
   if (rawUrl && !rawUrl.startsWith('http')) {
     rawUrl = `${SUPABASE_URL}/storage/v1/object/public/Videos/${rawUrl}`;
   }
@@ -84,7 +89,8 @@ const mapDatabaseVideo = (dbItem: any): VideoItem => {
     anio: anio,
     url_video: rawUrl,
     thumbnail_url: dbItem.thumbnail_url,
-    descripcion: dbItem.descripcion
+    descripcion: dbItem.descripcion,
+    fecha_publicacion: fechaFormatted
   };
 };
 

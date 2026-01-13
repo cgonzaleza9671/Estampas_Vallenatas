@@ -27,6 +27,7 @@ export interface VideoItem {
   url_video: string;  
   thumbnail_url?: string;
   descripcion?: string;
+  fecha_publicacion: string; // New field for formatted month/year
 }
 
 export interface Question {
