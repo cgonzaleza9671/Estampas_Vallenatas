@@ -38,6 +38,12 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
   const [selectedVideo, setSelectedVideo] = useState<VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Helper to format text to Title Case (First letter of each word in caps)
+  const toTitleCase = (str: string) => {
+    if (!str) return "";
+    return str.toLowerCase().replace(/(^|\s)\S/g, (L) => L.toUpperCase());
+  };
+
   useEffect(() => { setActiveTab(initialTab); }, [initialTab]);
 
   const loadInitialData = async () => {
@@ -184,7 +190,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-vallenato-mustard group-focus-within:text-vallenato-red transition-colors" size={20} />
                     <input 
                       type="text" 
-                      placeholder={activeTab === 'audio' ? "Buscar por título, autor o cantante..." : "Buscar por título, autor o intérprete..."}
+                      placeholder={toTitleCase(activeTab === 'audio' ? "Buscar por título, autor o cantante..." : "Buscar por título, autor o intérprete...")}
                       className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm font-sans" 
                       value={searchQuery} 
                       onChange={(e) => setSearchQuery(e.target.value)} 
@@ -195,33 +201,33 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
               {activeTab === 'audio' ? (
                 <>
                   <div className="col-span-1 lg:col-span-3">
-                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold uppercase tracking-tighter cursor-pointer" value={selectedAudioAuthor} onChange={(e) => setSelectedAudioAuthor(e.target.value)}>
-                        <option value="All">Todos los autores</option>
-                        {uniqueAudioAuthors.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
+                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold tracking-tight cursor-pointer" value={selectedAudioAuthor} onChange={(e) => setSelectedAudioAuthor(e.target.value)}>
+                        <option value="All">{toTitleCase("Todos los autores")}</option>
+                        {uniqueAudioAuthors.filter(a => a !== 'All').map(a => <option key={a} value={a}>{toTitleCase(a)}</option>)}
                     </select>
                   </div>
                   <div className="col-span-1 lg:col-span-3">
-                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold uppercase tracking-tighter cursor-pointer" value={selectedAudioSinger} onChange={(e) => setSelectedAudioSinger(e.target.value)}>
-                        <option value="All">Todos los cantantes</option>
-                        {uniqueAudioSingers.filter(s => s !== 'All').map(s => <option key={s} value={s}>{s}</option>)}
+                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold tracking-tight cursor-pointer" value={selectedAudioSinger} onChange={(e) => setSelectedAudioSinger(e.target.value)}>
+                        <option value="All">{toTitleCase("Todos los cantantes")}</option>
+                        {uniqueAudioSingers.filter(s => s !== 'All').map(s => <option key={s} value={s}>{toTitleCase(s)}</option>)}
                     </select>
                   </div>
                   <div className="col-span-1 lg:col-span-3">
-                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold uppercase tracking-tighter cursor-pointer" value={selectedAudioAccordion} onChange={(e) => setSelectedAudioAccordion(e.target.value)}>
-                        <option value="All">Todos los acordeoneros</option>
-                        {uniqueAudioAccordions.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
+                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold tracking-tight cursor-pointer" value={selectedAudioAccordion} onChange={(e) => setSelectedAudioAccordion(e.target.value)}>
+                        <option value="All">{toTitleCase("Todos los acordeoneros")}</option>
+                        {uniqueAudioAccordions.filter(a => a !== 'All').map(a => <option key={a} value={a}>{toTitleCase(a)}</option>)}
                     </select>
                   </div>
                 </>
               ) : (
                 <div className="col-span-1 lg:col-span-9 grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold uppercase tracking-tighter cursor-pointer" value={selectedVideoAuthor} onChange={(e) => setSelectedVideoAuthor(e.target.value)}>
-                        <option value="All">Todos los autores</option>
-                        {uniqueVideoAuthors.filter(a => a !== 'All').map(a => <option key={a} value={a}>{a}</option>)}
+                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold tracking-tight cursor-pointer" value={selectedVideoAuthor} onChange={(e) => setSelectedVideoAuthor(e.target.value)}>
+                        <option value="All">{toTitleCase("Todos los autores")}</option>
+                        {uniqueVideoAuthors.filter(a => a !== 'All').map(a => <option key={a} value={a}>{toTitleCase(a)}</option>)}
                     </select>
-                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold uppercase tracking-tighter cursor-pointer" value={selectedVideoInterpreter} onChange={(e) => setSelectedVideoInterpreter(e.target.value)}>
-                        <option value="All">Todos los intérpretes</option>
-                        {uniqueVideoInterpreters.filter(i => i !== 'All').map(i => <option key={i} value={i}>{i}</option>)}
+                    <select className="w-full px-4 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-xs font-bold tracking-tight cursor-pointer" value={selectedVideoInterpreter} onChange={(e) => setSelectedVideoInterpreter(e.target.value)}>
+                        <option value="All">{toTitleCase("Todos los intérpretes")}</option>
+                        {uniqueVideoInterpreters.filter(i => i !== 'All').map(i => <option key={i} value={i}>{toTitleCase(i)}</option>)}
                     </select>
                 </div>
               )}
