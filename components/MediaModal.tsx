@@ -1,7 +1,8 @@
 
-import React, { useEffect, useRef } from 'react';
-import { X, Calendar, User, Mic2, FileText, Music, Video, ListMusic, Info, Award } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { X, Calendar, User, Mic2, FileText, Music, Video, ListMusic, Info, Award, Loader2 } from 'lucide-react';
 import { AudioItem, VideoItem } from '../types.ts';
+import { fetchAudioDescription, fetchVideoDescription } from '../services/supabaseClient.ts';
 
 interface MediaModalProps {
   item: AudioItem | VideoItem | null;
@@ -12,6 +13,8 @@ interface MediaModalProps {
 const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
+  const [fullDescription, setFullDescription] = useState<string>("");
+  const [loadingDesc, setLoadingDesc] = useState(false);
 
   useEffect(() => {
     if (isOpen && item) {
@@ -24,8 +27,25 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
           playerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       }, 100);
+
+      // Cargar descripción bajo demanda si está vacía
+      if (!item.descripcion) {
+        setLoadingDesc(true);
+        const isVideo = 'interprete' in item;
+        const fetcher = isVideo ? fetchVideoDescription : fetchAudioDescription;
+        
+        fetcher(item.id).then(desc => {
+          setFullDescription(desc);
+          setLoadingDesc(false);
+        });
+      } else {
+        setFullDescription(item.descripcion);
+        setLoadingDesc(false);
+      }
       
       return () => clearTimeout(timer);
+    } else {
+      setFullDescription("");
     }
   }, [isOpen, item]);
 
@@ -37,7 +57,6 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-6 overflow-hidden">
-      {/* Backdrop con desenfoque profundo */}
       <div 
         className="absolute inset-0 bg-vallenato-dark/95 backdrop-blur-2xl transition-opacity duration-700 animate-in fade-in"
         onClick={onClose}
@@ -45,7 +64,6 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
 
       <div className="relative bg-[#0a1120] w-full max-w-5xl h-full md:h-auto md:max-h-[92vh] md:rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden flex flex-col animate-fade-in-up border border-white/5">
         
-        {/* Header Superior Flotante - Más compacto en mobile */}
         <div className="absolute top-0 left-0 w-full z-20 p-4 md:p-8 flex justify-between items-start pointer-events-none">
            <div className="pointer-events-auto">
               <div className="flex items-center gap-2 md:gap-3 bg-black/40 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10 mb-1 md:mb-2">
@@ -67,12 +85,9 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
            </div>
         </div>
 
-        {/* Contenido Principal */}
         <div ref={scrollContainerRef} className="overflow-y-auto flex-grow custom-scrollbar">
           
-          {/* Player de Gran Formato - Ocupa más visual inicial en mobile */}
           <div ref={playerRef} className="w-full relative aspect-video bg-black flex items-center justify-center">
-            {/* Gradiente para lectura de título */}
             <div className="absolute inset-0 bg-gradient-to-b from-vallenato-dark/80 via-transparent to-vallenato-dark/60 z-10 pointer-events-none"></div>
             
             {isVideo && videoItem ? (
@@ -100,11 +115,9 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
             ) : null}
           </div>
 
-          {/* Grid de Información Moderna (Bento Style) - Compactado en mobile */}
           <div className="p-4 md:p-10 bg-vallenato-dark">
              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
                 
-                {/* Tarjeta Autor */}
                 <div className="bg-white/5 backdrop-blur-sm p-3.5 md:p-5 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 hover:border-vallenato-mustard/50 transition-all group">
                    <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                       <div className="bg-vallenato-mustard/20 p-2 md:p-2.5 rounded-lg md:rounded-xl text-vallenato-mustard group-hover:scale-110 transition-transform">
@@ -115,7 +128,6 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                    <p className="font-serif text-sm md:text-lg text-white font-bold">{item.autor}</p>
                 </div>
 
-                {/* Tarjeta Intérprete */}
                 <div className="bg-white/5 backdrop-blur-sm p-3.5 md:p-5 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 hover:border-vallenato-red/50 transition-all group">
                    <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                       <div className="bg-vallenato-red/20 p-2 md:p-2.5 rounded-lg md:rounded-xl text-vallenato-red group-hover:scale-110 transition-transform">
@@ -126,11 +138,10 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                    <p className="font-serif text-sm md:text-lg text-white font-bold">{isVideo ? videoItem?.interprete : audioItem?.cantante}</p>
                 </div>
 
-                {/* Tarjeta Registro Histórico */}
                 <div className="bg-white/5 backdrop-blur-sm p-3.5 md:p-5 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 hover:border-vallenato-blue/50 transition-all group">
                    <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                       <div className="bg-vallenato-blue/40 p-2 md:p-2.5 rounded-lg md:rounded-xl text-white group-hover:scale-110 transition-transform">
-                         {audioItem ? <ListMusic size={16} className="md:w-5 h-5" /> : <Calendar size={16} className="md:w-5 md:h-5" />}
+                         {audioItem ? <ListMusic size={16} className="md:w-5 md:h-5" /> : <Calendar size={16} className="md:w-5 md:h-5" />}
                       </div>
                       <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-white/40">{audioItem ? 'Acordeonero' : 'Registro Histórico'}</span>
                    </div>
@@ -139,19 +150,26 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                    </p>
                 </div>
 
-                {/* Tarjeta Descripción (Ocupa todo el ancho inferior) - Más compacta en mobile */}
-                <div className="md:col-span-3 bg-vallenato-mustard/5 border border-vallenato-mustard/20 p-5 md:p-9 rounded-[1.5rem] md:rounded-[2rem] relative overflow-hidden group">
+                <div className="md:col-span-3 bg-vallenato-mustard/5 border border-vallenato-mustard/20 p-5 md:p-9 rounded-[1.5rem] md:rounded-[2rem] relative overflow-hidden group min-h-[150px]">
                    <div className="absolute top-0 right-0 p-4 md:p-6 opacity-[0.03] text-vallenato-mustard">
                       <FileText size={80} className="md:w-[100px] md:h-[100px]" />
                    </div>
                    <div className="flex items-center gap-2 md:gap-3 mb-3 md:mb-5">
-                      {/* FIX: Merged duplicated className attributes into a single string */}
                       <Info className="text-vallenato-mustard md:w-[18px] md:h-[18px]" size={16} />
                       <h3 className="font-serif text-base md:text-lg text-vallenato-mustard font-bold italic">Descripción</h3>
                    </div>
-                   <p className="text-gray-300 font-serif leading-relaxed text-xs md:text-lg italic relative z-10">
-                      {item.descripcion || "Este tesoro del folclor vallenato forma parte del archivo vivo del Maestro Álvaro González Pimienta, preservado para las futuras generaciones."}
-                   </p>
+                   
+                   {loadingDesc ? (
+                     <div className="flex items-center gap-3 text-vallenato-mustard/60 animate-pulse">
+                        <Loader2 size={16} className="animate-spin" />
+                        <span className="text-xs font-serif italic">Abriendo los archivos...</span>
+                     </div>
+                   ) : (
+                     <p className="text-gray-300 font-serif leading-relaxed text-xs md:text-lg italic relative z-10">
+                        {fullDescription || "Este tesoro del folclor vallenato forma parte del archivo vivo del Maestro Álvaro González Pimienta, preservado para las futuras generaciones."}
+                     </p>
+                   )}
+
                    <div className="mt-5 md:mt-7 pt-4 md:pt-5 border-t border-white/10 flex items-center gap-2 md:gap-3">
                       <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-vallenato-blue flex items-center justify-center text-white border border-white/10 shadow-lg">
                          <Award size={12} className="md:w-[14px] md:h-[14px]" />

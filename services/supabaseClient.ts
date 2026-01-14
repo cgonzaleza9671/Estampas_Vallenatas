@@ -9,6 +9,14 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 
+/** 
+ * ESTRATEGIA DE DISPONIBILIDAD:
+ * Incluimos variaciones de nombres de columnas comunes para evitar errores 400.
+ * Si alguna columna no existe, la consulta fallará, por lo que usamos un try/catch con fallback.
+ */
+const AUDIO_LIST_COLUMNS = 'id, titulo, autor, cantante, acordeonero, fecha, audio_url, url_audio';
+const VIDEO_LIST_COLUMNS = 'id, titulo, autor, interprete, anio, fecha, thumbnail_url, video_url, url_video, url';
+
 const setCache = (key: string, data: any) => {
   const cacheEntry = {
     timestamp: Date.now(),
@@ -27,10 +35,6 @@ const getCache = (key: string) => {
   }
   return data;
 };
-
-// Restauramos a '*' para evitar errores de Schema Mismatch si faltan columnas
-const AUDIO_COLUMNS = '*';
-const VIDEO_COLUMNS = '*';
 
 const mapDatabaseAudio = (dbItem: any): AudioItem => {
   let anio = 0;
@@ -55,7 +59,7 @@ const mapDatabaseAudio = (dbItem: any): AudioItem => {
     fecha_publicacion: fechaFormatted,
     anio: anio,
     url_audio: dbItem.audio_url || dbItem.url_audio || '',
-    descripcion: dbItem.descripcion || "Sin comentarios adicionales."
+    descripcion: dbItem.descripcion || ""
   };
 };
 
@@ -68,15 +72,11 @@ const mapDatabaseVideo = (dbItem: any): VideoItem => {
     if (!isNaN(date.getTime())) {
       anio = date.getFullYear();
       const month = date.toLocaleDateString('es-CO', { month: 'long' });
-      // Formato: "Mes Año" (ej: Enero 2026)
       fechaFormatted = `${month.charAt(0).toUpperCase() + month.slice(1)} ${anio}`;
     }
   }
 
-  // Buscamos la URL en cualquier columna posible
   let rawUrl = dbItem.video_url || dbItem.url_video || dbItem.url || '';
-  
-  // Si la URL es solo una ruta (no empieza con http), construimos la URL pública de Supabase
   if (rawUrl && !rawUrl.startsWith('http')) {
     rawUrl = `${SUPABASE_URL}/storage/v1/object/public/Videos/${rawUrl}`;
   }
@@ -89,113 +89,124 @@ const mapDatabaseVideo = (dbItem: any): VideoItem => {
     anio: anio,
     url_video: rawUrl,
     thumbnail_url: dbItem.thumbnail_url,
-    descripcion: dbItem.descripcion,
+    descripcion: dbItem.descripcion || "",
     fecha_publicacion: fechaFormatted
   };
 };
 
 export const fetchAudios = async (page: number = 0, limit: number = 50): Promise<AudioItem[]> => {
-  const cacheKey = `ev_audios_p${page}_v6`;
+  const cacheKey = `ev_audios_p${page}_v8`;
   if (page === 0) {
     const cached = getCache(cacheKey);
     if (cached) return cached;
   }
 
-  try {
-    const from = page * limit;
-    const to = from + limit - 1;
+  const from = page * limit;
+  const to = from + limit - 1;
 
-    const { data, error } = await supabase
+  // Intento 1: Columnas optimizadas
+  let { data, error } = await supabase
+    .from('Audios')
+    .select(AUDIO_LIST_COLUMNS)
+    .order('fecha', { ascending: false })
+    .range(from, to);
+    
+  // Fallback: Si hay error (posiblemente por nombre de columna), pedimos todo (*)
+  if (error) {
+    const fallback = await supabase
       .from('Audios')
-      .select(AUDIO_COLUMNS)
+      .select('*')
       .order('fecha', { ascending: false })
       .range(from, to);
-      
-    if (error) {
-      console.error("Error fetching audios:", error);
-      return [];
-    }
-    const results = data.map(mapDatabaseAudio);
-    
-    if (page === 0) setCache(cacheKey, results);
-    return results;
-  } catch (e) {
-    return [];
+    data = fallback.data;
+    error = fallback.error;
   }
-};
 
-export const fetchRecentAudios = async (limit: number = 3): Promise<AudioItem[]> => {
-  try {
-    const { data, error } = await supabase
-      .from('Audios')
-      .select(AUDIO_COLUMNS)
-      .order('fecha', { ascending: false })
-      .limit(limit);
-      
-    if (error) return [];
-    return data.map(mapDatabaseAudio);
-  } catch (e) {
-    return [];
-  }
+  if (error || !data) return [];
+  const results = data.map(mapDatabaseAudio);
+  
+  if (page === 0) setCache(cacheKey, results);
+  return results;
 };
 
 export const fetchVideos = async (): Promise<VideoItem[]> => {
-  const cached = getCache('ev_all_videos_v6');
+  const cached = getCache('ev_all_videos_v8');
   if (cached) return cached;
 
-  try {
-    const { data, error } = await supabase
-      .from('Videos')
-      .select(VIDEO_COLUMNS)
-      .order('fecha', { ascending: false });
+  // Intento 1: Columnas optimizadas
+  let { data, error } = await supabase
+    .from('Videos')
+    .select(VIDEO_LIST_COLUMNS)
+    .order('fecha', { ascending: false });
 
-    if (error) {
-      console.error("Error fetching videos:", error);
-      return [];
-    }
-    const results = data.map(mapDatabaseVideo);
-    setCache('ev_all_videos_v6', results);
-    return results;
-  } catch (e) {
-    return [];
+  // Fallback: Si hay error, pedimos todo (*)
+  if (error) {
+    const fallback = await supabase
+      .from('Videos')
+      .select('*')
+      .order('fecha', { ascending: false });
+    data = fallback.data;
+    error = fallback.error;
   }
+
+  if (error || !data) return [];
+  const results = data.map(mapDatabaseVideo);
+  setCache('ev_all_videos_v8', results);
+  return results;
+};
+
+export const fetchRecentAudios = async (limit: number = 3): Promise<AudioItem[]> => {
+  let { data, error } = await supabase
+    .from('Audios')
+    .select(AUDIO_LIST_COLUMNS)
+    .order('fecha', { ascending: false })
+    .limit(limit);
+    
+  if (error) {
+    const fallback = await supabase.from('Audios').select('*').order('fecha', { ascending: false }).limit(limit);
+    data = fallback.data;
+  }
+
+  return data ? data.map(mapDatabaseAudio) : [];
 };
 
 export const fetchRecentVideos = async (limit: number = 2): Promise<VideoItem[]> => {
-  try {
-    const { data, error } = await supabase
-      .from('Videos')
-      .select(VIDEO_COLUMNS)
-      .order('fecha', { ascending: false })
-      .limit(limit);
+  let { data, error } = await supabase
+    .from('Videos')
+    .select(VIDEO_LIST_COLUMNS)
+    .order('fecha', { ascending: false })
+    .limit(limit);
 
-    if (error) return [];
-    return data.map(mapDatabaseVideo);
-  } catch (e) {
-    return [];
+  if (error) {
+    const fallback = await supabase.from('Videos').select('*').order('fecha', { ascending: false }).limit(limit);
+    data = fallback.data;
   }
+
+  return data ? data.map(mapDatabaseVideo) : [];
+};
+
+export const fetchAudioDescription = async (id: number): Promise<string> => {
+  const { data, error } = await supabase.from('Audios').select('descripcion').eq('id', id).single();
+  return error ? "" : data.descripcion || "";
+};
+
+export const fetchVideoDescription = async (id: number): Promise<string> => {
+  const { data, error } = await supabase.from('Videos').select('descripcion').eq('id', id).single();
+  return error ? "" : data.descripcion || "";
 };
 
 export const saveQuestion = async (question: Question): Promise<boolean> => {
-  try {
-    const payload = {
-      nombre_apellido: question.nombre_apellido,
-      ciudad: question.ciudad,
-      pregunta: question.pregunta,
-      fecha_envio: new Date().toISOString()
-    };
-    const { error } = await supabase.from('Preguntas').insert([payload]);
-    return !error;
-  } catch (e) {
-    return false;
-  }
+  const payload = {
+    nombre_apellido: question.nombre_apellido,
+    ciudad: question.ciudad,
+    pregunta: question.pregunta,
+    fecha_envio: new Date().toISOString()
+  };
+  const { error } = await supabase.from('Preguntas').insert([payload]);
+  return !error;
 };
 
 export const fetchLatestAudio = async (): Promise<AudioItem | null> => {
-    try {
-      const audios = await fetchRecentAudios(1);
-      return audios.length > 0 ? audios[0] : null;
-    } catch (e) {
-      return null;
-    }
+  const audios = await fetchRecentAudios(1);
+  return audios.length > 0 ? audios[0] : null;
 }
