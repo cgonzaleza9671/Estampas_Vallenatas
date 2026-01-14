@@ -28,7 +28,6 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
         }
       }, 100);
 
-      // Cargar descripción bajo demanda si está vacía
       if (!item.descripcion) {
         setLoadingDesc(true);
         const isVideo = 'interprete' in item;
@@ -64,23 +63,45 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
 
       <div className="relative bg-[#0a1120] w-full max-w-5xl h-full md:h-auto md:max-h-[92vh] md:rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden flex flex-col animate-fade-in-up border border-white/5">
         
-        <div className="absolute top-0 left-0 w-full z-20 p-4 md:p-8 flex justify-between items-start pointer-events-none">
+        {/* MOBILE HEADER: No absoluto, empuja el contenido hacia abajo para liberar el video */}
+        <div className="md:hidden flex items-start justify-between p-4 bg-black border-b border-white/10 z-30">
+           <div className="flex flex-col gap-1 pr-4">
+              <div className="flex items-center gap-2">
+                 {isVideo ? <Video size={12} className="text-vallenato-mustard" /> : <Music size={12} className="text-vallenato-mustard" />}
+                 <span className="text-[9px] font-bold uppercase tracking-widest text-white/50">
+                    {isVideo ? 'Archivo Fílmico' : 'Tesoro Sonoro'}
+                 </span>
+              </div>
+              <h2 className="text-white font-serif font-bold text-base leading-tight">
+                {item.titulo}
+              </h2>
+           </div>
+           <button 
+             onClick={onClose}
+             className="bg-white/10 p-2.5 rounded-full text-white active:bg-vallenato-red transition-colors"
+           >
+             <X size={20} />
+           </button>
+        </div>
+
+        {/* DESKTOP HEADER: Mantiene el diseño original flotante */}
+        <div className="hidden md:flex absolute top-0 left-0 w-full z-20 p-8 justify-between items-start pointer-events-none">
            <div className="pointer-events-auto">
-              <div className="flex items-center gap-2 md:gap-3 bg-black/40 backdrop-blur-md px-3 py-1.5 md:px-4 md:py-2 rounded-full border border-white/10 mb-1 md:mb-2">
-                 {isVideo ? <Video className="text-vallenato-mustard w-3 h-3 md:w-4 md:h-4" /> : <Music className="text-vallenato-mustard w-3 h-3 md:w-4 md:h-4" />}
-                 <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] text-white/80">
+              <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 mb-2">
+                 {isVideo ? <Video className="text-vallenato-mustard w-4 h-4" /> : <Music className="text-vallenato-mustard w-4 h-4" />}
+                 <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                    {isVideo ? 'Archivo Fílmico' : 'Tesoro Sonoro'}
                  </span>
               </div>
-              <h2 className="text-base md:text-3xl font-serif text-white font-bold drop-shadow-2xl leading-tight max-w-[200px] md:max-w-2xl">{item.titulo}</h2>
+              <h2 className="text-3xl font-serif text-white font-bold drop-shadow-2xl leading-tight max-w-2xl">{item.titulo}</h2>
            </div>
            
            <div className="flex gap-2 pointer-events-auto">
               <button 
                 onClick={onClose}
-                className="bg-white/10 hover:bg-vallenato-red text-white backdrop-blur-md p-2.5 md:p-4 rounded-full transition-all border border-white/20 shadow-xl group"
+                className="bg-white/10 hover:bg-vallenato-red text-white backdrop-blur-md p-4 rounded-full transition-all border border-white/20 shadow-xl group"
               >
-                <X size={20} className="md:w-6 md:h-6 group-hover:rotate-90 transition-transform duration-300" />
+                <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
               </button>
            </div>
         </div>
@@ -88,7 +109,8 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
         <div ref={scrollContainerRef} className="overflow-y-auto flex-grow custom-scrollbar">
           
           <div ref={playerRef} className="w-full relative aspect-video bg-black flex items-center justify-center">
-            <div className="absolute inset-0 bg-gradient-to-b from-vallenato-dark/80 via-transparent to-vallenato-dark/60 z-10 pointer-events-none"></div>
+            {/* El gradiente se oculta en mobile para dar total visibilidad a los controles */}
+            <div className="hidden md:block absolute inset-0 bg-gradient-to-b from-vallenato-dark/80 via-transparent to-vallenato-dark/60 z-10 pointer-events-none"></div>
             
             {isVideo && videoItem ? (
                <video 
