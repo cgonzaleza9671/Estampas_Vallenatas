@@ -80,7 +80,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         const [latest, audios, videos] = await Promise.all([
           fetchLatestAudio(),
           fetchRecentAudios(6),
-          fetchRecentVideos(3) // Cambiado de 2 a 3 para balancear la visual
+          fetchRecentVideos(3)
         ]);
         setLatestAudio(latest);
         setRecentAudios(audios);
@@ -173,7 +173,6 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                     : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue shadow-[0_10px_20px_-4px_rgba(184,134,11,0.5),inset_0_1px_2px_rgba(255,255,255,0.7)] hover:scale-105 hover:shadow-[0_15px_30px_-5px_rgba(184,134,11,0.6)] active:scale-95 active:brightness-90'
                   }`}
               >
-                {/* Shine Sweep Overlay */}
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-shimmer transition-transform duration-1000 pointer-events-none"></div>
                 
                 <span className="relative z-10 flex items-center gap-2">
@@ -191,9 +190,19 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       {/* Hero Section */}
       <section className="relative min-h-[85vh] md:min-h-[90vh] w-full overflow-hidden flex items-center justify-center pt-12 pb-8 md:pb-12">
         {HERO_GALLERY.map((img, index) => (
-          <div key={index} className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundImage: `url("${img}")` }} />
+          <div 
+            key={index} 
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} 
+            style={{ 
+              backgroundImage: `url("${img}")`,
+              // Aplicamos un oscurecimiento mayor a la imagen específica e39bXRu.jpeg
+              filter: img === "https://i.imgur.com/e39bXRu.jpeg" ? 'brightness(0.45) contrast(1.1)' : 'none'
+            }} 
+          />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/90 z-10"></div>
+        {/* Gradiente reforzado para mejor contraste */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/95 z-10"></div>
+        
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
           <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-md">Estampas Vallenatas</span>
           <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-2xl leading-[1.1]">

@@ -256,7 +256,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
               <div className="space-y-10">
                 
                 <div className="flex justify-end items-center px-4 border-b border-vallenato-mustard/20 pb-3 gap-3">
-                  <span className="text-[10px] font-bold uppercase text-vallenato-red tracking-[0.3em] opacity-80 mr-1">Modo de consulta</span>
+                  <span className="text-[10px] font-bold uppercase text-vallenato-red tracking-[0.3em] opacity-80 mr-1">{toTitleCase("Modo de consulta")}</span>
                   
                   <div className="flex bg-vallenato-blue/5 rounded-xl p-1 gap-1">
                     <button 
@@ -284,7 +284,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                     {(Object.entries(groupedAudios) as [string, AudioItem[]][]).map(([groupName, items]) => (
                       <div key={groupName} className="space-y-6">
                         <div className="flex items-center gap-6">
-                          <h3 className="text-vallenato-blue font-serif text-2xl md:text-3xl font-bold capitalize whitespace-nowrap">{groupName}</h3>
+                          <h3 className="text-vallenato-blue font-serif text-2xl md:text-3xl font-bold capitalize whitespace-nowrap">{toTitleCase(groupName)}</h3>
                           <div className="h-[1px] bg-gradient-to-r from-vallenato-mustard/40 to-transparent flex-grow"></div>
                         </div>
                         
@@ -317,11 +317,11 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                           <div className="bg-white/70 backdrop-blur-md rounded-[2rem] shadow-sm border border-vallenato-mustard/10 overflow-hidden">
                              <div className="hidden lg:grid grid-cols-12 gap-4 px-8 py-5 bg-vallenato-blue/5 border-b border-vallenato-mustard/20">
                                 <div className="col-span-1 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">#</div>
-                                <div className="col-span-4 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Canción</div>
-                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Autor</div>
-                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Voz</div>
-                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Acordeonero</div>
-                                <div className="col-span-1 text-right text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">Mes</div>
+                                <div className="col-span-4 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">{toTitleCase("Canción")}</div>
+                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">{toTitleCase("Autor")}</div>
+                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">{toTitleCase("Voz")}</div>
+                                <div className="col-span-2 text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">{toTitleCase("Acordeonero")}</div>
+                                <div className="col-span-1 text-right text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/40">{toTitleCase("Mes")}</div>
                              </div>
                              
                              <div className="divide-y divide-gray-100/50">
@@ -392,9 +392,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                            className="min-w-[200px]"
                          >
                            {loadingMore ? (
-                             <span className="flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> Cargando...</span>
+                             <span className="flex items-center gap-2"><Loader2 size={18} className="animate-spin" /> {toTitleCase("Cargando...")}</span>
                            ) : (
-                             <span className="flex items-center gap-2">Cargar más estampas <ChevronDown size={18} /></span>
+                             <span className="flex items-center gap-2">{toTitleCase("Cargar más estampas")} <ChevronDown size={18} /></span>
                            )}
                          </Button>
                       </div>
@@ -418,22 +418,22 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                      <div className="p-8">
                         <div className="flex items-center gap-3 mb-3">
                            <div className="bg-vallenato-red h-1 w-12 rounded-full"></div>
-                           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-vallenato-red">Archivo Fílmico</span>
+                           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-vallenato-red">{toTitleCase("Archivo Fílmico")}</span>
                         </div>
                         <h3 className="text-2xl font-serif text-vallenato-blue font-bold mb-4 group-hover:text-vallenato-red transition-colors">{item.titulo}</h3>
                         <div className="grid grid-cols-2 gap-4">
                            <div className="flex flex-col gap-1">
-                              <span className="text-[9px] uppercase font-bold text-gray-400">Autor</span>
+                              <span className="text-[9px] uppercase font-bold text-gray-400">{toTitleCase("Autor")}</span>
                               <div className="flex items-center gap-2"><User size={12} className="text-vallenato-mustard" /><span className="text-xs font-bold text-vallenato-blue truncate">{item.autor}</span></div>
                            </div>
                            <div className="flex flex-col gap-1">
-                              <span className="text-[9px] uppercase font-bold text-gray-400">Intérprete</span>
+                              <span className="text-[9px] uppercase font-bold text-gray-400">{toTitleCase("Intérprete")}</span>
                               <div className="flex items-center gap-2"><Mic2 size={12} className="text-vallenato-red" /><span className="text-xs font-bold text-vallenato-blue truncate">{item.interprete}</span></div>
                            </div>
                         </div>
                         <div className="mt-6 pt-6 border-t border-gray-50 flex items-center justify-between">
-                           <div className="flex items-center gap-2 text-gray-400"><Calendar size={14} /><span className="text-xs font-bold">Año {item.anio}</span></div>
-                           <button className="text-vallenato-blue font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:text-vallenato-red transition-colors">Ver ahora <Play size={10} fill="currentColor"/></button>
+                           <div className="flex items-center gap-2 text-gray-400"><Calendar size={14} /><span className="text-xs font-bold">{toTitleCase(`Año ${item.anio}`)}</span></div>
+                           <button className="text-vallenato-blue font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:text-vallenato-red transition-colors">{toTitleCase("Ver ahora")} <Play size={10} fill="currentColor"/></button>
                         </div>
                      </div>
                   </div>

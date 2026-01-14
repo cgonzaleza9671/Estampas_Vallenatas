@@ -6,8 +6,8 @@ export const FESTIVAL_DATE = new Date('2026-04-29T08:00:00');
 export const HERO_GALLERY = [
   "https://i.imgur.com/CyzoY4Y.jpeg",
   "https://i.imgur.com/egByYqx.jpeg",
-  "https://i.imgur.com/RgqMXVB.jpeg",
-  "https://i.imgur.com/wa2FZec.png"
+  "https://i.imgur.com/wDz7qUP.jpeg",
+  "https://i.imgur.com/e39bXRu.jpeg"
 ];
 
 export const MOCK_AUDIOS: AudioItem[] = [
@@ -56,7 +56,6 @@ export const MOCK_VIDEOS: VideoItem[] = [
     url_video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     thumbnail_url: "https://i.imgur.com/CyzoY4Y.jpeg",
     descripcion: "Documento inédito de una parranda de tres días.",
-    // Added missing fecha_publicacion property to satisfy VideoItem interface
     fecha_publicacion: "Mayo de 1995"
   },
   {
@@ -68,7 +67,6 @@ export const MOCK_VIDEOS: VideoItem[] = [
     url_video: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     thumbnail_url: "https://i.imgur.com/egByYqx.jpeg",
     descripcion: "Análisis rítmico del aire de Son.",
-    // Added missing fecha_publicacion property to satisfy VideoItem interface
     fecha_publicacion: "Octubre de 1988"
   }
 ];
