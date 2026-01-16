@@ -272,41 +272,41 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         {viewMode === 'grid' ? (
                           <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                             {items.map((item) => (
-                              <div key={item.id} onClick={() => onPlayAudio?.(item, items)} className={`group relative h-[185px] bg-white rounded-[1.6rem] p-5 shadow-sm hover:shadow-gold transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-vallenato-mustard/50 hover:border-vallenato-mustard'} cursor-pointer flex flex-col overflow-hidden`}>
+                              <div key={item.id} onClick={() => onPlayAudio?.(item, items)} className={`group relative min-h-[220px] bg-white rounded-[2rem] p-6 shadow-sm hover:shadow-gold transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-vallenato-mustard/40 hover:border-vallenato-mustard'} cursor-pointer flex flex-col overflow-hidden`}>
                                 
-                                <div className="absolute top-1/2 -right-12 w-20 h-20 bg-vallenato-blue rounded-full border-4 border-vallenato-mustard/20 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:-right-6 transition-all duration-700 pointer-events-none z-0 shadow-2xl flex items-center justify-center">
-                                   <div className="w-8 h-8 rounded-full border border-white/10 bg-vallenato-mustard/20 flex items-center justify-center">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+                                <div className="absolute top-1/2 -right-12 w-24 h-24 bg-vallenato-blue rounded-full border-4 border-vallenato-mustard/20 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:-right-6 transition-all duration-700 pointer-events-none z-0 shadow-2xl flex items-center justify-center">
+                                   <div className="w-10 h-10 rounded-full border border-white/10 bg-vallenato-mustard/20 flex items-center justify-center">
+                                      <div className="w-2 h-2 rounded-full bg-white/40"></div>
                                    </div>
                                 </div>
 
-                                <div className="absolute top-3 left-4 z-10 flex items-center gap-1.5 bg-vallenato-mustard/10 text-vallenato-mustard px-2.5 py-1 rounded-full border border-vallenato-mustard/20">
-                                   <span className="text-[7.5px] font-black uppercase tracking-widest whitespace-nowrap">{formatBadgeDate(item.fecha_publicacion)}</span>
+                                <div className="absolute top-4 left-6 z-10 flex items-center gap-1.5 bg-vallenato-mustard/15 text-vallenato-mustard px-3 py-1 rounded-full border border-vallenato-mustard/30">
+                                   <span className="text-[9px] font-black uppercase tracking-widest whitespace-nowrap">{formatBadgeDate(item.fecha_publicacion)}</span>
                                 </div>
 
-                                {currentAudioId === item.id && isPlaying && <div className="absolute top-4 right-5 p-0 z-30"><div className="flex gap-1 items-end h-4"><div className="w-1 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
+                                {currentAudioId === item.id && isPlaying && <div className="absolute top-5 right-6 p-0 z-30"><div className="flex gap-1.5 items-end h-5"><div className="w-1.5 bg-vallenato-red animate-[wave_1s_infinite_ease-in-out]"></div><div className="w-1.5 bg-vallenato-red animate-[wave_1.2s_infinite_ease-in-out]"></div><div className="w-1.5 bg-vallenato-red animate-[wave_0.8s_infinite_ease-in-out]"></div></div></div>}
                                 
-                                <div className="mt-6 flex-grow relative z-10">
-                                   <h4 className="text-base md:text-lg font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors mb-2 pr-4 leading-tight line-clamp-1">{item.titulo}</h4>
+                                <div className="mt-8 flex-grow relative z-10">
+                                   <h4 className="text-xl md:text-2xl font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors mb-4 pr-6 leading-tight line-clamp-2">{item.titulo}</h4>
                                    
-                                   <div className="space-y-1.5">
-                                      <div className="flex items-center gap-2 bg-vallenato-blue/5 w-fit px-2.5 py-1.5 rounded-lg group-hover:bg-vallenato-blue transition-colors group-hover:text-white">
-                                         <User size={10} className="text-vallenato-mustard" />
-                                         <span className="text-[8.5px] font-bold uppercase tracking-widest">{item.autor}</span>
+                                   <div className="space-y-2.5">
+                                      <div className="flex items-center gap-2.5 bg-vallenato-blue/5 w-fit px-3 py-2 rounded-xl group-hover:bg-vallenato-blue transition-colors group-hover:text-white">
+                                         <User size={12} className="text-vallenato-mustard" />
+                                         <span className="text-[11px] font-bold uppercase tracking-widest">{item.autor}</span>
                                       </div>
-                                      <div className="flex items-center gap-2 bg-vallenato-red/5 w-fit px-2.5 py-1.5 rounded-lg group-hover:bg-vallenato-red transition-colors group-hover:text-white">
-                                         <Mic2 size={10} className="text-vallenato-red group-hover:text-white" />
-                                         <span className="text-[8.5px] font-bold uppercase tracking-widest">{item.cantante}</span>
+                                      <div className="flex items-center gap-2.5 bg-vallenato-red/5 w-fit px-3 py-2 rounded-xl group-hover:bg-vallenato-red transition-colors group-hover:text-white">
+                                         <Mic2 size={12} className="text-vallenato-red group-hover:text-white" />
+                                         <span className="text-[11px] font-bold uppercase tracking-widest">{item.cantante}</span>
                                       </div>
                                    </div>
                                 </div>
 
-                                <div className="mt-auto pt-3.5 border-t border-gray-100 flex items-center justify-between relative z-10">
+                                <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between relative z-10">
                                   <div className="flex flex-col">
-                                     <span className="text-[8px] uppercase font-bold text-gray-400">Acordeón</span>
-                                     <span className="text-[10px] font-bold text-vallenato-blue leading-none">{item.acordeonero}</span>
+                                     <span className="text-[10px] uppercase font-bold text-gray-400 mb-1">Acordeón</span>
+                                     <span className="text-xs font-bold text-vallenato-blue leading-none">{item.acordeonero}</span>
                                   </div>
-                                  <div className={`p-3 rounded-full transition-all duration-500 shadow-lg ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:scale-110 group-hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={16} fill="currentColor"/> : <Play size={16} fill="currentColor" className="ml-0.5"/>}</div>
+                                  <div className={`p-3.5 rounded-full transition-all duration-500 shadow-lg ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:scale-110 group-hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor" className="ml-0.5"/>}</div>
                                 </div>
                               </div>
                             ))}
