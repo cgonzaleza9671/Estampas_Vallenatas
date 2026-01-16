@@ -210,7 +210,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         </div>
       </section>
 
-      {/* Audios Section - Ultra Compact Style - Updated Size +15% */}
+      {/* Audios Section - Updated legibility +15% */}
       <section className="pt-20 pb-16 bg-white relative z-10">
          <div className="container mx-auto px-6">
              <div className="mb-12">
@@ -264,7 +264,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                          </div>
                          <div className="flex items-center gap-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest"><Calendar size={12} /><span>Año {item.anio}</span></div>
                       </div>
-                      <div className="mt-auto bg-vallenato-blue p-5 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-[0.2em]">Ver Documento</span><Play size={14} className="text-white fill-white" /></div>
+                      <div className="mt-auto bg-vallenato-blue p-5 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-[0.2em]">Ver ahora</span><Play size={14} className="text-white fill-white" /></div>
                    </div>
                 ))}
              </div>
