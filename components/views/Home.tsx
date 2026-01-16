@@ -4,7 +4,7 @@ import { ViewState, AudioItem, VideoItem } from '../../types.ts';
 import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
-import { Play, Sparkles, ArrowRight, User, ListMusic, Video, Calendar, Pause, Mic2, Globe } from 'lucide-react';
+import { Play, Sparkles, ArrowRight, User, ListMusic, Video, Calendar, Pause, Mic2, Globe, Award } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../services/supabaseClient.ts';
 
 interface HomeProps {
@@ -35,7 +35,6 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
-  // Lógica para efecto de escritura
   const [charCount, setCharCount] = useState(0);
   const segments = useMemo(() => [
     { text: "Una ", bold: false },
@@ -150,6 +149,10 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
     });
   };
 
+  const formatBadgeDate = (dateStr: string) => {
+    return dateStr.replace(/ de /g, ' ');
+  };
+
   return (
     <div className="animate-fade-in-up">
       {!loadingData && latestAudio && (
@@ -165,21 +168,10 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                     <span className="font-serif italic text-lg line-clamp-1">"{latestAudio.titulo}" - {latestAudio.autor}</span>
                  </div>
               </div>
-              <button 
-                onClick={() => onPlayAudio?.(latestAudio, [latestAudio])}
-                className={`relative overflow-hidden px-6 py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn
-                  ${currentAudioId === latestAudio.id && isPlaying 
-                    ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' 
-                    : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue shadow-[0_10px_20px_-4px_rgba(184,134,11,0.5),inset_0_1px_2px_rgba(255,255,255,0.7)] hover:scale-105 hover:shadow-[0_15px_30px_-5px_rgba(184,134,11,0.6)] active:scale-95 active:brightness-90'
-                  }`}
-              >
+              <button onClick={() => onPlayAudio?.(latestAudio, [latestAudio])} className={`relative overflow-hidden px-6 py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn ${currentAudioId === latestAudio.id && isPlaying ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue shadow-[0_10px_20px_-4px_rgba(184,134,11,0.5),inset_0_1px_2px_rgba(255,255,255,0.7)] hover:scale-105 hover:shadow-[0_15px_30px_-5px_rgba(184,134,11,0.6)] active:scale-95 active:brightness-90'}`}>
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-shimmer transition-transform duration-1000 pointer-events-none"></div>
-                
                 <span className="relative z-10 flex items-center gap-2">
-                  {currentAudioId === latestAudio.id && isPlaying 
-                    ? <Pause size={14} fill="currentColor" /> 
-                    : <Play size={14} fill="currentColor" className="ml-0.5" />
-                  }
+                  {currentAudioId === latestAudio.id && isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
                   <span>{currentAudioId === latestAudio.id && isPlaying ? 'Pausar' : 'Reproducir'}</span>
                 </span>
               </button>
@@ -190,31 +182,19 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       {/* Hero Section */}
       <section className="relative min-h-[85vh] md:min-h-[90vh] w-full overflow-hidden flex items-center justify-center pt-12 pb-8 md:pb-12">
         {HERO_GALLERY.map((img, index) => (
-          <div 
-            key={index} 
-            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} 
-            style={{ 
-              backgroundImage: `url("${img}")`,
-              // Aplicamos un oscurecimiento mayor a la imagen específica e39bXRu.jpeg
-              filter: img === "https://i.imgur.com/e39bXRu.jpeg" ? 'brightness(0.45) contrast(1.1)' : 'none'
-            }} 
-          />
+          <div key={index} className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundImage: `url("${img}")`, filter: img === "https://i.imgur.com/e39bXRu.jpeg" ? 'brightness(0.45) contrast(1.1)' : 'none' }} />
         ))}
-        {/* Gradiente reforzado para mejor contraste */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/95 z-10"></div>
-        
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
           <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-md">Estampas Vallenatas</span>
           <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-2xl leading-[1.1]">
             <span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-2">El Museo Digital del</span>
             <span className="text-vallenato-red">Folclor Vallenato</span>
           </h1>
-          
           <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-lg min-h-[5em] md:min-h-[4em]">
             {renderTypedDescription()}
             <span className={`inline-block w-1.5 h-4 md:h-5 bg-vallenato-mustard ml-1 ${charCount < totalChars ? 'animate-pulse' : 'hidden'}`}></span>
           </h2>
-
           <div className="mt-2 w-full max-w-4xl flex flex-col items-center">
              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
                 {Object.entries(timeLeft).map(([label, value]) => (
@@ -230,64 +210,65 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         </div>
       </section>
 
-      {/* Audios Section */}
-      <section className="pt-16 pb-12 bg-white relative z-10">
+      {/* Audios Section - Ultra Compact Style */}
+      <section className="pt-20 pb-16 bg-white relative z-10">
          <div className="container mx-auto px-6">
-             <div className="mb-8 md:mb-12">
+             <div className="mb-12">
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
                 <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Audios</h2>
              </div>
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 md:mb-10">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {recentAudios.map((item) => (
-                   <div key={item.id} onClick={() => onPlayAudio?.(item, recentAudios)} className={`bg-white rounded-2xl shadow-lg border-l-4 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-500 cursor-pointer transform hover:-translate-y-1 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream/30' : 'border-vallenato-mustard'}`}>
-                      <div className="p-6 relative flex-grow overflow-hidden">
-                         <h3 className="text-xl font-serif text-vallenato-blue font-bold truncate group-hover:text-vallenato-red transition-colors relative z-20">{item.titulo}</h3>
-                         <div className="space-y-1 mt-2 relative z-20">
-                            <p className="text-vallenato-red text-xs font-bold uppercase flex items-center gap-1.5"><User size={12} /> {item.autor}</p>
-                            <p className="text-vallenato-blue/70 text-xs font-bold uppercase flex items-center gap-1.5"><Mic2 size={12} /> {item.cantante}</p>
-                         </div>
-                         <div className="mt-4 flex items-center gap-2 text-[10px] text-gray-500 relative z-20">
-                           <ListMusic size={12} /> <span className="uppercase tracking-wide font-bold">{item.acordeonero}</span>
+                   <div key={item.id} onClick={() => onPlayAudio?.(item, recentAudios)} className={`group relative h-[155px] bg-white rounded-[1.4rem] p-4 shadow-sm hover:shadow-gold transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-vallenato-mustard/50 hover:border-vallenato-mustard'} cursor-pointer flex flex-col overflow-hidden`}>
+                      <div className="absolute top-1/2 -right-10 w-16 h-16 bg-vallenato-blue rounded-full border-4 border-vallenato-mustard/20 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:-right-4 transition-all duration-700 pointer-events-none z-0"></div>
+                      <div className="absolute top-3 left-4 z-10 flex items-center gap-1.5 bg-vallenato-mustard/10 text-vallenato-mustard px-2 py-0.5 rounded-full border border-vallenato-mustard/20">
+                         <span className="text-[6.5px] font-black uppercase tracking-widest whitespace-nowrap">{formatBadgeDate(item.fecha_publicacion)}</span>
+                      </div>
+                      <div className="mt-5 flex-grow relative z-10">
+                         <h3 className="text-sm md:text-base font-serif text-vallenato-blue font-bold truncate group-hover:text-vallenato-red transition-colors mb-2 pr-4">{item.titulo}</h3>
+                         <div className="space-y-1">
+                            <p className="text-vallenato-red text-[8px] font-bold uppercase tracking-widest flex items-center gap-1.5"><User size={9} className="text-vallenato-mustard" /> {item.autor}</p>
+                            <p className="text-vallenato-blue text-[8px] font-bold uppercase tracking-widest flex items-center gap-1.5"><Mic2 size={9} className="text-vallenato-red" /> {item.cantante}</p>
                          </div>
                       </div>
-                      <div className={`mt-auto p-4 border-t border-vallenato-mustard/20 flex items-center justify-between transition-colors duration-300 ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-cream group-hover:bg-vallenato-blue group-hover:text-white'}`}>
-                         <span className="text-xs font-bold uppercase tracking-widest">{currentAudioId === item.id && isPlaying ? 'Reproduciendo' : 'Escuchar'}</span>
-                         <div className="bg-white/20 p-2 rounded-full">{currentAudioId === item.id && isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" />}</div>
+                      <div className="mt-auto p-0 flex items-center justify-between relative z-10">
+                         <div className="flex flex-col"><span className="text-[7px] uppercase font-bold text-gray-400 leading-none">Acordeón</span><span className="text-[9px] font-bold text-vallenato-blue leading-tight">{item.acordeonero}</span></div>
+                         <div className={`p-2.5 rounded-full transition-all duration-300 shadow-lg ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={14} fill="currentColor"/> : <Play size={14} fill="currentColor" className="ml-0.5"/>}</div>
                       </div>
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => setViewState(ViewState.ARCHIVE)} className="group">Ver todo <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-center"><Button variant="outline" onClick={() => setViewState(ViewState.ARCHIVE)} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">Ver más audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
       </section>
 
       {/* Videos Section */}
-      <section className="pt-12 pb-20 bg-vallenato-cream/50 relative z-10 border-t border-vallenato-mustard/10">
+      <section className="pt-16 pb-24 bg-vallenato-cream/50 relative z-10 border-t border-vallenato-mustard/10">
          <div className="container mx-auto px-6">
-             <div className="mb-8 md:mb-12">
+             <div className="mb-12">
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
                 <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Videos</h2>
              </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8 md:mb-10">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {recentVideos.map((item) => (
-                   <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+                   <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-[2.5rem] shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
                       <div className="aspect-video relative overflow-hidden bg-black">
                         {item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}
-                        <div className="absolute inset-0 flex items-center justify-center"><div className="bg-white/20 backdrop-blur-md p-3 rounded-full border border-white/50 group-hover:scale-110 transition-transform"><Play size={24} className="text-white fill-white" /></div></div>
+                        <div className="absolute inset-0 flex items-center justify-center"><div className="bg-white/20 backdrop-blur-md p-6 rounded-full border border-white/50 group-hover:scale-110 transition-transform"><Play size={32} className="text-white fill-white" /></div></div>
                       </div>
-                      <div className="p-6 flex-grow">
-                         <h3 className="text-xl font-serif text-vallenato-blue font-bold mb-2 group-hover:text-vallenato-red transition-colors">{item.titulo}</h3>
+                      <div className="p-8 flex-grow">
+                         <h3 className="text-2xl font-serif text-vallenato-blue font-bold mb-4 group-hover:text-vallenato-red transition-colors leading-tight">{item.titulo}</h3>
                          <div className="space-y-1 mb-4">
-                            <p className="text-vallenato-mustard text-xs font-bold flex items-center gap-2 uppercase"><User size={14} /> {item.autor}</p>
-                            <p className="text-vallenato-red text-xs font-bold flex items-center gap-2 uppercase"><Mic2 size={14} /> {item.interprete}</p>
+                            <p className="text-vallenato-mustard text-xs font-bold flex items-center gap-2 uppercase tracking-wide"><User size={14} /> {item.autor}</p>
+                            <p className="text-vallenato-red text-xs font-bold flex items-center gap-2 uppercase tracking-wide"><Mic2 size={14} /> {item.interprete}</p>
                          </div>
-                         <div className="flex items-center gap-1 text-gray-400 text-[10px] uppercase font-bold"><Calendar size={12} /><span>Año {item.anio}</span></div>
+                         <div className="flex items-center gap-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest"><Calendar size={12} /><span>Año {item.anio}</span></div>
                       </div>
-                      <div className="mt-auto bg-vallenato-blue p-4 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-widest">Ver Video</span><div className="bg-white/20 p-1.5 rounded-full"><Play size={14} className="text-white fill-white" /></div></div>
+                      <div className="mt-auto bg-vallenato-blue p-5 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-[0.2em]">Ver Documento</span><Play size={14} className="text-white fill-white" /></div>
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => {if(onNavigateArchive) onNavigateArchive('video'); else setViewState(ViewState.ARCHIVE);}} className="group">Ver todo <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-center"><Button variant="outline" onClick={() => {if(onNavigateArchive) onNavigateArchive('video'); else setViewState(ViewState.ARCHIVE);}} className="group border-vallenato-mustard/30">Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
       </section>
       

@@ -69,7 +69,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
               <div className="flex items-center gap-2">
                  {isVideo ? <Video size={12} className="text-vallenato-mustard" /> : <Music size={12} className="text-vallenato-mustard" />}
                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/50">
-                    {isVideo ? 'Archivo Fílmico' : 'Tesoro Sonoro'}
+                    {isVideo ? 'Videos' : 'Tesoro Sonoro'}
                  </span>
               </div>
               <h2 className="text-white font-serif font-bold text-base leading-tight">
@@ -90,7 +90,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
               <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 mb-2">
                  {isVideo ? <Video className="text-vallenato-mustard w-4 h-4" /> : <Music className="text-vallenato-mustard w-4 h-4" />}
                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
-                   {isVideo ? 'Archivo Fílmico' : 'Tesoro Sonoro'}
+                   {isVideo ? 'Videos' : 'Tesoro Sonoro'}
                  </span>
               </div>
               <h2 className="text-3xl font-serif text-white font-bold drop-shadow-2xl leading-tight max-w-2xl">{item.titulo}</h2>
