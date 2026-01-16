@@ -158,17 +158,17 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       {!loadingData && latestAudio && (
         <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-           <div className="container mx-auto px-6 py-3 flex flex-col sm:flex-row items-center justify-center relative z-10 gap-4 md:gap-10">
-              <div className="flex items-center gap-3">
+           <div className="container mx-auto px-6 py-4 md:py-3 flex flex-col sm:flex-row items-center justify-center relative z-10 gap-5 md:gap-10">
+              <div className="flex items-center gap-3 max-w-2xl">
                  <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse flex-shrink-0">
                     <Sparkles size={16} className="text-vallenato-blue" />
                  </div>
                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
-                    <span className="text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap">Novedad Exclusiva:</span>
-                    <span className="font-serif italic text-lg line-clamp-1">"{latestAudio.titulo}" - {latestAudio.autor}</span>
+                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap mb-1 sm:mb-0">Novedad Exclusiva:</span>
+                    <span className="font-serif italic text-base md:text-lg line-clamp-2 md:line-clamp-1 leading-tight">"{latestAudio.titulo}" - {latestAudio.autor}</span>
                  </div>
               </div>
-              <button onClick={() => onPlayAudio?.(latestAudio, [latestAudio])} className={`relative overflow-hidden px-6 py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn ${currentAudioId === latestAudio.id && isPlaying ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue shadow-[0_10px_20px_-4px_rgba(184,134,11,0.5),inset_0_1px_2px_rgba(255,255,255,0.7)] hover:scale-105 hover:shadow-[0_15px_30px_-5px_rgba(184,134,11,0.6)] active:scale-95 active:brightness-90'}`}>
+              <button onClick={() => onPlayAudio?.(latestAudio, [latestAudio])} className={`relative overflow-hidden px-7 py-3 md:py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn shadow-xl ${currentAudioId === latestAudio.id && isPlaying ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue hover:scale-105 active:scale-95 active:brightness-90'}`}>
                 <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-shimmer transition-transform duration-1000 pointer-events-none"></div>
                 <span className="relative z-10 flex items-center gap-2">
                   {currentAudioId === latestAudio.id && isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
@@ -210,7 +210,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         </div>
       </section>
 
-      {/* Audios Section - Ultra Compact Style */}
+      {/* Audios Section - Ultra Compact Style - Updated Size +15% */}
       <section className="pt-20 pb-16 bg-white relative z-10">
          <div className="container mx-auto px-6">
              <div className="mb-12">
@@ -219,21 +219,21 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {recentAudios.map((item) => (
-                   <div key={item.id} onClick={() => onPlayAudio?.(item, recentAudios)} className={`group relative h-[155px] bg-white rounded-[1.4rem] p-4 shadow-sm hover:shadow-gold transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-vallenato-mustard/50 hover:border-vallenato-mustard'} cursor-pointer flex flex-col overflow-hidden`}>
-                      <div className="absolute top-1/2 -right-10 w-16 h-16 bg-vallenato-blue rounded-full border-4 border-vallenato-mustard/20 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:-right-4 transition-all duration-700 pointer-events-none z-0"></div>
+                   <div key={item.id} onClick={() => onPlayAudio?.(item, recentAudios)} className={`group relative h-[180px] bg-white rounded-[1.6rem] p-5 shadow-sm hover:shadow-gold transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-vallenato-mustard/50 hover:border-vallenato-mustard'} cursor-pointer flex flex-col overflow-hidden`}>
+                      <div className="absolute top-1/2 -right-12 w-20 h-20 bg-vallenato-blue rounded-full border-4 border-vallenato-mustard/20 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:-right-6 transition-all duration-700 pointer-events-none z-0"></div>
                       <div className="absolute top-3 left-4 z-10 flex items-center gap-1.5 bg-vallenato-mustard/10 text-vallenato-mustard px-2 py-0.5 rounded-full border border-vallenato-mustard/20">
-                         <span className="text-[6.5px] font-black uppercase tracking-widest whitespace-nowrap">{formatBadgeDate(item.fecha_publicacion)}</span>
+                         <span className="text-[7.5px] font-black uppercase tracking-widest whitespace-nowrap">{formatBadgeDate(item.fecha_publicacion)}</span>
                       </div>
-                      <div className="mt-5 flex-grow relative z-10">
-                         <h3 className="text-sm md:text-base font-serif text-vallenato-blue font-bold truncate group-hover:text-vallenato-red transition-colors mb-2 pr-4">{item.titulo}</h3>
-                         <div className="space-y-1">
-                            <p className="text-vallenato-red text-[8px] font-bold uppercase tracking-widest flex items-center gap-1.5"><User size={9} className="text-vallenato-mustard" /> {item.autor}</p>
-                            <p className="text-vallenato-blue text-[8px] font-bold uppercase tracking-widest flex items-center gap-1.5"><Mic2 size={9} className="text-vallenato-red" /> {item.cantante}</p>
+                      <div className="mt-6 flex-grow relative z-10">
+                         <h3 className="text-base md:text-lg font-serif text-vallenato-blue font-bold truncate group-hover:text-vallenato-red transition-colors mb-2 pr-4">{item.titulo}</h3>
+                         <div className="space-y-1.5">
+                            <p className="text-vallenato-red text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5"><User size={10} className="text-vallenato-mustard" /> {item.autor}</p>
+                            <p className="text-vallenato-blue text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5"><Mic2 size={10} className="text-vallenato-red" /> {item.cantante}</p>
                          </div>
                       </div>
                       <div className="mt-auto p-0 flex items-center justify-between relative z-10">
-                         <div className="flex flex-col"><span className="text-[7px] uppercase font-bold text-gray-400 leading-none">Acordeón</span><span className="text-[9px] font-bold text-vallenato-blue leading-tight">{item.acordeonero}</span></div>
-                         <div className={`p-2.5 rounded-full transition-all duration-300 shadow-lg ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={14} fill="currentColor"/> : <Play size={14} fill="currentColor" className="ml-0.5"/>}</div>
+                         <div className="flex flex-col"><span className="text-[8px] uppercase font-bold text-gray-400 leading-none">Acordeón</span><span className="text-[10px] font-bold text-vallenato-blue leading-tight">{item.acordeonero}</span></div>
+                         <div className={`p-3 rounded-full transition-all duration-300 shadow-lg ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={16} fill="currentColor"/> : <Play size={16} fill="currentColor" className="ml-0.5"/>}</div>
                       </div>
                    </div>
                 ))}

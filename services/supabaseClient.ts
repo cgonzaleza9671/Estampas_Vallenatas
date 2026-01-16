@@ -9,11 +9,34 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CACHE_TTL = 24 * 60 * 60 * 1000;
 
-/** 
- * ESTRATEGIA DE DISPONIBILIDAD:
- * Incluimos variaciones de nombres de columnas comunes para evitar errores 400.
- * Si alguna columna no existe, la consulta fallará, por lo que usamos un try/catch con fallback.
+/**
+ * OBTIENE LA FECHA ACTUAL EN FORMATO COLOMBIA (UTC-5)
+ * Esto asegura que los estrenos ocurran a medianoche hora Colombia.
  */
+const getColombiaDate = (): Date => {
+  const now = new Date();
+  // Ajuste manual simple para COT (UTC-5)
+  // En una app de producción más compleja usaríamos Luxon o similar, 
+  // pero para este caso basta con el offset.
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const colombiaOffset = -5;
+  return new Date(utc + (3600000 * colombiaOffset));
+};
+
+const getColombiaISOString = (): string => {
+  const coDate = getColombiaDate();
+  return coDate.toISOString().split('T')[0]; // YYYY-MM-DD
+};
+
+/** 
+ * ESTRATEGIA DE CACHÉ INTELIGENTE:
+ * La clave de caché ahora incluye la fecha de hoy. 
+ * Mañana, la clave será distinta y forzará una nueva descarga de Supabase automáticamente.
+ */
+const getSmartCacheKey = (base: string) => {
+  return `${base}_${getColombiaISOString()}`;
+};
+
 const AUDIO_LIST_COLUMNS = 'id, titulo, autor, cantante, acordeonero, fecha, audio_url, url_audio';
 const VIDEO_LIST_COLUMNS = 'id, titulo, autor, interprete, anio, fecha, thumbnail_url, video_url, url_video, url';
 
@@ -95,7 +118,7 @@ const mapDatabaseVideo = (dbItem: any): VideoItem => {
 };
 
 export const fetchAudios = async (page: number = 0, limit: number = 50): Promise<AudioItem[]> => {
-  const cacheKey = `ev_audios_p${page}_v8`;
+  const cacheKey = getSmartCacheKey(`ev_audios_p${page}_v9`);
   if (page === 0) {
     const cached = getCache(cacheKey);
     if (cached) return cached;
@@ -103,19 +126,22 @@ export const fetchAudios = async (page: number = 0, limit: number = 50): Promise
 
   const from = page * limit;
   const to = from + limit - 1;
+  const today = getColombiaISOString();
 
-  // Intento 1: Columnas optimizadas
+  // FILTRADO EN SERVIDOR: .lte('fecha', today)
+  // Esto ahorra Egress al no descargar audios que aún no deben ser visibles.
   let { data, error } = await supabase
     .from('Audios')
     .select(AUDIO_LIST_COLUMNS)
+    .lte('fecha', today)
     .order('fecha', { ascending: false })
     .range(from, to);
     
-  // Fallback: Si hay error (posiblemente por nombre de columna), pedimos todo (*)
   if (error) {
     const fallback = await supabase
       .from('Audios')
       .select('*')
+      .lte('fecha', today)
       .order('fecha', { ascending: false })
       .range(from, to);
     data = fallback.data;
@@ -130,20 +156,23 @@ export const fetchAudios = async (page: number = 0, limit: number = 50): Promise
 };
 
 export const fetchVideos = async (): Promise<VideoItem[]> => {
-  const cached = getCache('ev_all_videos_v8');
+  const cacheKey = getSmartCacheKey('ev_all_videos_v9');
+  const cached = getCache(cacheKey);
   if (cached) return cached;
 
-  // Intento 1: Columnas optimizadas
+  const today = getColombiaISOString();
+
   let { data, error } = await supabase
     .from('Videos')
     .select(VIDEO_LIST_COLUMNS)
+    .lte('fecha', today)
     .order('fecha', { ascending: false });
 
-  // Fallback: Si hay error, pedimos todo (*)
   if (error) {
     const fallback = await supabase
       .from('Videos')
       .select('*')
+      .lte('fecha', today)
       .order('fecha', { ascending: false });
     data = fallback.data;
     error = fallback.error;
@@ -151,19 +180,26 @@ export const fetchVideos = async (): Promise<VideoItem[]> => {
 
   if (error || !data) return [];
   const results = data.map(mapDatabaseVideo);
-  setCache('ev_all_videos_v8', results);
+  setCache(cacheKey, results);
   return results;
 };
 
 export const fetchRecentAudios = async (limit: number = 3): Promise<AudioItem[]> => {
+  const today = getColombiaISOString();
   let { data, error } = await supabase
     .from('Audios')
     .select(AUDIO_LIST_COLUMNS)
+    .lte('fecha', today)
     .order('fecha', { ascending: false })
     .limit(limit);
     
   if (error) {
-    const fallback = await supabase.from('Audios').select('*').order('fecha', { ascending: false }).limit(limit);
+    const fallback = await supabase
+      .from('Audios')
+      .select('*')
+      .lte('fecha', today)
+      .order('fecha', { ascending: false })
+      .limit(limit);
     data = fallback.data;
   }
 
@@ -171,14 +207,21 @@ export const fetchRecentAudios = async (limit: number = 3): Promise<AudioItem[]>
 };
 
 export const fetchRecentVideos = async (limit: number = 2): Promise<VideoItem[]> => {
+  const today = getColombiaISOString();
   let { data, error } = await supabase
     .from('Videos')
     .select(VIDEO_LIST_COLUMNS)
+    .lte('fecha', today)
     .order('fecha', { ascending: false })
     .limit(limit);
 
   if (error) {
-    const fallback = await supabase.from('Videos').select('*').order('fecha', { ascending: false }).limit(limit);
+    const fallback = await supabase
+      .from('Videos')
+      .select('*')
+      .lte('fecha', today)
+      .order('fecha', { ascending: false })
+      .limit(limit);
     data = fallback.data;
   }
 
