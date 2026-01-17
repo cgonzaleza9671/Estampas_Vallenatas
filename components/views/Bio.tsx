@@ -142,7 +142,7 @@ const Bio: React.FC = () => {
                   <div>
                      <h3 className="text-2xl font-serif text-vallenato-blue font-bold mb-3">Voz Autorizada</h3>
                      <p className="text-gray-600 text-sm leading-relaxed font-light">
-                        <strong className="text-vallenato-blue font-bold">Creador y director</strong> del programa <strong className="text-vallenato-blue font-bold">"Estampas Vallenatas"</strong>, referente obligado para la preservación cultural.
+                        <strong className="text-vallenato-blue font-bold">Creador y director</strong> del programa radial <strong className="text-vallenato-blue font-bold">"Estampas Vallenatas"</strong>, referente obligado para la preservación cultural.
                      </p>
                   </div>
                </div>
