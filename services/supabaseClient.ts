@@ -10,9 +10,9 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const CACHE_TTL = 30 * 60 * 1000; 
 
 /**
- * CACHÉ v26 - Optimización de rendimiento para producción
+ * CACHÉ v27 - Corregido: Claves únicas por límite para evitar colisiones de tamaño
  */
-const getCacheKey = (base: string) => `${base}_v26`;
+const getCacheKey = (base: string, limit: number) => `${base}_l${limit}_v27`;
 
 const setCache = (key: string, data: any) => {
   try {
@@ -89,7 +89,9 @@ const mapVideo = (db: any): VideoItem => {
 };
 
 export const fetchAudios = async (page: number = 0, limit: number = 24): Promise<AudioItem[]> => {
-  const cacheKey = getCacheKey(`audios_p${page}`);
+  const cacheKey = getCacheKey(`audios_p${page}`, limit);
+  
+  // Solo cachear la primera página de cualquier consulta
   if (page === 0) {
     const cached = getCache(cacheKey);
     if (cached) return cached;
@@ -111,12 +113,17 @@ export const fetchAudios = async (page: number = 0, limit: number = 24): Promise
   }
 
   const items = data ? data.map(mapAudio) : [];
-  if (page === 0 && items.length > 0) setCache(cacheKey, items);
+  
+  // No guardar si la respuesta está vacía para permitir reintentos
+  if (page === 0 && items.length > 0) {
+    setCache(cacheKey, items);
+  }
+  
   return items;
 };
 
 export const fetchVideos = async (): Promise<VideoItem[]> => {
-  const cacheKey = getCacheKey('videos');
+  const cacheKey = getCacheKey('videos', 999);
   const cached = getCache(cacheKey);
   if (cached) return cached;
 
@@ -137,7 +144,6 @@ export const fetchVideos = async (): Promise<VideoItem[]> => {
 };
 
 export const fetchRecentAudios = async (limit: number = 6): Promise<AudioItem[]> => {
-  // Para los recientes siempre traemos la primera página con el límite deseado
   return fetchAudios(0, limit);
 };
 
@@ -147,7 +153,8 @@ export const fetchRecentVideos = async (limit: number = 3): Promise<VideoItem[]>
 };
 
 export const fetchLatestAudio = async (): Promise<AudioItem | null> => {
-  const audios = await fetchRecentAudios(1);
+  // Nota: Usamos un límite de 1 para el banner, ahora no colisionará con los 6 del home
+  const audios = await fetchAudios(0, 1);
   return audios.length > 0 ? audios[0] : null;
 };
 
