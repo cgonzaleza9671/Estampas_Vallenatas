@@ -182,7 +182,14 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
       {/* Hero Section */}
       <section className="relative min-h-[85vh] md:min-h-[90vh] w-full overflow-hidden flex items-center justify-center pt-12 pb-8 md:pb-12">
         {HERO_GALLERY.map((img, index) => (
-          <div key={index} className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundImage: `url("${img}")`, filter: img === "https://i.imgur.com/e39bXRu.jpeg" ? 'brightness(0.45) contrast(1.1)' : 'none' }} />
+          <div 
+            key={index} 
+            className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} 
+            style={{ 
+              backgroundImage: `url("${img}")`, 
+              filter: (img === "https://i.imgur.com/e39bXRu.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg") ? 'brightness(0.4) contrast(1.1)' : 'none' 
+            }} 
+          />
         ))}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/95 z-10"></div>
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
