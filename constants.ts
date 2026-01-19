@@ -4,7 +4,7 @@ import { AudioItem, VideoItem } from './types.ts';
 export const FESTIVAL_DATE = new Date('2026-04-29T08:00:00');
 
 export const HERO_GALLERY = [
-  "https://i.imgur.com/CyzoY4Y.jpeg",
+  "https://i.imgur.com/H7JgO73.jpeg",
   "https://i.imgur.com/l4iOgsO.jpeg",
   "https://i.imgur.com/wDz7qUP.jpeg",
   "https://i.imgur.com/e39bXRu.jpeg"

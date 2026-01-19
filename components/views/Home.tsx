@@ -187,23 +187,24 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} 
             style={{ 
               backgroundImage: `url("${img}")`, 
-              filter: (img === "https://i.imgur.com/e39bXRu.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg") ? 'brightness(0.4) contrast(1.1)' : 'none' 
+              filter: (img === "https://i.imgur.com/e39bXRu.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg" || img === "https://i.imgur.com/H7JgO73.jpeg") ? 'brightness(0.7) contrast(1.05)' : 'none' 
             }} 
           />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/95 z-10"></div>
+        {/* Capa de contraste mejorada: un degradado más denso en la base para el texto pero más suave en el centro para la imagen */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/80 z-10"></div>
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
-          <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-md">Estampas Vallenatas</span>
-          <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-2xl leading-[1.1]">
+          <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Estampas Vallenatas</span>
+          <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] leading-[1.1]">
             <span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-2">El Museo Digital del</span>
             <span className="text-vallenato-red">Folclor Vallenato</span>
           </h1>
-          <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-lg min-h-[5em] md:min-h-[4em]">
+          <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-[0_2px_6px_rgba(0,0,0,1)] min-h-[5em] md:min-h-[4em]">
             {renderTypedDescription()}
             <span className={`inline-block w-1.5 h-4 md:h-5 bg-vallenato-mustard ml-1 ${charCount < totalChars ? 'animate-pulse' : 'hidden'}`}></span>
           </h2>
           <div className="mt-2 w-full max-w-4xl flex flex-col items-center">
-             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl w-full">
+             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 shadow-2xl w-full">
                 {Object.entries(timeLeft).map(([label, value]) => (
                   <div key={label} className={`flex flex-col items-center justify-center bg-black/30 rounded-xl py-3 border border-white/10 transition-all duration-300 ${label === 'seconds' ? 'border-vallenato-mustard/60 scale-105 shadow-[0_0_15px_rgba(234,170,0,0.3)] bg-vallenato-mustard/5' : ''}`}>
                      <span className={`text-2xl md:text-3xl font-mono font-bold mb-1 text-vallenato-mustard ${label === 'seconds' ? 'drop-shadow-[0_0_8px_rgba(234,170,0,0.8)] animate-pulse' : ''}`}>{String(value).padStart(2, '0')}</span>
@@ -211,7 +212,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                   </div>
                 ))}
              </div>
-             <p className="text-white text-xs md:text-sm mt-4 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] text-center">Cuenta regresiva para el inicio del 59° Festival de la Leyenda Vallenata</p>
+             <p className="text-white text-xs md:text-sm mt-4 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] text-center">Cuenta regresiva para el inicio del 59° Festival de la Leyenda Vallenata</p>
              <a href="https://festivalvallenato.com/" target="_blank" rel="noopener noreferrer" className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-8 py-3 rounded-full font-bold uppercase text-xs md:text-sm tracking-widest transition-all duration-300 shadow-2xl flex items-center gap-3 border border-vallenato-mustard/20">Sitio oficial del Festival <Globe size={18} /></a>
           </div>
         </div>
@@ -284,7 +285,10 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                             <p className="text-vallenato-mustard text-xs font-bold flex items-center gap-2 uppercase tracking-wide"><User size={14} /> {item.autor}</p>
                             <p className="text-vallenato-red text-xs font-bold flex items-center gap-2 uppercase tracking-wide"><Mic2 size={14} /> {item.interprete}</p>
                          </div>
-                         <div className="flex items-center gap-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest"><Calendar size={12} /><span>Año {item.anio}</span></div>
+                         <div className="flex items-center gap-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest">
+                           <Calendar size={12} />
+                           <span>{item.fecha_publicacion}</span>
+                         </div>
                       </div>
                       <div className="mt-auto bg-vallenato-blue p-5 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-[0.2em]">Ver ahora</span><Play size={14} className="text-white fill-white" /></div>
                    </div>

@@ -425,7 +425,10 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                            </div>
                         </div>
                         <div className="mt-8 pt-8 border-t border-gray-50 flex items-center justify-between">
-                           <div className="flex items-center gap-3 text-gray-400 font-bold"><Calendar size={18} /><span className="text-sm">{toTitleCase(`Año ${item.anio}`)}</span></div>
+                           <div className="flex items-center gap-3 text-gray-400 font-bold">
+                             <Calendar size={18} />
+                             <span className="text-sm">{item.fecha_publicacion}</span>
+                           </div>
                            <button className="text-vallenato-blue font-bold uppercase text-[11px] tracking-widest flex items-center gap-3 group-hover:text-vallenato-red transition-colors">Ver ahora <Play size={12} fill="currentColor"/></button>
                         </div>
                      </div>
