@@ -171,9 +171,14 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
          <div className="bg-vallenato-blue/95 backdrop-blur-xl border-b-2 border-vallenato-mustard shadow-2xl overflow-hidden">
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
                <div className="flex items-center gap-4 md:gap-6">
-                  <div className="bg-vallenato-mustard p-3 rounded-full shadow-gold animate-bounce">
-                     <Headphones className="text-vallenato-blue" size={24} />
-                  </div>
+                  {/* ÍCONO DE AUDÍFONOS AHORA ES UN LINK */}
+                  <button 
+                    onClick={() => setViewState(ViewState.TALES)}
+                    className="bg-vallenato-mustard p-3 rounded-full shadow-gold animate-bounce hover:scale-110 active:scale-95 transition-transform cursor-pointer group/icon"
+                    title="Ir a Relatos Legendarios"
+                  >
+                     <Headphones className="text-vallenato-blue group-hover/icon:rotate-12 transition-transform" size={24} />
+                  </button>
                   <div className="flex flex-col">
                      <div className="flex items-center gap-2 mb-0.5">
                         <Sparkles className="text-vallenato-mustard" size={14} />
