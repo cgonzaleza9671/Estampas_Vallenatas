@@ -14,8 +14,8 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
   const navItems = [
     { label: 'Inicio', value: ViewState.HOME },
     { label: 'La Memoria del Acordeón', value: ViewState.ARCHIVE },
+    { label: 'Relatos Legendarios', value: ViewState.TALES },
     { label: 'Acerca del autor', value: ViewState.BIO },
-    { label: 'El Vallenato cerca a ti', value: ViewState.LOCATIONS },
   ];
 
   const handleNav = (view: ViewState) => {
@@ -27,7 +27,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
   return (
     <header className="sticky top-0 z-50 bg-vallenato-blue/95 backdrop-blur-md shadow-museum border-b-4 border-vallenato-mustard transition-colors duration-300">
       <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
-        {/* Logo Area */}
         <div 
           className="flex items-center gap-2 md:gap-3 cursor-pointer group" 
           onClick={() => handleNav(ViewState.HOME)}
@@ -51,7 +50,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
           </div>
         </div>
 
-        {/* Desktop Nav */}
         <div className="hidden lg:flex items-center gap-8">
           <nav className="flex gap-8">
             {navItems.map((item) => (
@@ -70,7 +68,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
           </nav>
         </div>
 
-        {/* Mobile Actions */}
         <div className="lg:hidden flex items-center">
           <button 
             className="text-white hover:text-vallenato-mustard transition-colors p-1"
@@ -81,7 +78,6 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <div className="absolute top-full left-0 w-full px-4 pt-2 lg:hidden animate-fade-in-down z-50">
           <div className="bg-vallenato-blue/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 flex flex-col gap-1">

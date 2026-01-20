@@ -17,18 +17,14 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
     <footer className="bg-vallenato-blue text-white border-t-8 border-vallenato-red pt-16 pb-8">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
         
-        {/* Brand Column */}
         <div className="space-y-6">
           <div className="flex items-center gap-3">
-             {/* Ultra Compact Isotype Style */}
              <div className="flex items-center justify-center gap-1 px-[4px] py-[1px] bg-white/5 rounded-lg border border-white/10 min-w-[46px]">
-                 {/* Chevrons with offset for centering */}
                  <div className="flex gap-[1.5px] ml-0.5">
                     <div className="w-1 h-6 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
                     <div className="w-1 h-6 bg-vallenato-mustard transform -skew-x-12 rounded-sm shadow-sm"></div>
                     <div className="w-1 h-6 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
                  </div>
-                 {/* Accordion Bar */}
                  <div className="bg-vallenato-blue w-3.5 h-7 rounded-md border border-white/20 flex flex-col items-center justify-between py-1.5 shadow-inner">
                     <div className="w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
                     <div className="w-0.5 h-0.5 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
@@ -47,7 +43,6 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           </p>
         </div>
 
-        {/* Links Column */}
         <div className="md:pl-10">
           <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Navegación</h3>
           <ul className="space-y-3 font-sans text-sm tracking-wide">
@@ -58,15 +53,14 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <button onClick={(e) => handleNav(e, ViewState.ARCHIVE)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">La Memoria del Acordeón</button>
             </li>
             <li>
-              <button onClick={(e) => handleNav(e, ViewState.BIO)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Acerca del autor</button>
+              <button onClick={(e) => handleNav(e, ViewState.TALES)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Relatos Legendarios</button>
             </li>
             <li>
-              <button onClick={(e) => handleNav(e, ViewState.LOCATIONS)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">El Vallenato cerca a ti</button>
+              <button onClick={(e) => handleNav(e, ViewState.BIO)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Acerca del autor</button>
             </li>
           </ul>
         </div>
 
-        {/* Contact Column */}
         <div>
           <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Contacto</h3>
           <div className="space-y-4 font-sans text-sm">

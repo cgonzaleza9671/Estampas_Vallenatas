@@ -103,7 +103,7 @@ const Bio: React.FC = () => {
                  Desde sus primeros años en Valledupar hasta su asentamiento en Bogotá, Álvaro González ha dedicado más de cinco décadas a documentar toda la riqueza cultural que ha vivido a través del Vallenato.
                </p>
                <p>
-                 No es solo un espectador; es parte viva de la historia, compartiendo parrandas y secretos con los fundadores del género.
+                 No es solo un espectador; es parte viva de la historia, compartiendo experiencias, historia y conocimiento de este género.
                </p>
              </div>
              

@@ -1,6 +1,6 @@
 
 import { createClient } from '@supabase/supabase-js';
-import { AudioItem, VideoItem, Question } from '../types.ts';
+import { AudioItem, VideoItem, Question, StoryItem } from '../types.ts';
 
 const SUPABASE_URL = 'https://bptsqlqnllsgflwpbbru.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwdHNxbHFubGxzZ2Zsd3BiYnJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3MTM2OTcsImV4cCI6MjA4MjI4OTY5N30.42H85Q1YEIFCGL7EezsnqTYVBUbT9uUxWvu8dJoQUDo';
@@ -9,10 +9,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CACHE_TTL = 30 * 60 * 1000; 
 
-/**
- * CACHÉ v27 - Corregido: Claves únicas por límite para evitar colisiones de tamaño
- */
-const getCacheKey = (base: string, limit: number) => `${base}_l${limit}_v27`;
+const getCacheKey = (base: string, limit: number) => `${base}_l${limit}_v28`;
 
 const setCache = (key: string, data: any) => {
   try {
@@ -88,37 +85,50 @@ const mapVideo = (db: any): VideoItem => {
   };
 };
 
+const mapRelato = (db: any): StoryItem => {
+  const d = new Date(db.fecha_registro || Date.now());
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const fechaLabel = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+
+  let imagen = db.imagen_relato || '';
+  if (imagen && !imagen.startsWith('http')) {
+    imagen = `${SUPABASE_URL}/storage/v1/object/public/Imagenes/${imagen}`;
+  }
+
+  let audio = db.relato_url || '';
+  if (audio && !audio.startsWith('http')) {
+    audio = `${SUPABASE_URL}/storage/v1/object/public/Audios/${audio}`;
+  }
+
+  return {
+    id: db.id,
+    titulo: db.titulo || 'Sin Título',
+    subtitulo: db.subtitulo || '',
+    fecha: fechaLabel,
+    imagen: imagen,
+    contenido: db.texto || '',
+    autor: "Álvaro González Pimienta",
+    audio_url: audio
+  };
+};
+
 export const fetchAudios = async (page: number = 0, limit: number = 24): Promise<AudioItem[]> => {
   const cacheKey = getCacheKey(`audios_p${page}`, limit);
-  
-  // Solo cachear la primera página de cualquier consulta
   if (page === 0) {
     const cached = getCache(cacheKey);
     if (cached) return cached;
   }
-
   const from = page * limit;
   const to = from + limit - 1;
-
   const { data, error } = await supabase
     .from('Audios')
     .select('*')
     .order('fecha', { ascending: false, nullsFirst: false })
     .order('id', { ascending: false })
     .range(from, to);
-
-  if (error) {
-    console.error("Error fetching audios:", error);
-    return [];
-  }
-
+  if (error) return [];
   const items = data ? data.map(mapAudio) : [];
-  
-  // No guardar si la respuesta está vacía para permitir reintentos
-  if (page === 0 && items.length > 0) {
-    setCache(cacheKey, items);
-  }
-  
+  if (page === 0 && items.length > 0) setCache(cacheKey, items);
   return items;
 };
 
@@ -126,19 +136,33 @@ export const fetchVideos = async (): Promise<VideoItem[]> => {
   const cacheKey = getCacheKey('videos', 999);
   const cached = getCache(cacheKey);
   if (cached) return cached;
-
   const { data, error } = await supabase
     .from('Videos')
     .select('*')
     .order('fecha', { ascending: false, nullsFirst: false })
     .order('id', { ascending: false });
+  if (error) return [];
+  const items = data ? data.map(mapVideo) : [];
+  if (items.length > 0) setCache(cacheKey, items);
+  return items;
+};
+
+export const fetchRelatos = async (): Promise<StoryItem[]> => {
+  const cacheKey = getCacheKey('relatos', 100);
+  const cached = getCache(cacheKey);
+  if (cached) return cached;
+
+  const { data, error } = await supabase
+    .from('Relatos')
+    .select('*')
+    .order('fecha_registro', { ascending: false });
 
   if (error) {
-    console.error("Error fetching videos:", error);
+    console.error("Error fetching relatos:", error);
     return [];
   }
 
-  const items = data ? data.map(mapVideo) : [];
+  const items = data ? data.map(mapRelato) : [];
   if (items.length > 0) setCache(cacheKey, items);
   return items;
 };
@@ -153,7 +177,6 @@ export const fetchRecentVideos = async (limit: number = 3): Promise<VideoItem[]>
 };
 
 export const fetchLatestAudio = async (): Promise<AudioItem | null> => {
-  // Nota: Usamos un límite de 1 para el banner, ahora no colisionará con los 6 del home
   const audios = await fetchAudios(0, 1);
   return audios.length > 0 ? audios[0] : null;
 };

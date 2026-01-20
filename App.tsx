@@ -6,7 +6,7 @@ import Footer from './components/Footer.tsx';
 import Home from './components/views/Home.tsx';
 import Archive from './components/views/Archive.tsx';
 import Bio from './components/views/Bio.tsx';
-import Locations from './components/views/Locations.tsx';
+import LegendaryTales from './components/views/LegendaryTales.tsx';
 import AudioStoryCard from './components/AudioStoryCard.tsx';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, MessageSquareQuote, User, Mic2 } from 'lucide-react';
 
@@ -65,14 +65,12 @@ const App: React.FC = () => {
   const goToPrev = () => {
     if (!currentAudio || !audioRef.current) return;
     
-    // Si la canción ya avanzó más de 3 segundos, reiniciamos la misma canción
     if (audioRef.current.currentTime > 3) {
       audioRef.current.currentTime = 0;
       if (!isPlaying) setIsPlaying(true);
       return;
     }
 
-    // Si no, vamos a la anterior de la playlist
     const currentIndex = playlist.findIndex(a => a.id === currentAudio.id);
     if (currentIndex > 0) {
       handlePlayAudio(playlist[currentIndex - 1]);
@@ -138,7 +136,7 @@ const App: React.FC = () => {
           />
         )}
         {currentView === ViewState.BIO && <Bio />}
-        {currentView === ViewState.LOCATIONS && <Locations />}
+        {currentView === ViewState.TALES && <LegendaryTales />}
       </main>
 
       <Footer onNavigate={setCurrentView} />

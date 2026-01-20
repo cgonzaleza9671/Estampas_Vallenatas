@@ -1,11 +1,11 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { ViewState, AudioItem, VideoItem } from '../../types.ts';
+import { ViewState, AudioItem, VideoItem, StoryItem } from '../../types.ts';
 import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
-import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe } from 'lucide-react';
-import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos } from '../../services/supabaseClient.ts';
+import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star } from 'lucide-react';
+import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
 
 interface HomeProps {
   setViewState: (view: ViewState) => void;
@@ -30,10 +30,12 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
   const [latestAudio, setLatestAudio] = useState<AudioItem | null>(null);
   const [recentAudios, setRecentAudios] = useState<AudioItem[]>([]);
   const [recentVideos, setRecentVideos] = useState<VideoItem[]>([]);
+  const [recentRelatos, setRecentRelatos] = useState<StoryItem[]>([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const [selectedMedia, setSelectedMedia] = useState<AudioItem | VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
+  const [showPromoBanner, setShowPromoBanner] = useState(false);
 
   const [charCount, setCharCount] = useState(0);
   const segments = useMemo(() => [
@@ -76,14 +78,22 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
     const loadData = async () => {
       setLoadingData(true);
       try {
-        const [latest, audios, videos] = await Promise.all([
+        const [latest, audios, videos, relatos] = await Promise.all([
           fetchLatestAudio(),
           fetchRecentAudios(6),
-          fetchRecentVideos(3)
+          fetchRecentVideos(3),
+          fetchRelatos()
         ]);
         setLatestAudio(latest);
         setRecentAudios(audios);
         setRecentVideos(videos);
+        setRecentRelatos(relatos.slice(0, 2));
+        
+        // Mostrar banner temporal después de cargar
+        setTimeout(() => setShowPromoBanner(true), 1000);
+        // Desaparecer después de 10 segundos
+        setTimeout(() => setShowPromoBanner(false), 11000);
+
       } catch (error) {
         console.error("Home fetch error", error);
       } finally {
@@ -154,7 +164,45 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
   };
 
   return (
-    <div className="animate-fade-in-up">
+    <div className="animate-fade-in-up relative">
+      
+      {/* BANNER TEMPORAL SUPERIOR (10 SEGUNDOS) */}
+      <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 transform ${showPromoBanner ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
+         <div className="bg-vallenato-blue/95 backdrop-blur-xl border-b-2 border-vallenato-mustard shadow-2xl overflow-hidden">
+            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+               <div className="flex items-center gap-4 md:gap-6">
+                  <div className="bg-vallenato-mustard p-3 rounded-full shadow-gold animate-bounce">
+                     <Headphones className="text-vallenato-blue" size={24} />
+                  </div>
+                  <div className="flex flex-col">
+                     <div className="flex items-center gap-2 mb-0.5">
+                        <Sparkles className="text-vallenato-mustard" size={14} />
+                        <span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Nueva Experiencia Inmersiva</span>
+                     </div>
+                     <p className="text-gray-200 text-sm md:text-base font-serif italic">
+                        "Escuche los relatos acerca de grandes juglares que han marcado la historia del vallenato"
+                     </p>
+                  </div>
+               </div>
+               <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => setViewState(ViewState.TALES)}
+                    className="hidden md:flex bg-vallenato-mustard text-vallenato-blue px-6 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-white transition-all transform hover:scale-105 active:scale-95 items-center gap-2"
+                  >
+                     Ver Relatos <ArrowRight size={14} />
+                  </button>
+                  <button onClick={() => setShowPromoBanner(false)} className="text-white/40 hover:text-white transition-colors">
+                     <X size={24} />
+                  </button>
+               </div>
+            </div>
+            {/* Barra de progreso de cierre */}
+            <div className="h-1 bg-vallenato-mustard/20 w-full relative">
+               <div className={`h-full bg-vallenato-mustard ${showPromoBanner ? 'w-0' : 'w-full'} transition-all duration-[10000ms] ease-linear`}></div>
+            </div>
+         </div>
+      </div>
+
       {!loadingData && latestAudio && (
         <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -187,11 +235,10 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} 
             style={{ 
               backgroundImage: `url("${img}")`, 
-              filter: (img === "https://i.imgur.com/e39bXRu.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg" || img === "https://i.imgur.com/H7JgO73.jpeg") ? 'brightness(0.7) contrast(1.05)' : 'none' 
+              filter: (img === "https://i.imgur.com/H7JgO73.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg" || img === "https://i.imgur.com/wDz7qUP.jpeg") ? 'brightness(0.7) contrast(1.05)' : 'none' 
             }} 
           />
         ))}
-        {/* Capa de contraste mejorada: un degradado más denso en la base para el texto pero más suave en el centro para la imagen */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/80 z-10"></div>
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
           <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Estampas Vallenatas</span>
@@ -218,8 +265,8 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         </div>
       </section>
 
-      {/* Audios Section con diseño unificado */}
-      <section className="pt-20 pb-16 bg-white relative z-10">
+      {/* Audios Section */}
+      <section className="pt-20 pb-12 bg-white relative z-10">
          <div className="container mx-auto px-6">
              <div className="mb-12">
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
@@ -265,8 +312,67 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
          </div>
       </section>
 
+      {/* Relatos Section */}
+      <section className="py-24 bg-vallenato-beige relative z-10 border-y border-vallenato-mustard/10 overflow-hidden">
+         {/* Background Decoration */}
+         <div className="absolute top-0 right-0 w-96 h-96 bg-vallenato-mustard/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+         <div className="absolute bottom-0 left-0 w-96 h-96 bg-vallenato-red/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+
+         <div className="container mx-auto px-6 relative">
+             <div className="mb-16 text-center flex flex-col items-center">
+                <div className="inline-flex items-center gap-2 bg-vallenato-red px-4 py-1.5 rounded-full mb-4 shadow-lg animate-pulse">
+                   <Star size={12} className="text-white fill-current" />
+                   <span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Nueva Sección</span>
+                </div>
+                <span className="text-vallenato-red font-bold uppercase tracking-[0.4em] text-xs mb-2 block">Experiencia Inmersiva</span>
+                <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue font-bold">Relatos Legendarios</h2>
+                <div className="w-24 h-1 bg-vallenato-mustard mx-auto mt-6"></div>
+             </div>
+
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12 max-w-5xl mx-auto">
+                {recentRelatos.map((relato) => (
+                  <div 
+                    key={relato.id} 
+                    onClick={() => setViewState(ViewState.TALES)}
+                    className="bg-white rounded-[2.5rem] overflow-hidden shadow-md border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col"
+                  >
+                    <div className="aspect-[21/9] relative overflow-hidden bg-vallenato-blue">
+                       <img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-90" />
+                       <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/90 via-vallenato-blue/40 to-transparent"></div>
+                       <div className="absolute top-4 left-4 right-4">
+                          <span className="bg-vallenato-mustard text-vallenato-blue text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block backdrop-blur-sm shadow-lg max-w-full truncate">{relato.subtitulo}</span>
+                       </div>
+                       <div className="absolute bottom-4 left-6">
+                          <h3 className="text-xl font-serif text-white font-bold leading-tight drop-shadow-lg">{relato.titulo}</h3>
+                       </div>
+                    </div>
+                    <div className="p-6 flex-grow flex flex-col">
+                       <div className="mt-auto flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                             <div className="bg-vallenato-red/10 p-2 rounded-full text-vallenato-red">
+                                <BookOpen size={16} />
+                             </div>
+                             <span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/60">{relato.fecha}</span>
+                          </div>
+                          <button className="text-vallenato-blue font-bold uppercase text-[11px] tracking-widest flex items-center gap-2 group-hover:text-vallenato-red transition-colors">
+                             Escuchar <Play size={12} fill="currentColor" />
+                          </button>
+                       </div>
+                    </div>
+                  </div>
+                ))}
+             </div>
+             
+             <div className="flex justify-center">
+                <Button variant="outline" onClick={() => setViewState(ViewState.TALES)} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">
+                   Explorar todos los relatos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </Button>
+             </div>
+         </div>
+      </section>
+
       {/* Videos Section */}
-      <section className="pt-16 pb-24 bg-vallenato-cream/50 relative z-10 border-t border-vallenato-mustard/10">
+      <section className="pt-16 pb-24 bg-vallenato-cream/50 relative z-10">
          <div className="container mx-auto px-6">
              <div className="mb-12">
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
