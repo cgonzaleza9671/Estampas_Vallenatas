@@ -53,17 +53,23 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
         <div className="hidden lg:flex items-center gap-8">
           <nav className="flex gap-8">
             {navItems.map((item) => (
-              <button
-                key={item.value}
-                onClick={() => handleNav(item.value)}
-                className={`text-xs xl:text-sm font-bold uppercase tracking-widest transition-colors duration-300 ${
-                  currentView === item.value 
-                    ? 'text-vallenato-mustard border-b-2 border-vallenato-mustard pb-1' 
-                    : 'text-gray-200 hover:text-white pb-1 border-b-2 border-transparent hover:border-white/50'
-                }`}
-              >
-                {item.label}
-              </button>
+              <div key={item.value} className="relative flex flex-col items-center">
+                <button
+                  onClick={() => handleNav(item.value)}
+                  className={`text-xs xl:text-sm font-bold uppercase tracking-widest transition-colors duration-300 ${
+                    currentView === item.value 
+                      ? 'text-vallenato-mustard border-b-2 border-vallenato-mustard pb-1' 
+                      : 'text-gray-200 hover:text-white pb-1 border-b-2 border-transparent hover:border-white/50'
+                  }`}
+                >
+                  {item.label}
+                </button>
+                {item.value === ViewState.TALES && (
+                  <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 font-calligraphy text-lg text-vallenato-mustard lowercase tracking-widest pointer-events-none drop-shadow-lg animate-pulse">
+                    nuevo
+                  </span>
+                )}
+              </div>
             ))}
           </nav>
         </div>
@@ -94,7 +100,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
                   }
                 `}
               >
-                {item.label}
+                <div className="flex flex-col items-start">
+                  <span>{item.label}</span>
+                  {item.value === ViewState.TALES && (
+                    <span className="font-calligraphy text-lg lowercase leading-none -mt-1 text-vallenato-mustard tracking-widest">nuevo</span>
+                  )}
+                </div>
                 {currentView === item.value && (
                   <div className="w-1.5 h-1.5 rounded-full bg-vallenato-blue" />
                 )}
