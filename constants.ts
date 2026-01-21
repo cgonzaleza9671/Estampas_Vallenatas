@@ -18,7 +18,13 @@ export const LEGENDARY_TALES: StoryItem[] = [
     fecha: "Enero 2024",
     imagen: "https://i.imgur.com/CyzoY4Y.jpeg",
     autor: "Álvaro González Pimienta",
-    contenido: "La historia del vallenato no sería la misma sin la legendaria rivalidad entre Emiliano Zuleta Baquero y Lorenzo Morales. Todo comenzó en una parranda donde las notas del acordeón se convirtieron en dardos de ingenio. 'Acordate Moralito de aquel día, que estuviste en Urumita y no quisiste hacer parada', rezan los versos que recorrieron el mundo. Morales, conocido como 'El gran Moralito', era un hombre de una técnica exquisita, mientras que Zuleta poseía una fuerza narrativa inigualable. Este duelo no fue de armas, sino de versos y fuelles, una demostración de que en el Magdalena Grande, el honor se defiende cantando. A pesar de la dureza de las palabras en la canción, el tiempo reveló que debajo de la competencia existía un respeto profundo que solo los grandes maestros pueden comprender."
+    contenido: "La historia del vallenato no sería la misma sin la legendaria rivalidad entre Emiliano Zuleta Baquero y Lorenzo Morales. Todo comenzó en una parranda donde las notas del acordeón se convirtieron en dardos de ingenio. 'Acordate Moralito de aquel día, que estuviste en Urumita y no quisiste hacer parada', rezan los versos que recorrieron el mundo. Morales, conocido como 'El gran Moralito', era un hombre de una técnica exquisita, mientras que Zuleta poseía una fuerza narrativa inigualable. Este duelo no fue de armas, sino de versos y fuelles, una demostración de que en el Magdalena Grande, el honor se defiende cantando. A pesar de la dureza de las palabras en la canción, el tiempo reveló que debajo de la competencia existía un respeto profundo que solo los grandes maestros pueden comprender.",
+    frases: [
+      "El honor se defiende cantando.",
+      "Un duelo no de armas, sino de versos.",
+      "El respeto profundo bajo la competencia.",
+      "Dardos de ingenio hechos melodía."
+    ]
   },
   {
     id: 2,
@@ -27,7 +33,13 @@ export const LEGENDARY_TALES: StoryItem[] = [
     fecha: "Febrero 2024",
     imagen: "https://i.imgur.com/cJhXAof.jpeg",
     autor: "Álvaro González Pimienta",
-    contenido: "Rafael Escalona Martínez no tocaba el acordeón, pero sus manos moldeaban la realidad en forma de canciones. Fue el cronista más grande que ha parido la tierra del Cacique Upar. Sus composiciones eran periódicos cantados que relataban desde amores imposibles hasta las peripecias de los contrabandistas en la Alta Guajira. 'La Casa en el Aire' no es solo una metáfora de protección paterna, es el símbolo de la imaginación vallenata que desafía las leyes de la física para honrar el sentimiento. Escalona elevó el vallenato de los corrales a los palacios presidenciales, demostrando que la poesía de provincia tiene un lenguaje universal. Su legado es un mapa sonoro de una Colombia que ya no existe, pero que vive eternamente en cada nota de sus composiciones."
+    contenido: "Rafael Escalona Martínez no tocaba el acordeón, pero sus manos moldeaban la realidad en forma de canciones. Fue el cronista más grande que ha parido la tierra del Cacique Upar. Sus composiciones eran periódicos cantados que relataban desde amores imposibles hasta las peripecias de los contrabandistas en la Alta Guajira. 'La Casa en el Aire' no es solo una metáfora de protección paterna, es el símbolo de la imaginación vallenata que desafía las leyes de la física para honrar el sentimiento. Escalona elevó el vallenato de los corrales a los palacios presidenciales, demostrando que la poesía de provincia tiene un lenguaje universal. Su legado es un mapa sonoro de una Colombia que ya no existe, pero que vive eternamente in cada nota de sus composiciones.",
+    frases: [
+      "El cronista del aire.",
+      "Periódicos cantados.",
+      "La poesía de provincia tiene un lenguaje universal.",
+      "Manos que moldeaban la realidad."
+    ]
   }
 ];
 

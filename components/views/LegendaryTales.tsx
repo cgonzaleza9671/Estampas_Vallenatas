@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
-import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Clock, BookOpen, ArrowRight, Loader2, AlertCircle, Volume2, Award, Headphones, Info, Sparkles, X, Settings2, Star } from 'lucide-react';
+import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Clock, BookOpen, ArrowRight, Loader2, AlertCircle, Volume2, Award, Headphones, Info, Sparkles, X, Settings2, Star, Quote, Timer } from 'lucide-react';
 import Button from '../Button.tsx';
 
 const LegendaryTales: React.FC = () => {
@@ -22,8 +22,7 @@ const LegendaryTales: React.FC = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const requestRef = useRef<number>(0);
 
-  // Offset de latencia optimizado para una sincronía perfecta (-0.22s de pre-fetch visual)
-  const LATENCY_OFFSET = -0.22; 
+  const LATENCY_OFFSET = -0.30; 
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -52,45 +51,81 @@ const LegendaryTales: React.FC = () => {
     
     let globalIdx = 0;
     let totalWeight = 0;
-    const wordWeights: { index: number; cumulativeWeight: number }[] = [];
+    const wordWeights: { index: number; cumulativeWeight: number; paragraphIndex: number; text: string }[] = [];
 
     const paragraphs = selectedStory.contenido.split(/\n\s*\n/).filter(p => p.trim()).map((p, pIdx) => {
-      // Peso de Párrafo: 45 unidades para simular la pausa de respiración natural del orador
-      if (pIdx > 0) totalWeight += 45;
+      if (pIdx > 0) totalWeight += 180;
 
       const pWords = p.split(/\s+/).filter(w => w.trim()).map(word => {
-        // Normalización de peso: las palabras no pueden durar "cero"
-        let weight = Math.max(word.length, 6);
+        let weight = Math.max(word.length * 1.8, 12);
         
-        // Pesos de puntuación rítmica enfáticos
-        if (word.endsWith('.') || word.endsWith(':')) weight += 32; 
-        else if (word.endsWith(';') || word.endsWith('...')) weight += 20;
-        else if (word.endsWith(',')) weight += 15;
-        else if (word.endsWith('?') || word.endsWith('!')) weight += 22;
+        if (word.endsWith('.') || word.endsWith(':')) weight += 80; 
+        else if (word.endsWith(';') || word.endsWith('...')) weight += 50;
+        else if (word.endsWith(',')) weight += 35;
+        else if (word.endsWith('?') || word.endsWith('!')) weight += 60;
         
         totalWeight += weight;
         const currentIdx = globalIdx++;
         
         wordWeights.push({
           index: currentIdx,
-          cumulativeWeight: totalWeight
+          cumulativeWeight: totalWeight,
+          paragraphIndex: pIdx,
+          text: word
         });
 
         return { text: word, index: currentIdx, weight };
       });
-      return { words: pWords };
+      return { words: pWords, paragraphIndex: pIdx };
     });
 
     return { paragraphs, totalWeight, wordWeights };
   }, [selectedStory]);
 
+  const interactiveFrases = useMemo(() => {
+    if (!selectedStory?.frases || !storyData.wordWeights.length) return [];
+    
+    return selectedStory.frases.slice(0, 3).map(fraseText => {
+      const fraseWords = fraseText.toLowerCase().split(/\s+/);
+      let startIndex = -1;
+      
+      for (let i = 0; i < storyData.wordWeights.length - fraseWords.length; i++) {
+        let match = true;
+        for (let j = 0; j < Math.min(fraseWords.length, 3); j++) {
+           const wordInStory = storyData.wordWeights[i+j]?.text.toLowerCase().replace(/[.,!?;:]/g, '');
+           if (!wordInStory || !wordInStory.includes(fraseWords[j])) {
+             match = false;
+             break;
+           }
+        }
+        if (match) {
+          startIndex = i;
+          break;
+        }
+      }
+
+      const weightAtStart = startIndex > 0 ? storyData.wordWeights[startIndex - 1]?.cumulativeWeight || 0 : 0;
+      const weightAtEnd = startIndex !== -1 
+        ? storyData.wordWeights[Math.min(startIndex + fraseWords.length, storyData.wordWeights.length - 1)]?.cumulativeWeight || 0
+        : 0;
+
+      return {
+        text: fraseText,
+        startIndex,
+        weightAtStart,
+        weightAtEnd
+      };
+    });
+  }, [selectedStory, storyData]);
+
   const findActiveWordIndex = (targetWeight: number) => {
     const arr = storyData.wordWeights;
+    if (!arr || arr.length === 0) return -1;
+    
     let start = 0;
     let end = arr.length - 1;
     let ans = -1;
 
-    // Búsqueda binaria ultra-rápida
     while (start <= end) {
       let mid = Math.floor((start + end) / 2);
       if (arr[mid].cumulativeWeight >= targetWeight) {
@@ -108,10 +143,9 @@ const LegendaryTales: React.FC = () => {
       const currentTime = Math.max(0, audioRef.current.currentTime + LATENCY_OFFSET);
       const duration = audioRef.current.duration;
       
-      if (duration > 0) {
+      if (duration > 0 && storyData.totalWeight > 0) {
         const progress = currentTime / duration;
         const targetWeight = progress * storyData.totalWeight;
-        
         const activeIdx = findActiveWordIndex(targetWeight);
         
         if (activeIdx !== -1 && activeIdx !== currentWordIndex) {
@@ -178,10 +212,9 @@ const LegendaryTales: React.FC = () => {
   };
 
   const handleWordClick = (index: number) => {
-    if (audioRef.current && audioRef.current.duration) {
-      const word = storyData.wordWeights.find(w => w.index === index);
+    if (audioRef.current && audioRef.current.duration && storyData.totalWeight > 0) {
+      const word = storyData.wordWeights[index];
       if (word) {
-        // Al hacer click, nos posicionamos justo antes de la palabra
         const prevWeight = index > 0 ? storyData.wordWeights[index - 1].cumulativeWeight : 0;
         const weightProgress = prevWeight / storyData.totalWeight;
         audioRef.current.currentTime = weightProgress * audioRef.current.duration;
@@ -191,29 +224,50 @@ const LegendaryTales: React.FC = () => {
     }
   };
 
-  const progress = storyData.totalWeight > 0 && currentWordIndex >= 0 
+  const handlePhraseJump = (weight: number) => {
+    if (audioRef.current && audioRef.current.duration && storyData.totalWeight > 0) {
+      const weightProgress = weight / storyData.totalWeight;
+      audioRef.current.currentTime = weightProgress * audioRef.current.duration;
+      if (!isPlaying) setIsPlaying(true);
+    }
+  };
+
+  const progress = storyData.totalWeight > 0 && currentWordIndex >= 0 && storyData.wordWeights[currentWordIndex]
     ? Math.round((storyData.wordWeights[currentWordIndex].cumulativeWeight / storyData.totalWeight) * 100) 
     : 0;
 
+  const currentParagraphIndex = currentWordIndex >= 0 
+    ? storyData.wordWeights[currentWordIndex]?.paragraphIndex 
+    : -1;
+
+  const currentWeight = (currentWordIndex >= 0 && storyData.wordWeights[currentWordIndex]) 
+    ? storyData.wordWeights[currentWordIndex].cumulativeWeight 
+    : 0;
+
   const getWordClasses = (index: number) => {
-    const baseClasses = "inline-block mr-[0.3em] px-1 rounded transition-all duration-200 cursor-pointer select-none";
+    const baseClasses = "inline-block mr-[0.3em] px-1 rounded transition-all duration-300 cursor-pointer select-none";
+    
     if (!isPlaying) {
       if (index === currentWordIndex) {
          return `${baseClasses} bg-vallenato-mustard/30 text-vallenato-blue font-bold border-b-2 border-vallenato-mustard`;
       }
       return `${baseClasses} text-vallenato-blue opacity-100`;
     }
+
+    const wordInfo = storyData.wordWeights[index];
+    const isSameParagraph = wordInfo?.paragraphIndex === currentParagraphIndex;
     const diff = Math.abs(index - currentWordIndex);
+
     if (index === currentWordIndex) {
-      return `${baseClasses} bg-vallenato-mustard text-vallenato-blue font-bold scale-110 shadow-[0_5px_15px_rgba(234,170,0,0.4)] relative z-20 ring-2 ring-vallenato-mustard/20`;
+      return `${baseClasses} bg-vallenato-mustard text-vallenato-blue font-bold scale-110 shadow-[0_5px_15px_rgba(234,170,0,0.5)] relative z-20 ring-2 ring-vallenato-mustard/30`;
     } else if (diff === 1) {
       return `${baseClasses} text-vallenato-blue font-bold opacity-100 scale-105 z-10`;
     } else if (diff === 2) {
       return `${baseClasses} text-vallenato-blue font-semibold opacity-70`;
-    } else if (diff < 15) {
+    } else if (isSameParagraph) {
       return `${baseClasses} text-vallenato-blue/40`;
     } else {
-      return `${baseClasses} text-vallenato-blue/10 blur-[0.4px]`;
+      return `${baseClasses} text-vallenato-blue/10 blur-[0.6px]`;
     }
   };
 
@@ -249,7 +303,6 @@ const LegendaryTales: React.FC = () => {
           />
         )}
 
-        {/* Modal Instructivo Compacto - Posición Alta */}
         {showInstructions && (
           <div className="fixed inset-0 z-[100] flex items-start justify-center p-6 bg-vallenato-dark/40 backdrop-blur-sm animate-in fade-in duration-300">
              <div className="bg-white rounded-[2rem] shadow-2xl max-w-sm w-full overflow-hidden border border-vallenato-mustard/30 mt-16 md:mt-24 animate-fade-in-down">
@@ -260,26 +313,26 @@ const LegendaryTales: React.FC = () => {
                    <div className="bg-vallenato-mustard p-2 rounded-full w-fit mx-auto mb-2 shadow-lg">
                       <Headphones className="text-vallenato-blue" size={18} />
                    </div>
-                   <h3 className="text-white font-serif text-xl font-bold">Lectura Guiada</h3>
+                   <h3 className="text-white font-serif text-xl font-bold">Lectura Sincronizada</h3>
                 </div>
                 <div className="p-6 space-y-4">
                    <div className="flex gap-3 items-center">
                       <div className="bg-vallenato-mustard p-1.5 rounded-full shadow-sm">
                         <Play size={12} className="text-vallenato-blue fill-current" />
                       </div>
-                      <p className="text-gray-700 text-sm font-medium">Pulsa <b>Play</b> para iniciar la crónica.</p>
+                      <p className="text-gray-700 text-sm font-medium">Pulsa <b>Play</b> para iniciar la experiencia.</p>
                    </div>
                    <div className="flex gap-3 items-center">
                       <BookOpen className="text-vallenato-red flex-shrink-0" size={18} />
-                      <p className="text-gray-700 text-sm">El texto seguirá el ritmo exacto de la voz.</p>
+                      <p className="text-gray-700 text-sm">El texto se resaltará al ritmo exacto de la narración.</p>
                    </div>
                    <div className="flex gap-3 items-center">
                       <Settings2 className="text-vallenato-blue flex-shrink-0" size={18} />
-                      <p className="text-gray-700 text-sm">Puedes pulsar cualquier palabra para saltar allí.</p>
+                      <p className="text-gray-700 text-sm">Pulsa en cualquier palabra para saltar a ese momento.</p>
                    </div>
                    <div className="pt-2">
                       <Button fullWidth onClick={() => setShowInstructions(false)} className="text-xs py-3 shadow-gold">
-                         Comenzar Experiencia
+                         Comenzar Crónica
                       </Button>
                    </div>
                 </div>
@@ -304,7 +357,6 @@ const LegendaryTales: React.FC = () => {
                 group relative p-3.5 md:p-4 rounded-full shadow-2xl transition-all duration-300 transform hover:scale-110 active:scale-90
                 ${isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-mustard text-vallenato-blue shadow-gold'}
               `}
-              title={isPlaying ? "Pausar relato" : "Continuar relato"}
             >
               {isPlaying ? <Pause size={isMobile ? 20 : 24} fill="currentColor" /> : <Play size={isMobile ? 20 : 24} fill="currentColor" className="ml-1" />}
               {!isMobile && (
@@ -331,60 +383,111 @@ const LegendaryTales: React.FC = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-vallenato-blue/40 font-mono text-[10px]">
-                <Volume2 size={12} className={isPlaying ? "animate-pulse text-vallenato-red" : ""} /> {isPlaying ? "Escuchando..." : "En pausa"}
+                <Volume2 size={12} className={isPlaying ? "animate-pulse text-vallenato-red" : ""} /> {isPlaying ? "Relatando..." : "En pausa"}
               </div>
             </div>
           </div>
           <div className="absolute bottom-0 left-0 h-1 bg-vallenato-mustard/20 w-full">
-            <div className="h-full bg-vallenato-mustard transition-all duration-300" style={{ width: `${progress}%` }}></div>
+            <div className="h-full bg-vallenato-mustard transition-all duration-500" style={{ width: `${progress}%` }}></div>
           </div>
         </div>
 
         <div className="container mx-auto px-6 pt-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            <aside className="lg:col-span-4 lg:sticky lg:top-32 self-start space-y-6">
-              <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl border-2 border-white group w-2/3 mx-auto lg:w-full">
-                <img src={selectedStory.imagen} alt={selectedStory.titulo} className="w-full h-auto aspect-square object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4">
-                   <span className="bg-vallenato-red text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">{selectedStory.fecha}</span>
+            <aside className="lg:col-span-4 lg:sticky lg:top-32 self-start space-y-8">
+              <div className="space-y-6">
+                <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl border-2 border-white group w-2/3 mx-auto lg:w-full">
+                  <img src={selectedStory.imagen} alt={selectedStory.titulo} className="w-full h-auto aspect-square object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <span className="bg-vallenato-red text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">{selectedStory.fecha}</span>
+                  </div>
+                </div>
+
+                <div className="bg-vallenato-blue text-white p-4 rounded-[1.5rem] shadow-xl space-y-4 border border-white/5 max-w-[280px] mx-auto lg:max-w-none">
+                  <div>
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard opacity-80 block mb-2">Avance del relato</span>
+                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full bg-vallenato-mustard transition-all duration-500" style={{ width: `${progress}%` }}></div>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-white/10">
+                    <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard opacity-80 block mb-2 text-center">Ritmo de voz</span>
+                    <div className="grid grid-cols-5 gap-1">
+                        {[0.75, 1, 1.25, 1.5, 2].map(speed => (
+                          <button 
+                            key={speed}
+                            onClick={() => setPlaybackSpeed(speed)}
+                            className={`py-1.5 rounded-lg text-[8px] font-bold transition-all border ${playbackSpeed === speed ? 'bg-vallenato-mustard border-vallenato-mustard text-vallenato-blue' : 'border-white/10 text-white/40 hover:bg-white/5'}`}
+                          >
+                            {speed}x
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                    <button onClick={() => skipSeconds(-5)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-all active:scale-90"><SkipBack size={16} /></button>
+                    <button 
+                      onClick={togglePlay} 
+                      className={`p-3 rounded-full shadow-lg transition-all transform hover:scale-110 active:scale-95 ${isPlaying ? 'bg-vallenato-red' : 'bg-vallenato-mustard text-vallenato-blue'}`}
+                    >
+                      {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-0.5" />}
+                    </button>
+                    <button onClick={() => skipSeconds(5)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-all active:scale-90"><SkipForward size={16} /></button>
+                  </div>
                 </div>
               </div>
 
-              <div className="bg-vallenato-blue text-white p-4 rounded-[1.5rem] shadow-xl space-y-4 border border-white/5 max-w-[280px] mx-auto lg:max-w-none">
-                <div>
-                   <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard opacity-80 block mb-2">Avance de lectura</span>
-                   <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-vallenato-mustard transition-all duration-500" style={{ width: `${progress}%` }}></div>
+              {/* MÓDULO: SENTENCIAS DEL MAESTRO (3 Frases) - Visibles Siempre */}
+              {interactiveFrases.length > 0 && (
+                <div className="bg-white/70 backdrop-blur-md rounded-[2rem] p-8 border border-vallenato-mustard/20 shadow-sm animate-fade-in-up">
+                   <div className="flex items-center gap-3 mb-8">
+                      <div className="bg-vallenato-red/10 p-2 rounded-lg text-vallenato-red">
+                        <Quote size={18} fill="currentColor" />
+                      </div>
+                      <h3 className="text-vallenato-blue font-serif font-bold text-lg leading-tight">Sentencias del Maestro</h3>
+                   </div>
+                   
+                   <div className="space-y-10">
+                      {interactiveFrases.map((frase, idx) => {
+                        const isActive = currentWeight >= frase.weightAtStart && currentWeight <= frase.weightAtEnd;
+                        
+                        return (
+                          <div 
+                            key={idx} 
+                            onClick={() => handlePhraseJump(frase.weightAtStart)}
+                            className={`
+                              cursor-pointer group relative pl-6 border-l-2 transition-all duration-700
+                              ${isActive ? 'border-vallenato-red' : 'border-vallenato-mustard/20 hover:border-vallenato-mustard'}
+                            `}
+                          >
+                             <p className={`font-serif italic leading-relaxed transition-all duration-500 ${isActive ? 'text-vallenato-blue text-lg font-bold scale-[1.02]' : 'text-vallenato-blue/70 text-base group-hover:text-vallenato-blue'}`}>
+                                "{frase.text}"
+                             </p>
+                             
+                             {isActive && (
+                                <div className="absolute -left-[5px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-vallenato-red shadow-[0_0_10px_rgba(200,16,46,0.8)]"></div>
+                             )}
+
+                             <div className={`mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity`}>
+                                <div className="bg-vallenato-mustard p-1 rounded-full text-vallenato-blue">
+                                   <Play size={10} fill="currentColor" />
+                                </div>
+                                <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard">Saltar a este momento</span>
+                             </div>
+                          </div>
+                        );
+                      })}
+                   </div>
+
+                   <div className="mt-10 pt-6 border-t border-vallenato-mustard/10 flex items-center justify-center gap-2">
+                      <Sparkles size={12} className="text-vallenato-mustard" />
+                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-vallenato-blue/40">Sabiduría Juglar Preservada</span>
                    </div>
                 </div>
-
-                <div className="pt-3 border-t border-white/10">
-                   <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard opacity-80 block mb-2 text-center">Ritmo de voz</span>
-                   <div className="grid grid-cols-5 gap-1">
-                      {[0.75, 1, 1.25, 1.5, 2].map(speed => (
-                        <button 
-                          key={speed}
-                          onClick={() => setPlaybackSpeed(speed)}
-                          className={`py-1.5 rounded-lg text-[8px] font-bold transition-all border ${playbackSpeed === speed ? 'bg-vallenato-mustard border-vallenato-mustard text-vallenato-blue' : 'border-white/10 text-white/40 hover:bg-white/5'}`}
-                        >
-                          {speed}x
-                        </button>
-                      ))}
-                   </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                   <button onClick={() => skipSeconds(-5)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-all active:scale-90" title="Retroceder 5s"><SkipBack size={16} /></button>
-                   <button 
-                    onClick={togglePlay} 
-                    className={`p-3 rounded-full shadow-lg transition-all transform hover:scale-110 active:scale-95 ${isPlaying ? 'bg-vallenato-red' : 'bg-vallenato-mustard text-vallenato-blue'}`}
-                   >
-                    {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-0.5" />}
-                   </button>
-                   <button onClick={() => skipSeconds(5)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-all active:scale-90" title="Adelantar 5s"><SkipForward size={16} /></button>
-                </div>
-              </div>
+              )}
             </aside>
 
             <main className="lg:col-span-8 relative">
@@ -397,9 +500,12 @@ const LegendaryTales: React.FC = () => {
                    </p>
                 </header>
 
-                <div className="prose prose-xl font-serif text-vallenato-blue leading-[2.2] relative">
+                <div className="prose prose-xl font-serif text-vallenato-blue leading-[2.4] relative">
                    {storyData.paragraphs.map((para, pIdx) => (
-                     <p key={pIdx} className="mb-12 text-justify">
+                     <p 
+                        key={pIdx} 
+                        className={`mb-16 text-justify transition-opacity duration-1000 ${currentParagraphIndex !== -1 && currentParagraphIndex !== pIdx ? 'opacity-40 grayscale-[0.6]' : 'opacity-100'}`}
+                     >
                        {para.words.map((word) => (
                          <span 
                           key={word.index}
@@ -417,9 +523,9 @@ const LegendaryTales: React.FC = () => {
                 <div className="mt-16 pt-8 border-t border-vallenato-mustard/30 flex flex-col items-end">
                    <div className="flex items-center gap-3 text-vallenato-blue/60 mb-2">
                       <Award size={20} className="text-vallenato-mustard" />
-                      <span className="text-sm font-serif italic font-bold">Crónica por Álvaro González</span>
+                      <span className="text-3xl md:text-5xl font-calligraphy text-vallenato-blue leading-tight">Crónica por Álvaro González</span>
                    </div>
-                   <div className="w-24 h-0.5 bg-gradient-to-r from-transparent to-vallenato-mustard"></div>
+                   <div className="w-32 md:w-64 h-0.5 bg-gradient-to-r from-transparent to-vallenato-mustard"></div>
                 </div>
 
                 <div className="mt-20 py-16 text-center">

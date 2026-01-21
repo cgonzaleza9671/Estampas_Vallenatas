@@ -39,6 +39,7 @@ export interface StoryItem {
   contenido: string;
   autor: string;
   audio_url?: string;
+  frases?: string[];
 }
 
 export interface Question {
