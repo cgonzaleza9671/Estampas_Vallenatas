@@ -1,27 +1,29 @@
 
 import React, { useState } from 'react';
-import { ViewState } from '../types';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
-interface HeaderProps {
-  currentView: ViewState;
-  onNavigate: (view: ViewState) => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
+const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
-    { label: 'Inicio', value: ViewState.HOME },
-    { label: 'La Memoria del Acordeón', value: ViewState.ARCHIVE },
-    { label: 'Relatos Legendarios', value: ViewState.TALES },
-    { label: 'Acerca del autor', value: ViewState.BIO },
+    { label: 'Inicio', path: '/' },
+    { label: 'La Memoria del Acordeón', path: '/la-memoria-del-acordeon' },
+    { label: 'Relatos Legendarios', path: '/relatos-legendarios' },
+    { label: 'Acerca del autor', path: '/acerca-del-autor' },
   ];
 
-  const handleNav = (view: ViewState) => {
-    onNavigate(view);
+  const handleNav = (path: string) => {
+    navigate(path);
     setMobileMenuOpen(false);
-    window.scrollTo(0, 0);
+  };
+
+  const isActive = (path: string) => {
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
+    return false;
   };
 
   return (
@@ -29,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
       <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
         <div 
           className="flex items-center gap-2 md:gap-3 cursor-pointer group" 
-          onClick={() => handleNav(ViewState.HOME)}
+          onClick={() => handleNav('/')}
         >
           <div className="flex items-center justify-center gap-1.5 px-[5px] py-[2px] bg-white/5 rounded-lg border border-white/10 group-hover:bg-white/10 transition-colors min-w-[65px]">
              <div className="flex gap-[2.5px] ml-1">
@@ -53,18 +55,18 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
         <div className="hidden lg:flex items-center gap-8">
           <nav className="flex gap-8">
             {navItems.map((item) => (
-              <div key={item.value} className="relative flex flex-col items-center">
+              <div key={item.path} className="relative flex flex-col items-center">
                 <button
-                  onClick={() => handleNav(item.value)}
+                  onClick={() => handleNav(item.path)}
                   className={`text-xs xl:text-sm font-bold uppercase tracking-widest transition-colors duration-300 ${
-                    currentView === item.value 
+                    isActive(item.path)
                       ? 'text-vallenato-mustard border-b-2 border-vallenato-mustard pb-1' 
                       : 'text-gray-200 hover:text-white pb-1 border-b-2 border-transparent hover:border-white/50'
                   }`}
                 >
                   {item.label}
                 </button>
-                {item.value === ViewState.TALES && (
+                {item.path === '/relatos-legendarios' && (
                   <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 font-calligraphy text-lg text-vallenato-mustard lowercase tracking-widest pointer-events-none drop-shadow-lg animate-pulse">
                     nuevo
                   </span>
@@ -89,12 +91,12 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
           <div className="bg-vallenato-blue/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 flex flex-col gap-1">
             {navItems.map((item) => (
               <button
-                key={item.value}
-                onClick={() => handleNav(item.value)}
+                key={item.path}
+                onClick={() => handleNav(item.path)}
                 className={`
                   w-full py-4 px-4 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-between group
                   ${
-                    currentView === item.value 
+                    isActive(item.path)
                       ? 'bg-vallenato-mustard text-vallenato-blue shadow-md' 
                       : 'text-white hover:bg-white/10'
                   }
@@ -102,11 +104,11 @@ const Header: React.FC<HeaderProps> = ({ currentView, onNavigate }) => {
               >
                 <div className="flex flex-col items-start">
                   <span>{item.label}</span>
-                  {item.value === ViewState.TALES && (
-                    <span className="font-calligraphy text-lg lowercase leading-none -mt-1 text-vallenato-mustard tracking-widest">nuevo</span>
+                  {item.path === '/relatos-legendarios' && (
+                    <span className={`font-calligraphy text-lg lowercase leading-none -mt-1 tracking-widest ${isActive(item.path) ? 'text-vallenato-blue' : 'text-vallenato-mustard'}`}>nuevo</span>
                   )}
                 </div>
-                {currentView === item.value && (
+                {isActive(item.path) && (
                   <div className="w-1.5 h-1.5 rounded-full bg-vallenato-blue" />
                 )}
               </button>

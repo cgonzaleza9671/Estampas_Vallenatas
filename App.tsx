@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { HashRouter, Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { ViewState, AudioItem } from './types.ts';
 import Header from './components/Header.tsx';
 import Footer from './components/Footer.tsx';
@@ -10,9 +11,23 @@ import LegendaryTales from './components/views/LegendaryTales.tsx';
 import AudioStoryCard from './components/AudioStoryCard.tsx';
 import { Play, Pause, SkipBack, SkipForward, Volume2, X, MessageSquareQuote, User, Mic2 } from 'lucide-react';
 
-const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewState>(ViewState.HOME);
-  const [archiveInitialTab, setArchiveInitialTab] = useState<'audio' | 'video'>('audio');
+// Componente para gestionar el scroll al cambiar de ruta
+const ScrollToTop = () => {
+  const { pathname, search } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname, search]);
+  return null;
+};
+
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Extraer parámetros de búsqueda para la pestaña del archivo
+  const queryParams = new URLSearchParams(location.search);
+  const archiveTab = (queryParams.get('tab') as 'audio' | 'video') || 'audio';
+
   const [currentAudio, setCurrentAudio] = useState<AudioItem | null>(null);
   const [playlist, setPlaylist] = useState<AudioItem[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -22,13 +37,6 @@ const App: React.FC = () => {
   const [showStoryCard, setShowStoryCard] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => { window.scrollTo(0, 0); }, [currentView]);
-
-  const navigateToArchive = (tab: 'audio' | 'video') => {
-    setArchiveInitialTab(tab);
-    setCurrentView(ViewState.ARCHIVE);
-  };
 
   const handlePlayAudio = (audio: AudioItem, list?: AudioItem[]) => {
     if (list) {
@@ -110,36 +118,36 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-vallenato-beige selection:bg-vallenato-mustard selection:text-vallenato-blue transition-colors duration-300 overflow-x-hidden">
-      <Header 
-        currentView={currentView} 
-        onNavigate={setCurrentView} 
-      />
+      <ScrollToTop />
+      <Header />
       
       <main className={`flex-grow relative transition-all duration-300 ${currentAudio ? 'pb-52 md:pb-40' : 'pb-0'}`}>
-        {currentView === ViewState.HOME && (
-          <Home 
-            setViewState={setCurrentView} 
-            onNavigateArchive={navigateToArchive} 
-            onPlayAudio={handlePlayAudio} 
-            onVideoOpen={handleVideoOpen}
-            currentAudioId={currentAudio?.id} 
-            isPlaying={isPlaying} 
-          />
-        )}
-        {currentView === ViewState.ARCHIVE && (
-          <Archive 
-            initialTab={archiveInitialTab} 
-            onPlayAudio={handlePlayAudio} 
-            onVideoOpen={handleVideoOpen}
-            currentAudioId={currentAudio?.id} 
-            isPlaying={isPlaying} 
-          />
-        )}
-        {currentView === ViewState.BIO && <Bio />}
-        {currentView === ViewState.TALES && <LegendaryTales />}
+        <Routes>
+          <Route path="/" element={
+            <Home 
+              onPlayAudio={handlePlayAudio} 
+              onVideoOpen={handleVideoOpen}
+              currentAudioId={currentAudio?.id} 
+              isPlaying={isPlaying} 
+            />
+          } />
+          <Route path="/la-memoria-del-acordeon" element={
+            <Archive 
+              initialTab={archiveTab} 
+              onPlayAudio={handlePlayAudio} 
+              onVideoOpen={handleVideoOpen}
+              currentAudioId={currentAudio?.id} 
+              isPlaying={isPlaying} 
+            />
+          } />
+          <Route path="/relatos-legendarios" element={<LegendaryTales />} />
+          <Route path="/acerca-del-autor" element={<Bio />} />
+          {/* Redirección para rutas no encontradas */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
-      <Footer onNavigate={setCurrentView} />
+      <Footer />
 
       {currentAudio && showStoryCard && <AudioStoryCard audio={currentAudio} onClose={() => setShowStoryCard(false)} />}
 
@@ -262,6 +270,14 @@ const App: React.FC = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <HashRouter>
+      <AppContent />
+    </HashRouter>
   );
 };
 

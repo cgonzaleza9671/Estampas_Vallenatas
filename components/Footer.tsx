@@ -1,16 +1,14 @@
 
 import React from 'react';
-import { ViewState } from '../types.ts';
+import { useNavigate } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 
-interface FooterProps {
-  onNavigate: (view: ViewState) => void;
-}
+const Footer: React.FC = () => {
+  const navigate = useNavigate();
 
-const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
-  const handleNav = (e: React.MouseEvent, view: ViewState) => {
+  const handleNav = (e: React.MouseEvent, path: string) => {
     e.preventDefault();
-    onNavigate(view);
+    navigate(path);
   };
 
   return (
@@ -32,7 +30,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                  </div>
              </div>
              
-             <div className="cursor-pointer" onClick={(e) => handleNav(e, ViewState.HOME)}>
+             <div className="cursor-pointer" onClick={(e) => handleNav(e, '/')}>
                 <h2 className="text-xl font-serif leading-none">Estampas</h2>
                 <span className="text-sm font-sans font-light text-white tracking-[0.05em]">Vallenatas</span>
              </div>
@@ -47,16 +45,16 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Navegación</h3>
           <ul className="space-y-3 font-sans text-sm tracking-wide">
             <li>
-              <button onClick={(e) => handleNav(e, ViewState.HOME)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Inicio</button>
+              <button onClick={(e) => handleNav(e, '/')} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Inicio</button>
             </li>
             <li>
-              <button onClick={(e) => handleNav(e, ViewState.ARCHIVE)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">La Memoria del Acordeón</button>
+              <button onClick={(e) => handleNav(e, '/la-memoria-del-acordeon')} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">La Memoria del Acordeón</button>
             </li>
             <li>
-              <button onClick={(e) => handleNav(e, ViewState.TALES)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Relatos Legendarios</button>
+              <button onClick={(e) => handleNav(e, '/relatos-legendarios')} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Relatos Legendarios</button>
             </li>
             <li>
-              <button onClick={(e) => handleNav(e, ViewState.BIO)} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Acerca del autor</button>
+              <button onClick={(e) => handleNav(e, '/acerca-del-autor')} className="hover:text-vallenato-mustard transition-colors text-left uppercase tracking-widest font-bold text-xs">Acerca del autor</button>
             </li>
           </ul>
         </div>

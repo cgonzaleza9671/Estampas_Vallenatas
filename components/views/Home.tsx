@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { ViewState, AudioItem, VideoItem, StoryItem } from '../../types.ts';
+import { useNavigate } from 'react-router-dom';
+import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
 import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
@@ -8,8 +9,6 @@ import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, 
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
 
 interface HomeProps {
-  setViewState: (view: ViewState) => void;
-  onNavigateArchive?: (tab: 'audio' | 'video') => void;
   onPlayAudio?: (audio: AudioItem, list?: AudioItem[]) => void;
   onVideoOpen?: () => void;
   currentAudioId?: number;
@@ -25,7 +24,8 @@ interface TimeLeft {
   seconds: number;
 }
 
-const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudio, onVideoOpen, currentAudioId, isPlaying }) => {
+const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, isPlaying }) => {
+  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [latestAudio, setLatestAudio] = useState<AudioItem | null>(null);
   const [recentAudios, setRecentAudios] = useState<AudioItem[]>([]);
@@ -89,9 +89,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
         setRecentVideos(videos);
         setRecentRelatos(relatos.slice(0, 2));
         
-        // Mostrar banner temporal después de cargar
         setTimeout(() => setShowPromoBanner(true), 1000);
-        // Desaparecer después de 10 segundos
         setTimeout(() => setShowPromoBanner(false), 11000);
 
       } catch (error) {
@@ -166,14 +164,13 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
   return (
     <div className="animate-fade-in-up relative">
       
-      {/* BANNER TEMPORAL SUPERIOR (10 SEGUNDOS) */}
+      {/* BANNER TEMPORAL SUPERIOR */}
       <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 transform ${showPromoBanner ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
          <div className="bg-vallenato-blue/95 backdrop-blur-xl border-b-2 border-vallenato-mustard shadow-2xl overflow-hidden">
             <div className="container mx-auto px-6 py-4 flex items-center justify-between">
                <div className="flex items-center gap-4 md:gap-6">
-                  {/* ÍCONO DE AUDÍFONOS AHORA ES UN LINK */}
                   <button 
-                    onClick={() => setViewState(ViewState.TALES)}
+                    onClick={() => navigate('/relatos-legendarios')}
                     className="bg-vallenato-mustard p-3 rounded-full shadow-gold animate-bounce hover:scale-110 active:scale-95 transition-transform cursor-pointer group/icon"
                     title="Ir a Relatos Legendarios"
                   >
@@ -191,7 +188,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                </div>
                <div className="flex items-center gap-4">
                   <button 
-                    onClick={() => setViewState(ViewState.TALES)}
+                    onClick={() => navigate('/relatos-legendarios')}
                     className="hidden md:flex bg-vallenato-mustard text-vallenato-blue px-6 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-white transition-all transform hover:scale-105 active:scale-95 items-center gap-2"
                   >
                      Ver Relatos <ArrowRight size={14} />
@@ -201,7 +198,6 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                   </button>
                </div>
             </div>
-            {/* Barra de progreso de cierre */}
             <div className="h-1 bg-vallenato-mustard/20 w-full relative">
                <div className={`h-full bg-vallenato-mustard ${showPromoBanner ? 'w-0' : 'w-full'} transition-all duration-[10000ms] ease-linear`}></div>
             </div>
@@ -313,13 +309,16 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                   </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => setViewState(ViewState.ARCHIVE)} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">Ver más audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-center">
+                <Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">
+                   Ver más audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </Button>
+             </div>
          </div>
       </section>
 
       {/* Relatos Section */}
       <section className="py-24 bg-vallenato-beige relative z-10 border-y border-vallenato-mustard/10 overflow-hidden">
-         {/* Background Decoration */}
          <div className="absolute top-0 right-0 w-96 h-96 bg-vallenato-mustard/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
          <div className="absolute bottom-0 left-0 w-96 h-96 bg-vallenato-red/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
 
@@ -338,7 +337,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                 {recentRelatos.map((relato) => (
                   <div 
                     key={relato.id} 
-                    onClick={() => setViewState(ViewState.TALES)}
+                    onClick={() => navigate('/relatos-legendarios')}
                     className="bg-white rounded-[2.5rem] overflow-hidden shadow-md border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col"
                   >
                     <div className="aspect-[21/9] relative overflow-hidden bg-vallenato-blue">
@@ -369,7 +368,7 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
              </div>
              
              <div className="flex justify-center">
-                <Button variant="outline" onClick={() => setViewState(ViewState.TALES)} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">
+                <Button variant="outline" onClick={() => navigate('/relatos-legendarios')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">
                    Explorar todos los relatos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </Button>
              </div>
@@ -405,7 +404,11 @@ const Home: React.FC<HomeProps> = ({ setViewState, onNavigateArchive, onPlayAudi
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => {if(onNavigateArchive) onNavigateArchive('video'); else setViewState(ViewState.ARCHIVE);}} className="group border-vallenato-mustard/30">Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-center">
+                <Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="group border-vallenato-mustard/30">
+                   Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </Button>
+             </div>
          </div>
       </section>
       
