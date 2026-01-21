@@ -157,6 +157,7 @@ const AppContent: React.FC = () => {
             <audio 
               ref={audioRef} 
               src={currentAudio.url_audio} 
+              preload="none"
               onTimeUpdate={handleTimeUpdate} 
               onLoadedMetadata={handleTimeUpdate} 
               onEnded={goToNext} 

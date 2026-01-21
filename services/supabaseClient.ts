@@ -9,7 +9,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CACHE_TTL = 30 * 60 * 1000; 
 
-const getCacheKey = (base: string, limit: number) => `${base}_l${limit}_v28`;
+const getCacheKey = (base: string, limit: number, page: number) => `${base}_p${page}_l${limit}_v30`;
 
 const setCache = (key: string, data: any) => {
   try {
@@ -85,70 +85,52 @@ const mapVideo = (db: any): VideoItem => {
   };
 };
 
-const mapRelato = (db: any): StoryItem => {
-  const d = new Date(db.fecha_registro || Date.now());
-  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  const fechaLabel = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-
-  let imagen = db.imagen_relato || '';
-  if (imagen && !imagen.startsWith('http')) {
-    imagen = `${SUPABASE_URL}/storage/v1/object/public/Imagenes/${imagen}`;
-  }
-
-  let audio = db.relato_url || '';
-  if (audio && !audio.startsWith('http')) {
-    audio = `${SUPABASE_URL}/storage/v1/object/public/Audios/${audio}`;
-  }
-
-  return {
-    id: db.id,
-    titulo: db.titulo || 'Sin Título',
-    subtitulo: db.subtitulo || '',
-    fecha: fechaLabel,
-    imagen: imagen,
-    contenido: db.texto || '',
-    autor: "Álvaro González Pimienta",
-    audio_url: audio
-  };
-};
-
-export const fetchAudios = async (page: number = 0, limit: number = 24): Promise<AudioItem[]> => {
-  const cacheKey = getCacheKey(`audios_p${page}`, limit);
+export const fetchAudios = async (page: number = 0, limit: number = 15): Promise<AudioItem[]> => {
+  const cacheKey = getCacheKey('audios', limit, page);
   if (page === 0) {
     const cached = getCache(cacheKey);
     if (cached) return cached;
   }
+  
   const from = page * limit;
   const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('Audios')
     .select('*')
-    .order('fecha', { ascending: false, nullsFirst: false })
-    .order('id', { ascending: false })
+    .order('fecha', { ascending: false })
     .range(from, to);
+
   if (error) return [];
   const items = data ? data.map(mapAudio) : [];
   if (page === 0 && items.length > 0) setCache(cacheKey, items);
   return items;
 };
 
-export const fetchVideos = async (): Promise<VideoItem[]> => {
-  const cacheKey = getCacheKey('videos', 999);
-  const cached = getCache(cacheKey);
-  if (cached) return cached;
+export const fetchVideos = async (page: number = 0, limit: number = 4): Promise<VideoItem[]> => {
+  const cacheKey = getCacheKey('videos', limit, page);
+  if (page === 0) {
+    const cached = getCache(cacheKey);
+    if (cached) return cached;
+  }
+  
+  const from = page * limit;
+  const to = from + limit - 1;
+
   const { data, error } = await supabase
     .from('Videos')
     .select('*')
-    .order('fecha', { ascending: false, nullsFirst: false })
-    .order('id', { ascending: false });
+    .order('fecha', { ascending: false })
+    .range(from, to);
+    
   if (error) return [];
   const items = data ? data.map(mapVideo) : [];
-  if (items.length > 0) setCache(cacheKey, items);
+  if (page === 0 && items.length > 0) setCache(cacheKey, items);
   return items;
 };
 
 export const fetchRelatos = async (): Promise<StoryItem[]> => {
-  const cacheKey = getCacheKey('relatos', 100);
+  const cacheKey = getCacheKey('relatos', 100, 0);
   const cached = getCache(cacheKey);
   if (cached) return cached;
 
@@ -157,14 +139,40 @@ export const fetchRelatos = async (): Promise<StoryItem[]> => {
     .select('*')
     .order('fecha_registro', { ascending: false });
 
-  if (error) {
-    console.error("Error fetching relatos:", error);
-    return [];
-  }
+  if (error) return [];
+  const items = data ? data.map((db: any): StoryItem => {
+    const d = new Date(db.fecha_registro || Date.now());
+    const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    let imagen = db.imagen_relato || '';
+    if (imagen && !imagen.startsWith('http')) {
+      imagen = `${SUPABASE_URL}/storage/v1/object/public/Imagenes/${imagen}`;
+    }
 
-  const items = data ? data.map(mapRelato) : [];
+    let audio = db.relato_url || '';
+    if (audio && !audio.startsWith('http')) {
+      audio = `${SUPABASE_URL}/storage/v1/object/public/Audios/${audio}`;
+    }
+
+    return {
+      id: db.id,
+      titulo: db.titulo || 'Sin Título',
+      subtitulo: db.subtitulo || '',
+      fecha: `${monthNames[d.getMonth()]} ${d.getFullYear()}`,
+      imagen: imagen,
+      contenido: db.texto || '',
+      autor: "Álvaro González Pimienta",
+      audio_url: audio
+    };
+  }) : [];
+  
   if (items.length > 0) setCache(cacheKey, items);
   return items;
+};
+
+export const fetchLatestAudio = async (): Promise<AudioItem | null> => {
+  const audios = await fetchAudios(0, 1);
+  return audios.length > 0 ? audios[0] : null;
 };
 
 export const fetchRecentAudios = async (limit: number = 6): Promise<AudioItem[]> => {
@@ -172,13 +180,7 @@ export const fetchRecentAudios = async (limit: number = 6): Promise<AudioItem[]>
 };
 
 export const fetchRecentVideos = async (limit: number = 3): Promise<VideoItem[]> => {
-  const videos = await fetchVideos();
-  return videos.slice(0, limit);
-};
-
-export const fetchLatestAudio = async (): Promise<AudioItem | null> => {
-  const audios = await fetchAudios(0, 1);
-  return audios.length > 0 ? audios[0] : null;
+  return fetchVideos(0, limit);
 };
 
 export const fetchAudioDescription = async (id: number): Promise<string> => {

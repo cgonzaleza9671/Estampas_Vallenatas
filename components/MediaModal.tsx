@@ -116,9 +116,8 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                <video 
                  key={videoItem.url_video}
                  controls 
-                 autoPlay 
                  playsInline
-                 preload="auto"
+                 preload="none"
                  className="w-full h-full object-contain relative z-0" 
                  poster={videoItem.thumbnail_url}
                >
@@ -128,10 +127,10 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                <div className="w-full h-full flex flex-col items-center justify-center bg-vallenato-blue text-white p-6 md:p-10 relative overflow-hidden">
                  <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                  <div className="relative z-10 w-full max-w-2xl flex flex-col items-center">
-                    <div className="mb-4 md:mb-8 p-6 md:p-8 rounded-full bg-white/5 border border-white/10 shadow-2xl animate-pulse">
+                    <div className="mb-4 md:mb-8 p-6 md:p-8 rounded-full bg-white/5 border border-white/10 shadow-2xl">
                        <Music size={40} className="md:w-20 md:h-20 text-vallenato-mustard" />
                     </div>
-                    <audio controls autoPlay className="w-full h-10 md:h-16 invert opacity-90" src={audioItem.url_audio} />
+                    <audio controls preload="none" className="w-full h-10 md:h-16 invert opacity-90" src={audioItem.url_audio} />
                  </div>
                </div>
             ) : null}

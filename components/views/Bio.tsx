@@ -77,6 +77,7 @@ const Bio: React.FC = () => {
                   src="https://i.imgur.com/cJhXAof.jpeg" 
                   alt="Álvaro González Pimienta junto al maestro Rafael Escalona" 
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
+                  loading="lazy"
                 />
                 <div className="absolute bottom-6 left-6 right-6 bg-white/10 backdrop-blur-xl border border-white/30 p-4 rounded-2xl transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
                    <div className="flex items-center gap-4">
@@ -164,6 +165,7 @@ const Bio: React.FC = () => {
                  src="https://i.imgur.com/hDuEleJ.jpeg" 
                  alt="Álvaro González Pimienta junto al gran Luis Enrique Martínez" 
                  className="max-w-full md:max-w-3xl h-auto object-cover transition-transform duration-700 group-hover:scale-110 opacity-90"
+                 loading="lazy"
                />
                <div className="absolute bottom-6 left-6 right-6 bg-white/10 backdrop-blur-xl border border-white/30 p-4 rounded-2xl transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 shadow-[0_20px_50px_rgba(0,0,0,0.3)]">
                   <div className="flex items-center gap-4">

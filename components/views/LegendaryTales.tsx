@@ -299,7 +299,7 @@ const LegendaryTales: React.FC = () => {
             ref={audioRef} 
             src={selectedStory.audio_url} 
             onEnded={() => setIsPlaying(false)}
-            preload="auto"
+            preload="none"
           />
         )}
 
@@ -397,7 +397,7 @@ const LegendaryTales: React.FC = () => {
             <aside className="lg:col-span-4 lg:sticky lg:top-32 self-start space-y-8">
               <div className="space-y-6">
                 <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl border-2 border-white group w-2/3 mx-auto lg:w-full">
-                  <img src={selectedStory.imagen} alt={selectedStory.titulo} className="w-full h-auto aspect-square object-cover" />
+                  <img src={selectedStory.imagen} alt={selectedStory.titulo} className="w-full h-auto aspect-square object-cover" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-4 left-4 right-4">
                     <span className="bg-vallenato-red text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">{selectedStory.fecha}</span>
@@ -568,6 +568,7 @@ const LegendaryTales: React.FC = () => {
                   src={story.imagen} 
                   alt={story.titulo} 
                   className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-1000"
+                  loading="lazy"
                  />
                  <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue via-transparent to-transparent opacity-60"></div>
                  <div className="absolute top-6 left-6">
