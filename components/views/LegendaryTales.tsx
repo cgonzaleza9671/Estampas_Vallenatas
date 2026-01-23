@@ -46,6 +46,17 @@ const LegendaryTales: React.FC = () => {
     loadRelatos();
   }, []);
 
+  // Lógica de coexistencia: si el App inicia música, pausamos el relato
+  useEffect(() => {
+    const handleMusicPlay = () => {
+      if (isPlaying) {
+        setIsPlaying(false);
+      }
+    };
+    window.addEventListener('musicPlay', handleMusicPlay);
+    return () => window.removeEventListener('musicPlay', handleMusicPlay);
+  }, [isPlaying]);
+
   const storyData = useMemo(() => {
     if (!selectedStory) return { paragraphs: [], totalWeight: 0, wordWeights: [] };
     
@@ -81,42 +92,6 @@ const LegendaryTales: React.FC = () => {
 
     return { paragraphs, totalWeight, wordWeights };
   }, [selectedStory]);
-
-  const interactiveFrases = useMemo(() => {
-    if (!selectedStory?.frases || !storyData.wordWeights.length) return [];
-    
-    return selectedStory.frases.slice(0, 3).map(fraseText => {
-      const fraseWords = fraseText.toLowerCase().split(/\s+/);
-      let startIndex = -1;
-      
-      for (let i = 0; i < storyData.wordWeights.length - fraseWords.length; i++) {
-        let match = true;
-        for (let j = 0; j < Math.min(fraseWords.length, 3); j++) {
-           const wordInStory = storyData.wordWeights[i+j]?.text.toLowerCase().replace(/[.,!?;:]/g, '');
-           if (!wordInStory || !wordInStory.includes(fraseWords[j])) {
-             match = false;
-             break;
-           }
-        }
-        if (match) {
-          startIndex = i;
-          break;
-        }
-      }
-
-      const weightAtStart = startIndex > 0 ? storyData.wordWeights[startIndex - 1]?.cumulativeWeight || 0 : 0;
-      const weightAtEnd = startIndex !== -1 
-        ? storyData.wordWeights[Math.min(startIndex + fraseWords.length, storyData.wordWeights.length - 1)]?.cumulativeWeight || 0
-        : 0;
-
-      return {
-        text: fraseText,
-        startIndex,
-        weightAtStart,
-        weightAtEnd
-      };
-    });
-  }, [selectedStory, storyData]);
 
   const findActiveWordIndex = (targetWeight: number) => {
     const arr = storyData.wordWeights;
@@ -158,8 +133,11 @@ const LegendaryTales: React.FC = () => {
 
   useEffect(() => {
     if (isPlaying) {
+      // Disparar evento para que App sepa que estamos relatando
+      window.dispatchEvent(new CustomEvent('talePlay'));
       requestRef.current = requestAnimationFrame(syncPlayback);
     } else {
+      window.dispatchEvent(new CustomEvent('talePause'));
       cancelAnimationFrame(requestRef.current);
     }
     return () => cancelAnimationFrame(requestRef.current);
@@ -224,14 +202,6 @@ const LegendaryTales: React.FC = () => {
     }
   };
 
-  const handlePhraseJump = (weight: number) => {
-    if (audioRef.current && audioRef.current.duration && storyData.totalWeight > 0) {
-      const weightProgress = weight / storyData.totalWeight;
-      audioRef.current.currentTime = weightProgress * audioRef.current.duration;
-      if (!isPlaying) setIsPlaying(true);
-    }
-  };
-
   const progress = storyData.totalWeight > 0 && currentWordIndex >= 0 && storyData.wordWeights[currentWordIndex]
     ? Math.round((storyData.wordWeights[currentWordIndex].cumulativeWeight / storyData.totalWeight) * 100) 
     : 0;
@@ -239,10 +209,6 @@ const LegendaryTales: React.FC = () => {
   const currentParagraphIndex = currentWordIndex >= 0 
     ? storyData.wordWeights[currentWordIndex]?.paragraphIndex 
     : -1;
-
-  const currentWeight = (currentWordIndex >= 0 && storyData.wordWeights[currentWordIndex]) 
-    ? storyData.wordWeights[currentWordIndex].cumulativeWeight 
-    : 0;
 
   const getWordClasses = (index: number) => {
     const baseClasses = "inline-block mr-[0.3em] px-1 rounded transition-all duration-300 cursor-pointer select-none";
@@ -322,14 +288,6 @@ const LegendaryTales: React.FC = () => {
                       </div>
                       <p className="text-gray-700 text-sm font-medium">Pulsa <b>Play</b> para iniciar la experiencia.</p>
                    </div>
-                   <div className="flex gap-3 items-center">
-                      <BookOpen className="text-vallenato-red flex-shrink-0" size={18} />
-                      <p className="text-gray-700 text-sm">El texto se resaltará al ritmo exacto de la narración.</p>
-                   </div>
-                   <div className="flex gap-3 items-center">
-                      <Settings2 className="text-vallenato-blue flex-shrink-0" size={18} />
-                      <p className="text-gray-700 text-sm">Pulsa en cualquier palabra para saltar a ese momento.</p>
-                   </div>
                    <div className="pt-2">
                       <Button fullWidth onClick={() => setShowInstructions(false)} className="text-xs py-3 shadow-gold">
                          Comenzar Crónica
@@ -358,12 +316,7 @@ const LegendaryTales: React.FC = () => {
                 ${isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-mustard text-vallenato-blue shadow-gold'}
               `}
             >
-              {isPlaying ? <Pause size={isMobile ? 20 : 24} fill="currentColor" /> : <Play size={isMobile ? 20 : 24} fill="currentColor" className="ml-1" />}
-              {!isMobile && (
-                <span className="absolute right-full mr-4 px-3 py-1 bg-vallenato-blue text-white text-[9px] font-bold uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                  {isPlaying ? 'Pausar Relato' : 'Seguir Escuchando'}
-                </span>
-              )}
+              {isPlaying ? <Pause size={isMobile ? 20 : 24} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
             </button>
             <div className={`w-0.5 h-10 md:h-12 mt-2 transition-opacity duration-500 bg-gradient-to-b from-vallenato-mustard to-transparent ${isPlaying ? 'opacity-60' : 'opacity-20'}`}></div>
           </div>
@@ -387,47 +340,18 @@ const LegendaryTales: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="absolute bottom-0 left-0 h-1 bg-vallenato-mustard/20 w-full">
-            <div className="h-full bg-vallenato-mustard transition-all duration-500" style={{ width: `${progress}%` }}></div>
-          </div>
         </div>
 
         <div className="container mx-auto px-6 pt-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             <aside className="lg:col-span-4 lg:sticky lg:top-32 self-start space-y-8">
               <div className="space-y-6">
-                <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl border-2 border-white group w-2/3 mx-auto lg:w-full">
+                <div className="relative rounded-[1.5rem] overflow-hidden shadow-xl border-2 border-white w-2/3 mx-auto lg:w-full">
                   <img src={selectedStory.imagen} alt={selectedStory.titulo} className="w-full h-auto aspect-square object-cover" loading="lazy" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <span className="bg-vallenato-red text-white text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">{selectedStory.fecha}</span>
-                  </div>
                 </div>
 
                 <div className="bg-vallenato-blue text-white p-4 rounded-[1.5rem] shadow-xl space-y-4 border border-white/5 max-w-[280px] mx-auto lg:max-w-none">
-                  <div>
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard opacity-80 block mb-2">Avance del relato</span>
-                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-vallenato-mustard transition-all duration-500" style={{ width: `${progress}%` }}></div>
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-white/10">
-                    <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard opacity-80 block mb-2 text-center">Ritmo de voz</span>
-                    <div className="grid grid-cols-5 gap-1">
-                        {[0.75, 1, 1.25, 1.5, 2].map(speed => (
-                          <button 
-                            key={speed}
-                            onClick={() => setPlaybackSpeed(speed)}
-                            className={`py-1.5 rounded-lg text-[8px] font-bold transition-all border ${playbackSpeed === speed ? 'bg-vallenato-mustard border-vallenato-mustard text-vallenato-blue' : 'border-white/10 text-white/40 hover:bg-white/5'}`}
-                          >
-                            {speed}x
-                          </button>
-                        ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                  <div className="flex items-center justify-between pt-3">
                     <button onClick={() => skipSeconds(-5)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-all active:scale-90"><SkipBack size={16} /></button>
                     <button 
                       onClick={togglePlay} 
@@ -439,55 +363,6 @@ const LegendaryTales: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              {/* MÓDULO: SENTENCIAS DEL MAESTRO (3 Frases) - Visibles Siempre */}
-              {interactiveFrases.length > 0 && (
-                <div className="bg-white/70 backdrop-blur-md rounded-[2rem] p-8 border border-vallenato-mustard/20 shadow-sm animate-fade-in-up">
-                   <div className="flex items-center gap-3 mb-8">
-                      <div className="bg-vallenato-red/10 p-2 rounded-lg text-vallenato-red">
-                        <Quote size={18} fill="currentColor" />
-                      </div>
-                      <h3 className="text-vallenato-blue font-serif font-bold text-lg leading-tight">Sentencias del Maestro</h3>
-                   </div>
-                   
-                   <div className="space-y-10">
-                      {interactiveFrases.map((frase, idx) => {
-                        const isActive = currentWeight >= frase.weightAtStart && currentWeight <= frase.weightAtEnd;
-                        
-                        return (
-                          <div 
-                            key={idx} 
-                            onClick={() => handlePhraseJump(frase.weightAtStart)}
-                            className={`
-                              cursor-pointer group relative pl-6 border-l-2 transition-all duration-700
-                              ${isActive ? 'border-vallenato-red' : 'border-vallenato-mustard/20 hover:border-vallenato-mustard'}
-                            `}
-                          >
-                             <p className={`font-serif italic leading-relaxed transition-all duration-500 ${isActive ? 'text-vallenato-blue text-lg font-bold scale-[1.02]' : 'text-vallenato-blue/70 text-base group-hover:text-vallenato-blue'}`}>
-                                "{frase.text}"
-                             </p>
-                             
-                             {isActive && (
-                                <div className="absolute -left-[5px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-vallenato-red shadow-[0_0_10px_rgba(200,16,46,0.8)]"></div>
-                             )}
-
-                             <div className={`mt-2 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity`}>
-                                <div className="bg-vallenato-mustard p-1 rounded-full text-vallenato-blue">
-                                   <Play size={10} fill="currentColor" />
-                                </div>
-                                <span className="text-[8px] font-bold uppercase tracking-widest text-vallenato-mustard">Saltar a este momento</span>
-                             </div>
-                          </div>
-                        );
-                      })}
-                   </div>
-
-                   <div className="mt-10 pt-6 border-t border-vallenato-mustard/10 flex items-center justify-center gap-2">
-                      <Sparkles size={12} className="text-vallenato-mustard" />
-                      <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-vallenato-blue/40">Sabiduría Juglar Preservada</span>
-                   </div>
-                </div>
-              )}
             </aside>
 
             <main className="lg:col-span-8 relative">
@@ -518,14 +393,6 @@ const LegendaryTales: React.FC = () => {
                        ))}
                      </p>
                    ))}
-                </div>
-
-                <div className="mt-16 pt-8 border-t border-vallenato-mustard/30 flex flex-col items-end">
-                   <div className="flex items-center gap-3 text-vallenato-blue/60 mb-2">
-                      <Award size={20} className="text-vallenato-mustard" />
-                      <span className="text-3xl md:text-5xl font-calligraphy text-vallenato-blue leading-tight">Crónica por Álvaro González</span>
-                   </div>
-                   <div className="w-32 md:w-64 h-0.5 bg-gradient-to-r from-transparent to-vallenato-mustard"></div>
                 </div>
 
                 <div className="mt-20 py-16 text-center">
@@ -571,11 +438,6 @@ const LegendaryTales: React.FC = () => {
                   loading="lazy"
                  />
                  <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue via-transparent to-transparent opacity-60"></div>
-                 <div className="absolute top-6 left-6">
-                    <div className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/30">
-                       <span className="text-white text-[10px] font-bold uppercase tracking-widest">{story.fecha}</span>
-                    </div>
-                 </div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <div className="bg-vallenato-mustard p-6 rounded-full text-vallenato-blue shadow-2xl scale-75 group-hover:scale-100 transition-transform">
                        <BookOpen size={32} />

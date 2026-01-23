@@ -9,7 +9,7 @@ import Archive from './components/views/Archive.tsx';
 import Bio from './components/views/Bio.tsx';
 import LegendaryTales from './components/views/LegendaryTales.tsx';
 import AudioStoryCard from './components/AudioStoryCard.tsx';
-import { Play, Pause, SkipBack, SkipForward, Volume2, X, MessageSquareQuote, User, Mic2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, X, MessageSquareQuote, User, Mic2, Headphones } from 'lucide-react';
 
 // Componente para gestionar el scroll al cambiar de ruta
 const ScrollToTop = () => {
@@ -22,7 +22,6 @@ const ScrollToTop = () => {
 
 const AppContent: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   
   // Extraer parámetros de búsqueda para la pestaña del archivo
   const queryParams = new URLSearchParams(location.search);
@@ -35,10 +34,14 @@ const AppContent: React.FC = () => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(1);
   const [showStoryCard, setShowStoryCard] = useState(false);
+  const [isTaleActive, setIsTaleActive] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handlePlayAudio = (audio: AudioItem, list?: AudioItem[]) => {
+    // Si se inicia música, avisamos que no estamos en modo relato activo para pausar narraciones
+    window.dispatchEvent(new CustomEvent('musicPlay'));
+    
     if (list) {
       setPlaylist(list);
     } else if (playlist.length === 0 || !playlist.find(a => a.id === audio.id)) {
@@ -61,6 +64,22 @@ const AppContent: React.FC = () => {
       audioRef.current.pause();
     }
   };
+
+  // Escuchar cuando un relato empieza a sonar para pausar la música
+  useEffect(() => {
+    const handleTaleStart = () => {
+      setIsPlaying(false);
+      setIsTaleActive(true);
+    };
+    const handleTaleStop = () => setIsTaleActive(false);
+
+    window.addEventListener('talePlay', handleTaleStart);
+    window.addEventListener('talePause', handleTaleStop);
+    return () => {
+      window.removeEventListener('talePlay', handleTaleStart);
+      window.removeEventListener('talePause', handleTaleStop);
+    };
+  }, []);
 
   const goToNext = () => {
     if (!currentAudio || playlist.length <= 1) return;
@@ -89,7 +108,7 @@ const AppContent: React.FC = () => {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.play().catch((err) => {
-          console.warn("Auto-play blocked by browser, wait for user interaction.", err);
+          console.warn("Auto-play blocked by browser", err);
         });
       } else {
         audioRef.current.pause();
@@ -142,7 +161,6 @@ const AppContent: React.FC = () => {
           } />
           <Route path="/relatos-legendarios" element={<LegendaryTales />} />
           <Route path="/acerca-del-autor" element={<Bio />} />
-          {/* Redirección para rutas no encontradas */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -152,7 +170,7 @@ const AppContent: React.FC = () => {
       {currentAudio && showStoryCard && <AudioStoryCard audio={currentAudio} onClose={() => setShowStoryCard(false)} />}
 
       {currentAudio && (
-        <div className="fixed bottom-0 left-0 w-full z-[90] animate-fade-in-up shadow-[0_-20px_60px_rgba(0,0,0,0.5)]">
+        <div className={`fixed bottom-0 left-0 w-full z-[90] animate-fade-in-up shadow-[0_-20px_60px_rgba(0,0,0,0.5)] transition-all duration-700 ${isTaleActive ? 'opacity-40 grayscale-[0.5] scale-[0.98] origin-bottom' : 'opacity-100'}`}>
           <div className="bg-vallenato-blue text-white border-t-4 border-vallenato-mustard relative">
             <audio 
               ref={audioRef} 
@@ -166,6 +184,13 @@ const AppContent: React.FC = () => {
             <div className="container mx-auto px-4 md:px-6 py-3 pb-[calc(16px+env(safe-area-inset-bottom,0px))] md:pb-4">
               <div className="flex flex-col gap-2.5">
                 
+                {/* Indicador de Modo Relato */}
+                {isTaleActive && (
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-vallenato-red text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-t-xl flex items-center gap-2 shadow-lg animate-bounce">
+                    <Headphones size={12} /> Música en espera por relato
+                  </div>
+                )}
+
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] font-mono opacity-50 w-8">{formatTime(currentTime)}</span>
                   <div className="flex-grow relative h-2 flex items-center group">
@@ -194,7 +219,6 @@ const AppContent: React.FC = () => {
                       <div className={`p-2.5 rounded-xl text-vallenato-blue transition-all duration-300 ${showStoryCard ? 'bg-vallenato-red text-white scale-110 shadow-lg' : 'bg-vallenato-mustard shadow-md hover:bg-white'}`}>
                         <MessageSquareQuote size={20} />
                       </div>
-                      <span className="hidden lg:block text-[9px] font-bold uppercase tracking-[0.2em] text-vallenato-mustard">Comentario</span>
                     </button>
 
                     <div className="flex flex-col min-w-0">
@@ -204,14 +228,8 @@ const AppContent: React.FC = () => {
                       <div className="flex flex-col gap-0.5">
                         <div className="flex items-center gap-1.5">
                           <User size={10} className="text-vallenato-mustard shrink-0" />
-                          <span className="text-[9px] md:text-[10px] text-vallenato-mustard font-bold uppercase tracking-widest truncate max-w-[120px] md:max-w-none">
+                          <span className="text-[9px] md:text-[10px] text-vallenato-mustard font-bold uppercase tracking-widest truncate">
                             {currentAudio.autor}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Mic2 size={10} className="text-vallenato-red shrink-0" />
-                          <span className="text-[9px] md:text-[10px] text-vallenato-red font-bold uppercase tracking-widest truncate max-w-[120px] md:max-w-none">
-                            {currentAudio.cantante}
                           </span>
                         </div>
                       </div>
@@ -228,7 +246,7 @@ const AppContent: React.FC = () => {
                     </button>
                     <button 
                       onClick={() => setIsPlaying(!isPlaying)} 
-                      className="bg-vallenato-mustard text-vallenato-blue p-3 md:p-4 rounded-full hover:scale-110 active:scale-95 transition-all shadow-[0_0_20px_rgba(234,170,0,0.4)]"
+                      className="bg-vallenato-mustard text-vallenato-blue p-3 md:p-4 rounded-full hover:scale-110 active:scale-95 transition-all shadow-lg"
                     >
                       {isPlaying ? <Pause size={24} fill="currentColor"/> : <Play size={24} fill="currentColor" className="ml-1" />}
                     </button>
@@ -242,26 +260,8 @@ const AppContent: React.FC = () => {
                   </div>
 
                   <div className="hidden md:flex items-center justify-end gap-6 w-1/4">
-                    <div className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10">
-                      <Volume2 size={18} className="opacity-40" />
-                      <div className="w-20 h-1 relative flex items-center group">
-                        <input type="range" min="0" max="1" step="0.01" value={volume} onChange={(e) => setVolume(parseFloat(e.target.value))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                        <div className="w-full bg-white/20 h-1 rounded-full overflow-hidden">
-                          <div className="bg-white h-full" style={{ width: `${volume * 100}%` }} />
-                        </div>
-                      </div>
-                    </div>
                     <button onClick={() => { setCurrentAudio(null); setShowStoryCard(false); }} className="text-white/30 hover:text-vallenato-red transition-all transform hover:rotate-90">
                       <X size={22}/>
-                    </button>
-                  </div>
-
-                  <div className="md:hidden flex items-center ml-2">
-                    <button 
-                      onClick={() => { setCurrentAudio(null); setShowStoryCard(false); }} 
-                      className="p-2 text-white/30 active:text-vallenato-red transition-colors"
-                    >
-                      <X size={24} />
                     </button>
                   </div>
                 </div>
