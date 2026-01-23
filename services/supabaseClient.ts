@@ -9,7 +9,10 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const CACHE_TTL = 30 * 60 * 1000; 
 
-const getCacheKey = (base: string, limit: number, page: number) => `${base}_p${page}_l${limit}_v30`;
+const getCacheKey = (base: string, limit: number, page: number, filters: any = {}) => {
+  const filterStr = JSON.stringify(filters);
+  return `${base}_p${page}_l${limit}_f${filterStr}_v32`;
+};
 
 const setCache = (key: string, data: any) => {
   try {
@@ -85,8 +88,12 @@ const mapVideo = (db: any): VideoItem => {
   };
 };
 
-export const fetchAudios = async (page: number = 0, limit: number = 15): Promise<AudioItem[]> => {
-  const cacheKey = getCacheKey('audios', limit, page);
+export const fetchAudios = async (
+  page: number = 0, 
+  limit: number = 15,
+  filters: { search?: string; author?: string; singer?: string; accordion?: string } = {}
+): Promise<AudioItem[]> => {
+  const cacheKey = getCacheKey('audios', limit, page, filters);
   if (page === 0) {
     const cached = getCache(cacheKey);
     if (cached) return cached;
@@ -95,9 +102,22 @@ export const fetchAudios = async (page: number = 0, limit: number = 15): Promise
   const from = page * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
-    .from('Audios')
-    .select('*')
+  let query = supabase.from('Audios').select('*');
+
+  if (filters.search) {
+    query = query.or(`titulo.ilike.%${filters.search}%,autor.ilike.%${filters.search}%,cantante.ilike.%${filters.search}%`);
+  }
+  if (filters.author && filters.author !== 'All') {
+    query = query.eq('autor', filters.author);
+  }
+  if (filters.singer && filters.singer !== 'All') {
+    query = query.eq('cantante', filters.singer);
+  }
+  if (filters.accordion && filters.accordion !== 'All') {
+    query = query.eq('acordeonero', filters.accordion);
+  }
+
+  const { data, error } = await query
     .order('fecha', { ascending: false })
     .range(from, to);
 
@@ -107,8 +127,12 @@ export const fetchAudios = async (page: number = 0, limit: number = 15): Promise
   return items;
 };
 
-export const fetchVideos = async (page: number = 0, limit: number = 4): Promise<VideoItem[]> => {
-  const cacheKey = getCacheKey('videos', limit, page);
+export const fetchVideos = async (
+  page: number = 0, 
+  limit: number = 4,
+  filters: { search?: string; author?: string; interpreter?: string } = {}
+): Promise<VideoItem[]> => {
+  const cacheKey = getCacheKey('videos', limit, page, filters);
   if (page === 0) {
     const cached = getCache(cacheKey);
     if (cached) return cached;
@@ -117,9 +141,19 @@ export const fetchVideos = async (page: number = 0, limit: number = 4): Promise<
   const from = page * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
-    .from('Videos')
-    .select('*')
+  let query = supabase.from('Videos').select('*');
+
+  if (filters.search) {
+    query = query.or(`titulo.ilike.%${filters.search}%,autor.ilike.%${filters.search}%,interprete.ilike.%${filters.search}%`);
+  }
+  if (filters.author && filters.author !== 'All') {
+    query = query.eq('autor', filters.author);
+  }
+  if (filters.interpreter && filters.interpreter !== 'All') {
+    query = query.eq('interprete', filters.interpreter);
+  }
+
+  const { data, error } = await query
     .order('fecha', { ascending: false })
     .range(from, to);
     
@@ -127,6 +161,28 @@ export const fetchVideos = async (page: number = 0, limit: number = 4): Promise<
   const items = data ? data.map(mapVideo) : [];
   if (page === 0 && items.length > 0) setCache(cacheKey, items);
   return items;
+};
+
+export const fetchAudioFilters = async () => {
+  const { data: authors } = await supabase.from('Audios').select('autor').not('autor', 'is', null);
+  const { data: singers } = await supabase.from('Audios').select('cantante').not('cantante', 'is', null);
+  const { data: accordions } = await supabase.from('Audios').select('acordeonero').not('acordeonero', 'is', null);
+  
+  return {
+    authors: Array.from(new Set(authors?.map(a => a.autor).filter(Boolean) || [])).sort(),
+    singers: Array.from(new Set(singers?.map(s => s.cantante).filter(Boolean) || [])).sort(),
+    accordions: Array.from(new Set(accordions?.map(a => a.acordeonero).filter(v => v && v !== "-") || [])).sort()
+  };
+};
+
+export const fetchVideoFilters = async () => {
+  const { data: authors } = await supabase.from('Videos').select('autor').not('autor', 'is', null);
+  const { data: interpreters } = await supabase.from('Videos').select('interprete').not('interprete', 'is', null);
+  
+  return {
+    authors: Array.from(new Set(authors?.map(a => a.autor).filter(Boolean) || [])).sort(),
+    interpreters: Array.from(new Set(interpreters?.map(i => i.interprete).filter(v => v && v !== "-") || [])).sort()
+  };
 };
 
 export const fetchRelatos = async (): Promise<StoryItem[]> => {
