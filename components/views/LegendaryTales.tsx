@@ -46,7 +46,6 @@ const LegendaryTales: React.FC = () => {
     loadRelatos();
   }, []);
 
-  // Lógica de coexistencia: si el App inicia música, pausamos el relato
   useEffect(() => {
     const handleMusicPlay = () => {
       if (isPlaying) {
@@ -296,7 +295,7 @@ const LegendaryTales: React.FC = () => {
                         <div className="bg-vallenato-red p-2 rounded-xl shadow-sm group-hover:scale-110 transition-transform">
                           <Pause size={14} className="text-white fill-current" />
                         </div>
-                        <p className="text-gray-700 text-sm font-medium leading-tight">Puedes <b>pausar</b> el relato en cualquier momento desde los controles laterales.</p>
+                        <p className="text-gray-700 text-sm font-medium leading-tight">Puedes <b>pausar</b> el relato desde los controles laterales o con el botón de pausa que se va moviendo con el texto.</p>
                      </div>
 
                      <div className="flex gap-4 items-center group">
@@ -504,10 +503,8 @@ const LegendaryTales: React.FC = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 bg-vallenato-red px-4 py-1.5 rounded-full mb-6 shadow-lg animate-pulse">
-            <Star size={12} className="text-white fill-current" />
-            <span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Nueva Sección</span>
+            <span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Archivo Vivo</span>
           </div>
-          <span className="text-vallenato-red font-bold uppercase tracking-widest text-[10px] md:text-xs">Archivo Vivo</span>
           <h1 className="text-4xl md:text-6xl font-serif text-vallenato-blue mb-4 font-bold tracking-tight">Relatos Legendarios</h1>
           <p className="text-gray-600 max-w-2xl mx-auto font-serif italic text-base md:text-lg">
              Una experiencia inmersiva para conectar con las raíces del Magdalena Grande.
@@ -553,6 +550,7 @@ const LegendaryTales: React.FC = () => {
             </div>
           ))}
 
+          {/* Módulo de Próximamente */}
           <div className="bg-white/40 border-2 border-dashed border-vallenato-mustard/20 rounded-[3rem] p-12 flex flex-col items-center justify-center text-center opacity-60">
              <div className="bg-vallenato-mustard/10 p-6 rounded-full text-vallenato-mustard mb-6">
                 <Clock size={40} />
