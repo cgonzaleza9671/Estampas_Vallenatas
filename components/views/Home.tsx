@@ -7,6 +7,7 @@ import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
 import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
+import { AccordionPlayIcon } from '../CustomIcons.tsx';
 
 interface HomeProps {
   onPlayAudio?: (audio: AudioItem, list?: AudioItem[]) => void;
@@ -210,7 +211,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
            <div className="container mx-auto px-6 py-4 md:py-3 flex flex-col sm:flex-row items-center justify-center relative z-10 gap-5 md:gap-10">
               <div className="flex items-center gap-3 max-w-2xl">
                  <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse flex-shrink-0">
-                    <Sparkles size={16} className="text-vallenato-blue" />
+                    <AccordionPlayIcon size={16} className="text-vallenato-blue" />
                  </div>
                  <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
                     <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap mb-1 sm:mb-0">Novedad Exclusiva:</span>

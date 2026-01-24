@@ -417,7 +417,7 @@ const LegendaryTales: React.FC = () => {
                             onClick={() => setPlaybackSpeed(speed)}
                             className={`flex-1 min-w-[45px] py-1.5 rounded-lg font-bold text-[10px] transition-all shadow-sm active:scale-90 ${
                               playbackSpeed === speed 
-                                ? 'bg-white text-vallenato-blue scale-105 shadow-gold ring-1 ring-vallenato-mustard' 
+                                ? 'bg-white text-vallenato-blue scale-105 shadow-gold font-bold ring-1 ring-vallenato-mustard' 
                                 : 'bg-vallenato-mustard/20 text-white/60 hover:bg-vallenato-mustard/40 hover:text-white'
                             }`}
                           >
@@ -473,11 +473,12 @@ const LegendaryTales: React.FC = () => {
                      ))}
                   </div>
 
-                  <div className="mt-20 py-16 text-center border-t border-vallenato-mustard/10">
-                     <div className="inline-block p-2 rounded-full bg-vallenato-mustard/5 mb-6">
-                        <Award size={40} className="text-vallenato-mustard" />
+                  <div className="mt-10 py-8 text-center border-t border-vallenato-mustard/10">
+                     <div className="mb-6">
+                        <h4 className="text-vallenato-blue font-calligraphy text-5xl md:text-7xl tracking-wide leading-none">
+                          Relato por: Álvaro González
+                        </h4>
                      </div>
-                     <h4 className="text-vallenato-blue font-serif text-2xl font-bold mb-8">Has terminado de escuchar esta crónica</h4>
                      <Button variant="outline" onClick={() => setSelectedStory(null)} className="min-w-[240px]">
                         Volver a la Galería de Relatos
                      </Button>
