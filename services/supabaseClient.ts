@@ -168,10 +168,20 @@ export const fetchAudioFilters = async () => {
   const { data: singers } = await supabase.from('Audios').select('cantante').not('cantante', 'is', null);
   const { data: accordions } = await supabase.from('Audios').select('acordeonero').not('acordeonero', 'is', null);
   
+  const cleanAndSort = (list: any[], excludeAnon: boolean = false) => {
+    let result = Array.from(new Set(list?.map(item => Object.values(item)[0] as string).filter(v => v && v.trim() !== "" && v !== "-") || []));
+    
+    if (excludeAnon) {
+      result = result.filter(v => v.toLowerCase() !== 'autor anónimo');
+    }
+    
+    return result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+  };
+
   return {
-    authors: Array.from(new Set(authors?.map(a => a.autor).filter(Boolean) || [])).sort(),
-    singers: Array.from(new Set(singers?.map(s => s.cantante).filter(Boolean) || [])).sort(),
-    accordions: Array.from(new Set(accordions?.map(a => a.acordeonero).filter(v => v && v !== "-") || [])).sort()
+    authors: cleanAndSort(authors || [], true),
+    singers: cleanAndSort(singers || []),
+    accordions: cleanAndSort(accordions || [])
   };
 };
 
@@ -179,9 +189,19 @@ export const fetchVideoFilters = async () => {
   const { data: authors } = await supabase.from('Videos').select('autor').not('autor', 'is', null);
   const { data: interpreters } = await supabase.from('Videos').select('interprete').not('interprete', 'is', null);
   
+  const cleanAndSort = (list: any[], excludeAnon: boolean = false) => {
+    let result = Array.from(new Set(list?.map(item => Object.values(item)[0] as string).filter(v => v && v.trim() !== "" && v !== "-") || []));
+    
+    if (excludeAnon) {
+      result = result.filter(v => v.toLowerCase() !== 'autor anónimo');
+    }
+    
+    return result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+  };
+
   return {
-    authors: Array.from(new Set(authors?.map(a => a.autor).filter(Boolean) || [])).sort(),
-    interpreters: Array.from(new Set(interpreters?.map(i => i.interprete).filter(v => v && v !== "-") || [])).sort()
+    authors: cleanAndSort(authors || [], true),
+    interpreters: cleanAndSort(interpreters || [])
   };
 };
 

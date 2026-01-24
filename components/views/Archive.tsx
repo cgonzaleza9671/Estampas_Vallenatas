@@ -196,7 +196,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-vallenato-mustard group-focus-within:text-vallenato-red transition-colors" size={20} />
                     <input 
                       type="text" 
-                      placeholder={toTitleCase(activeTab === 'audio' ? "Buscar título o autor..." : "Buscar título o intérprete...")}
+                      placeholder="Buscar por todos..."
                       className="w-full pl-12 pr-10 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm font-sans" 
                       value={searchQuery} 
                       onChange={(e) => setSearchQuery(e.target.value)} 
