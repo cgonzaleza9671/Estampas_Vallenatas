@@ -2,27 +2,33 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
-import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Clock, BookOpen, ArrowRight, Loader2, AlertCircle, Volume2, Award, Headphones, Info, Sparkles, X, Settings2, Star, Quote, Timer, Gauge, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Clock, BookOpen, ArrowRight, Loader2, AlertCircle, Volume2, Award, Headphones, Info, Sparkles, X, Settings2, Star, Quote, Timer, Gauge, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import Button from '../Button.tsx';
+
+// Diccionario de palabras con énfasis para el relato de Escalona
+const ESCALONA_EMPHASIS = [
+  "escalona", "rafael", "vallenato", "cacique", "upar", 
+  "aire", "juglares", "guajira", "poesía", "colombia"
+];
 
 const LegendaryTales: React.FC = () => {
   const [relatos, setRelatos] = useState<StoryItem[]>([]);
   const [selectedStory, setSelectedStory] = useState<StoryItem | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);
-  const [playbackSpeed, setPlaybackSpeed] = useState(1.25);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [inlineButtonTop, setInlineButtonTop] = useState(0);
   const [showInlineButton, setShowInlineButton] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showSyncPanel, setShowSyncPanel] = useState(false);
+  const [userLatency, setUserLatency] = useState(-0.15); 
   const [isMobile, setIsMobile] = useState(false);
   
   const wordsRef = useRef<(HTMLSpanElement | null)[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const requestRef = useRef<number>(0);
-
-  const LATENCY_OFFSET = -0.30; 
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
@@ -48,32 +54,53 @@ const LegendaryTales: React.FC = () => {
 
   useEffect(() => {
     const handleMusicPlay = () => {
-      if (isPlaying) {
-        setIsPlaying(false);
-      }
+      if (isPlaying) setIsPlaying(false);
     };
     window.addEventListener('musicPlay', handleMusicPlay);
     return () => window.removeEventListener('musicPlay', handleMusicPlay);
   }, [isPlaying]);
 
+  const countSyllables = (word: string) => {
+    const cleanWord = word.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const vowels = cleanWord.match(/[aeiou]/g);
+    let count = vowels ? vowels.length : 1;
+    const diptongos = cleanWord.match(/[aeiou]{2}/g);
+    if (diptongos) count -= diptongos.length * 0.5;
+    return Math.max(count, 1);
+  };
+
   const storyData = useMemo(() => {
     if (!selectedStory) return { paragraphs: [], totalWeight: 0, wordWeights: [] };
     
+    const isEscalona = selectedStory.titulo.toLowerCase().includes("escalona");
     let globalIdx = 0;
     let totalWeight = 0;
     const wordWeights: { index: number; cumulativeWeight: number; paragraphIndex: number; text: string }[] = [];
 
     const paragraphs = selectedStory.contenido.split(/\n\s*\n/).filter(p => p.trim()).map((p, pIdx) => {
-      if (pIdx > 0) totalWeight += 180;
+      const paragraphStartWeight = totalWeight;
+      
+      // Incremento de pausa entre párrafos (Checkpoints de resincronización)
+      if (pIdx > 0) totalWeight += isEscalona ? 380 : 300; 
 
       const pWords = p.split(/\s+/).filter(w => w.trim()).map(word => {
-        let weight = Math.max(word.length * 1.8, 12);
+        const syllables = countSyllables(word);
+        const cleanWord = word.toLowerCase().replace(/[¿?¡!(),.;:"]/g, "");
         
-        if (word.endsWith('.') || word.endsWith(':')) weight += 80; 
-        else if (word.endsWith(';') || word.endsWith('...')) weight += 50;
-        else if (word.endsWith(',')) weight += 35;
-        else if (word.endsWith('?') || word.endsWith('!')) weight += 60;
+        let weight = (syllables * 28) + (word.length * 2.5);
         
+        if (isEscalona && ESCALONA_EMPHASIS.some(emp => cleanWord.includes(emp))) {
+           weight *= 1.3; // Escalona paladea más los nombres propios
+        }
+
+        if (word.endsWith('.') || word.endsWith(':')) weight += 170;
+        else if (word.endsWith(';') || word.endsWith('...')) weight += 120;
+        else if (word.endsWith(',')) weight += 75;
+        else if (word.includes('"')) weight += 100; 
+        else if (word.endsWith('?') || word.endsWith('!')) weight += 150;
+        
+        if (word.length <= 3) weight += 8;
+
         totalWeight += weight;
         const currentIdx = globalIdx++;
         
@@ -86,7 +113,7 @@ const LegendaryTales: React.FC = () => {
 
         return { text: word, index: currentIdx, weight };
       });
-      return { words: pWords, paragraphIndex: pIdx };
+      return { words: pWords, paragraphIndex: pIdx, startWeight: paragraphStartWeight };
     });
 
     return { paragraphs, totalWeight, wordWeights };
@@ -96,6 +123,7 @@ const LegendaryTales: React.FC = () => {
     const arr = storyData.wordWeights;
     if (!arr || arr.length === 0) return -1;
     
+    // Búsqueda binaria para encontrar la palabra exacta según el peso acumulado
     let start = 0; 
     let end = arr.length - 1;
     let ans = -1;
@@ -114,12 +142,15 @@ const LegendaryTales: React.FC = () => {
 
   const syncPlayback = () => {
     if (audioRef.current && isPlaying) {
-      const currentTime = Math.max(0, audioRef.current.currentTime + LATENCY_OFFSET);
+      // Aplicamos latencia del usuario + pequeña compensación de procesamiento
+      const currentTime = Math.max(0, audioRef.current.currentTime + userLatency);
       const duration = audioRef.current.duration;
       
       if (duration > 0 && storyData.totalWeight > 0) {
+        // Mapeo lineal del tiempo de audio al peso total del texto
         const progress = currentTime / duration;
         const targetWeight = progress * storyData.totalWeight;
+        
         const activeIdx = findActiveWordIndex(targetWeight);
         
         if (activeIdx !== -1 && activeIdx !== currentWordIndex) {
@@ -139,7 +170,7 @@ const LegendaryTales: React.FC = () => {
       cancelAnimationFrame(requestRef.current);
     }
     return () => cancelAnimationFrame(requestRef.current);
-  }, [isPlaying, storyData, currentWordIndex]);
+  }, [isPlaying, storyData, currentWordIndex, userLatency]);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -156,6 +187,7 @@ const LegendaryTales: React.FC = () => {
     if (currentWordIndex >= 0 && wordsRef.current[currentWordIndex]) {
       const activeWord = wordsRef.current[currentWordIndex];
       if (activeWord) {
+        // Scroll suave al centro
         activeWord.scrollIntoView({
           behavior: 'smooth',
           block: 'center'
@@ -174,7 +206,7 @@ const LegendaryTales: React.FC = () => {
     setSelectedStory(story);
     setCurrentWordIndex(-1);
     setIsPlaying(false);
-    setPlaybackSpeed(1.25);
+    setPlaybackSpeed(1.0); 
     setShowInstructions(true); 
     window.scrollTo(0, 0);
   };
@@ -212,7 +244,7 @@ const LegendaryTales: React.FC = () => {
     : -1;
 
   const getWordClasses = (index: number) => {
-    const baseClasses = "inline-block mr-[0.3em] px-1 rounded transition-all duration-700 cursor-pointer select-none relative";
+    const baseClasses = "inline-block mr-[0.3em] px-1 rounded transition-all duration-300 cursor-pointer select-none relative";
     
     if (!isPlaying) {
       if (index === currentWordIndex) {
@@ -226,13 +258,14 @@ const LegendaryTales: React.FC = () => {
     const diff = Math.abs(index - currentWordIndex);
 
     if (index === currentWordIndex) {
-      return `${baseClasses} bg-vallenato-mustard text-vallenato-blue font-bold scale-110 shadow-[0_10px_30px_rgba(234,170,0,0.6)] z-20 ring-2 ring-vallenato-mustard/50`;
+      // Efecto "Respiración" en la palabra activa
+      return `${baseClasses} bg-vallenato-mustard text-vallenato-blue font-bold scale-110 shadow-[0_10px_30px_rgba(234,170,0,0.6)] z-20 ring-2 ring-vallenato-mustard/50 animate-pulse`;
     } else if (diff === 1) {
-      return `${baseClasses} text-vallenato-blue font-bold opacity-100 scale-105 z-10`;
+      return `${baseClasses} text-vallenato-blue font-bold opacity-80 scale-105 z-10`;
     } else if (isSameParagraph) {
       return `${baseClasses} text-vallenato-blue/40`;
     } else {
-      return `${baseClasses} text-vallenato-blue/10 blur-[1px]`;
+      return `${baseClasses} text-vallenato-blue/10 blur-[1.5px]`;
     }
   };
 
@@ -240,7 +273,7 @@ const LegendaryTales: React.FC = () => {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-vallenato-blue">
         <Loader2 size={48} className="animate-spin mb-4 text-vallenato-mustard" />
-        <p className="font-serif italic text-lg">Invocando el espíritu de los juglares...</p>
+        <p className="font-serif italic text-lg">Sincronizando los versos del maestro...</p>
       </div>
     );
   }
@@ -253,7 +286,7 @@ const LegendaryTales: React.FC = () => {
             ref={audioRef} 
             src={selectedStory.audio_url} 
             onEnded={() => setIsPlaying(false)}
-            preload="none"
+            preload="auto"
           />
         )}
 
@@ -270,21 +303,54 @@ const LegendaryTales: React.FC = () => {
               </button>
 
               <div className="flex flex-col items-center">
-                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-vallenato-red mb-1 text-center">Crónica Digital</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-vallenato-red mb-1 text-center">Inmersión Literaria</span>
                 <h2 className="text-sm font-serif font-bold text-vallenato-blue truncate max-w-[200px] md:max-w-xs text-center">{selectedStory.titulo}</h2>
               </div>
 
-              <div className="bg-vallenato-blue/5 rounded-full px-4 py-2 flex items-center gap-3">
-                <Volume2 size={14} className={isPlaying ? "text-vallenato-red animate-pulse" : "text-vallenato-blue/30"} />
-                <span className="text-[10px] font-mono font-bold text-vallenato-blue">{progressValue}%</span>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowSyncPanel(!showSyncPanel)}
+                  className={`p-2 rounded-full transition-all ${showSyncPanel ? 'bg-vallenato-mustard text-vallenato-blue shadow-lg' : 'bg-vallenato-blue/5 text-vallenato-blue hover:bg-vallenato-blue/10'}`}
+                  title="Ajustar sincronización"
+                >
+                  <SlidersHorizontal size={16} />
+                </button>
+                <div className="bg-vallenato-blue/5 rounded-full px-4 py-2 flex items-center gap-3">
+                  <Volume2 size={14} className={isPlaying ? "text-vallenato-red animate-pulse" : "text-vallenato-blue/30"} />
+                  <span className="text-[10px] font-mono font-bold text-vallenato-blue">{progressValue}%</span>
+                </div>
               </div>
            </div>
-           <div className="absolute bottom-0 left-0 h-[2px] bg-vallenato-mustard/20 w-full">
-              <div className="h-full bg-vallenato-mustard transition-all duration-500 shadow-[0_0_10px_#EAAA00]" style={{ width: `${progressValue}%` }}></div>
+           
+           {showSyncPanel && (
+             <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-md border-b border-vallenato-mustard/20 p-4 animate-fade-in-down z-50 shadow-xl">
+               <div className="container mx-auto max-w-xl flex flex-col items-center gap-2">
+                 <div className="flex justify-between w-full text-[10px] font-bold uppercase text-vallenato-blue/40 tracking-widest">
+                   <span>Resaltado Tarde</span>
+                   <span>Micro-Ajuste de Latencia</span>
+                   <span>Resaltado Pronto</span>
+                 </div>
+                 <input 
+                   type="range" 
+                   min="-1" 
+                   max="1" 
+                   step="0.05" 
+                   value={userLatency} 
+                   onChange={(e) => setUserLatency(parseFloat(e.target.value))}
+                   className="w-full accent-vallenato-mustard"
+                 />
+                 <div className="text-[10px] font-bold text-vallenato-mustard">
+                   {userLatency > 0 ? '+' : ''}{(userLatency * 1000).toFixed(0)} ms (Recomendado: -150ms)
+                 </div>
+               </div>
+             </div>
+           )}
+
+           <div className="absolute bottom-0 left-0 h-[3px] bg-vallenato-mustard/20 w-full">
+              <div className="h-full bg-vallenato-red transition-all duration-500 shadow-[0_0_10px_#C8102E]" style={{ width: `${progressValue}%` }}></div>
            </div>
         </div>
 
-        {/* Hero Section Cinematográfica con Efectos de Entrada */}
         <section className="relative w-full h-[55vh] md:h-[75vh] overflow-hidden">
            <img src={selectedStory.imagen} alt={selectedStory.titulo} className="w-full h-full object-cover transform scale-105" />
            <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/40 to-[#FDFCF7]"></div>
@@ -311,23 +377,19 @@ const LegendaryTales: React.FC = () => {
                    <div className="bg-vallenato-mustard p-3 rounded-full w-fit mx-auto mb-4 shadow-gold">
                       <Headphones className="text-vallenato-blue" size={24} />
                    </div>
-                   <h3 className="text-white font-serif text-2xl font-bold">Instrucciones de Lectura</h3>
+                   <h3 className="text-white font-serif text-2xl font-bold">Resincronización Inteligente</h3>
                 </div>
                 <div className="p-8 space-y-6">
                    <div className="flex gap-4 items-center">
-                      <div className="bg-vallenato-mustard/10 p-2.5 rounded-2xl text-vallenato-mustard"><Play size={16} fill="currentColor" /></div>
-                      <p className="text-vallenato-blue/70 text-sm font-medium leading-tight">Pulsa <b>Play</b> para iniciar la experiencia sonora.</p>
+                      <div className="bg-vallenato-mustard/10 p-2.5 rounded-2xl text-vallenato-mustard"><Star size={16} fill="currentColor" /></div>
+                      <p className="text-vallenato-blue/70 text-sm font-medium leading-tight">Cada párrafo actúa como un <b>ancla</b> para evitar desvíos en el resaltado.</p>
                    </div>
                    <div className="flex gap-4 items-center">
-                      <div className="bg-vallenato-red/10 p-2.5 rounded-2xl text-vallenato-red"><Pause size={16} fill="currentColor" /></div>
-                      <p className="text-vallenato-blue/70 text-sm font-medium leading-tight">Puedes <b>pausar</b> con los controles o el botón que sigue el texto.</p>
-                   </div>
-                   <div className="flex gap-4 items-center">
-                      <div className="bg-vallenato-blue/10 p-2.5 rounded-2xl text-vallenato-blue"><Gauge size={16} /></div>
-                      <p className="text-vallenato-blue/70 text-sm font-medium leading-tight">Ajusta la <b>velocidad</b> en el panel inferior para seguir tu propio ritmo.</p>
+                      <div className="bg-vallenato-red/10 p-2.5 rounded-2xl text-vallenato-red"><SlidersHorizontal size={16} fill="currentColor" /></div>
+                      <p className="text-vallenato-blue/70 text-sm font-medium leading-tight">Usa el panel superior si notas que la voz del maestro va más rápido que el texto.</p>
                    </div>
                    <div className="pt-4">
-                      <Button fullWidth onClick={() => setShowInstructions(false)} className="shadow-gold py-4 text-xs">Comenzar Inmersión</Button>
+                      <Button fullWidth onClick={() => setShowInstructions(false)} className="shadow-gold py-4 text-xs">Aceptar y Continuar</Button>
                    </div>
                 </div>
              </div>
@@ -341,7 +403,7 @@ const LegendaryTales: React.FC = () => {
               top: `${inlineButtonTop}px`,
               left: isMobile ? 'auto' : 'calc(50% + 420px)',
               right: isMobile ? '20px' : 'auto',
-              transition: 'top 0.5s cubic-bezier(0.16, 1, 0.3, 1)' 
+              transition: 'top 0.4s cubic-bezier(0.16, 1, 0.3, 1)' 
             }}
             className="flex flex-col items-center z-50 pointer-events-none"
           >
@@ -368,9 +430,9 @@ const LegendaryTales: React.FC = () => {
                  {storyData.paragraphs.map((para, pIdx) => (
                    <p 
                     key={pIdx} 
-                    className={`mb-5 text-justify transition-all duration-1000 
+                    className={`mb-10 text-justify transition-all duration-1000 
                       ${isPlaying && currentParagraphIndex !== -1 && currentParagraphIndex !== pIdx 
-                        ? 'opacity-10 blur-[2px] scale-[0.98]' 
+                        ? 'opacity-10 blur-[3px] scale-[0.97]' 
                         : 'opacity-100 scale-100 blur-0'
                       }
                     `}
@@ -398,7 +460,7 @@ const LegendaryTales: React.FC = () => {
                  ))}
               </div>
 
-              <div className="mt-4 pt-2 border-t border-vallenato-mustard/10 text-center">
+              <div className="mt-12 pt-2 border-t border-vallenato-mustard/10 text-center">
                  <span className="text-[10px] font-black uppercase tracking-[0.5em] text-vallenato-red mb-4 block">Relato por:</span>
                  <h4 className="text-vallenato-blue font-calligraphy text-6xl md:text-8xl leading-none mb-10">Álvaro González Pimienta</h4>
                  <Button variant="outline" onClick={() => setSelectedStory(null)} className="min-w-[240px] hover:border-vallenato-red">
@@ -428,7 +490,7 @@ const LegendaryTales: React.FC = () => {
                     <div className="flex items-center justify-between mb-2">
                        <div className="flex items-center gap-2">
                           <Timer size={12} className="text-vallenato-mustard" />
-                          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">Progreso y Velocidad de lectura</span>
+                          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40">Progreso Narrativo</span>
                        </div>
                        <span className="text-[10px] font-mono font-bold text-vallenato-mustard">{progressValue}%</span>
                     </div>
@@ -447,16 +509,6 @@ const LegendaryTales: React.FC = () => {
               </div>
            </div>
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        <AlertCircle size={64} className="text-vallenato-red mb-6" />
-        <h2 className="text-2xl font-serif font-bold text-vallenato-blue mb-2">No pudimos cargar los relatos</h2>
-        <Button onClick={() => window.location.reload()}>Reintentar</Button>
       </div>
     );
   }
