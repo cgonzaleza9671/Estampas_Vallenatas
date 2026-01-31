@@ -36,7 +36,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
   const [selectedMedia, setSelectedMedia] = useState<AudioItem | VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
-  const [showPromoBanner, setShowPromoBanner] = useState(false);
 
   const [charCount, setCharCount] = useState(0);
   const segments = useMemo(() => [
@@ -89,10 +88,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
         setRecentAudios(audios);
         setRecentVideos(videos);
         setRecentRelatos(relatos.slice(0, 2));
-        
-        setTimeout(() => setShowPromoBanner(true), 1000);
-        setTimeout(() => setShowPromoBanner(false), 11000);
-
       } catch (error) {
         console.error("Home fetch error", error);
       } finally {
@@ -165,46 +160,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
   return (
     <div className="animate-fade-in-up relative">
       
-      {/* BANNER TEMPORAL SUPERIOR */}
-      <div className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 transform ${showPromoBanner ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'}`}>
-         <div className="bg-vallenato-blue/95 backdrop-blur-xl border-b-2 border-vallenato-mustard shadow-2xl overflow-hidden">
-            <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-               <div className="flex items-center gap-4 md:gap-6">
-                  <button 
-                    onClick={() => navigate('/relatos-legendarios')}
-                    className="bg-vallenato-mustard p-3 rounded-full shadow-gold animate-bounce hover:scale-110 active:scale-95 transition-transform cursor-pointer group/icon"
-                    title="Ir a Relatos Legendarios"
-                  >
-                     <Headphones className="text-vallenato-blue group-hover/icon:rotate-12 transition-transform" size={24} />
-                  </button>
-                  <div className="flex flex-col">
-                     <div className="flex items-center gap-2 mb-0.5">
-                        <Sparkles className="text-vallenato-mustard" size={14} />
-                        <span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Nueva Experiencia Inmersiva</span>
-                     </div>
-                     <p className="text-gray-200 text-sm md:text-base font-serif italic">
-                        "Escuche los relatos acerca de grandes juglares que han marcado la historia del vallenato"
-                     </p>
-                  </div>
-               </div>
-               <div className="flex items-center gap-4">
-                  <button 
-                    onClick={() => navigate('/relatos-legendarios')}
-                    className="hidden md:flex bg-vallenato-mustard text-vallenato-blue px-6 py-2 rounded-full font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-white transition-all transform hover:scale-105 active:scale-95 items-center gap-2"
-                  >
-                     Ver Relatos <ArrowRight size={14} />
-                  </button>
-                  <button onClick={() => setShowPromoBanner(false)} className="text-white/40 hover:text-white transition-colors">
-                     <X size={24} />
-                  </button>
-               </div>
-            </div>
-            <div className="h-1 bg-vallenato-mustard/20 w-full relative">
-               <div className={`h-full bg-vallenato-mustard ${showPromoBanner ? 'w-0' : 'w-full'} transition-all duration-[10000ms] ease-linear`}></div>
-            </div>
-         </div>
-      </div>
-
       {!loadingData && latestAudio && (
         <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
