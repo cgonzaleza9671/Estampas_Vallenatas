@@ -6,20 +6,20 @@ import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRig
 // Marcas de tiempo de alta precisión sincronizadas a 1x.
 const STORY_TIMESTAMPS: Record<string, number[]> = {
   "Rafael Escalona": [
-    0.0,    // Párrafo 1: 0.0
-    22.0,   // Párrafo 2: 22.0
-    40.0,   // Párrafo 3: 40.0
-    69.0,   // Párrafo 4: 1:09.0
-    84.0,   // Párrafo 5: 1:24.0
-    143.0,  // Párrafo 6: 2:23.0
-    155.0,  // Párrafo 7: 2:35.0
-    190.0,  // Párrafo 8: 3:10.0
-    219.0,  // Párrafo 9: 3:39.0
-    233.0,  // Párrafo 10: 3:53.0
-    243.0,  // Párrafo 11: 4:03.0
-    253.0   // Párrafo 12: 4:13.0
+    0.0, 22.0, 40.0, 69.0, 84.0, 143.0, 155.0, 190.0, 219.0, 233.0, 243.0, 253.0
   ],
-  "La Gota Fría": [0, 14.8, 29.3, 45.7, 62.1, 78.5, 95.0, 112.0]
+  "La Gota Fría": [0, 14.8, 29.3, 45.7, 62.1, 78.5, 95.0, 112.0],
+  "Pablo López": [
+    0.0,    // Párrafo 1
+    42.0,   // Párrafo 2
+    72.0,   // Párrafo 3 (1:12.0)
+    106.0,  // Párrafo 4 (1:46.0)
+    146.0,  // Párrafo 5 (2:26.0)
+    180.0,  // Párrafo 6 (3:00.0)
+    208.0,  // Párrafo 7 (3:28.0)
+    230.0,  // Párrafo 8 (3:50.0)
+    252.0   // Párrafo 9 (4:12.0)
+  ]
 };
 
 const LegendaryTales: React.FC = () => {
@@ -32,17 +32,18 @@ const LegendaryTales: React.FC = () => {
   const [volume, setVolume] = useState(1.0);
   const [loading, setLoading] = useState(true);
   
-  // Latencia dinámica adaptada a la velocidad:
-  // A mayor velocidad, necesitamos un pequeño ajuste negativo mayor para que el scroll
-  // visual coincida con la percepción auditiva del cambio de idea.
+  // Latencia dinámica optimizada:
+  // Calculamos el desfase necesario según la velocidad de reproducción.
+  // A mayor velocidad (1.5x), el margen de error debe ser más agresivo para compensar
+  // el tiempo de renderizado de React frente al avance del buffer de audio.
   const dynamicLatency = useMemo(() => {
-    return -0.25 * playbackSpeed; 
+    // Factor de corrección: -0.3s base * multiplicador de velocidad
+    return -0.3 * playbackSpeed; 
   }, [playbackSpeed]);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const paragraphsRef = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Sincronización manual de propiedades de audio para máxima precisión
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
@@ -82,6 +83,7 @@ const LegendaryTales: React.FC = () => {
     );
     const baseTimestamps = matchKey ? STORY_TIMESTAMPS[matchKey] : [0];
     const finalTimestamps = [...baseTimestamps];
+    // Relleno automático para relatos sin marcas específicas
     while (finalTimestamps.length < paragraphs.length) {
       const lastTime = finalTimestamps[finalTimestamps.length - 1];
       finalTimestamps.push(lastTime + 15);
@@ -91,7 +93,10 @@ const LegendaryTales: React.FC = () => {
 
   const handleTimeUpdate = () => {
     if (!audioRef.current || isFinished) return;
+    
+    // Aplicamos la latencia dinámica al tiempo actual reportado por el hardware
     const currentTime = audioRef.current.currentTime + dynamicLatency;
+    
     let index = 0;
     for (let i = timestamps.length - 1; i >= 0; i--) {
       if (currentTime >= timestamps[i]) {
@@ -99,6 +104,7 @@ const LegendaryTales: React.FC = () => {
         break;
       }
     }
+    
     if (index !== activeParagraphIndex && index < paragraphs.length) {
       setActiveParagraphIndex(index);
     }
@@ -171,7 +177,6 @@ const LegendaryTales: React.FC = () => {
           onPause={() => setIsPlaying(false)}
         />
 
-        {/* Header Fijo Compacto */}
         <nav className="fixed top-0 left-0 w-full z-50 bg-vallenato-dark/80 backdrop-blur-xl border-b border-white/5 h-16 flex items-center px-4">
            <div className="container mx-auto grid grid-cols-3 items-center w-full">
               <div className="flex justify-start">
@@ -192,7 +197,6 @@ const LegendaryTales: React.FC = () => {
            </div>
         </nav>
 
-        {/* Hero Background */}
         <div className="relative w-full h-[50vh] overflow-hidden">
            <img src={selectedStory.imagen} className="w-full h-full object-cover opacity-30 scale-105" alt="" />
            <div className="absolute inset-0 bg-gradient-to-b from-vallenato-dark/40 via-vallenato-dark/80 to-vallenato-dark"></div>
@@ -208,7 +212,6 @@ const LegendaryTales: React.FC = () => {
            </div>
         </div>
 
-        {/* Contenido Principal */}
         <main className="container mx-auto px-6 mt-6 relative z-10 pb-16">
            <div className="max-w-2xl mx-auto space-y-10">
               {paragraphs.map((para, idx) => {
@@ -250,7 +253,6 @@ const LegendaryTales: React.FC = () => {
                 );
               })}
 
-              {/* Pie de página premium */}
               <div className="pt-24 pb-12 text-center">
                  <div className="inline-block relative">
                     <div className="absolute inset-0 bg-vallenato-mustard/5 blur-3xl rounded-full"></div>
@@ -267,7 +269,6 @@ const LegendaryTales: React.FC = () => {
            </div>
         </main>
 
-        {/* Reproductor Mini Ultra-Compacto */}
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-lg">
            <div className="bg-vallenato-blue/80 backdrop-blur-3xl p-3 md:p-4 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.8)] border border-white/10 flex flex-col gap-2.5">
               
@@ -279,8 +280,6 @@ const LegendaryTales: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between gap-3">
-                 
-                 {/* Volumen Compacto */}
                  <div className="flex items-center gap-2 w-24">
                     <button onClick={() => setVolume(v => v > 0 ? 0 : 1)} className="text-white/30 hover:text-vallenato-mustard transition-colors flex-shrink-0">
                        {volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
@@ -292,7 +291,6 @@ const LegendaryTales: React.FC = () => {
                     />
                  </div>
 
-                 {/* Controles Playback Centrados */}
                  <div className="flex items-center gap-4">
                     <button onClick={() => skipSeconds(-10)} className="text-white/20 hover:text-white transition-colors"><SkipBack size={16} /></button>
                     <button 
@@ -304,7 +302,6 @@ const LegendaryTales: React.FC = () => {
                     <button onClick={() => skipSeconds(10)} className="text-white/20 hover:text-white transition-colors"><SkipForward size={16} /></button>
                  </div>
 
-                 {/* Velocidad y Progreso */}
                  <div className="flex items-center gap-2 w-24 justify-end">
                     <button 
                       onClick={() => setPlaybackSpeed(prev => prev === 1 ? 1.25 : prev === 1.25 ? 1.5 : 1)}
