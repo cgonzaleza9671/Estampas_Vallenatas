@@ -40,6 +40,7 @@ export interface StoryItem {
   autor: string;
   audio_url?: string;
   frases?: string[];
+  paragraph_timestamps?: number[]; // Tiempos de inicio para cada párrafo en segundos
 }
 
 export interface Question {
