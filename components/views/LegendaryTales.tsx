@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
-import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX } from 'lucide-react';
+import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen } from 'lucide-react';
 
 // Marcas de tiempo de alta precisión sincronizadas a 1x.
 const STORY_TIMESTAMPS: Record<string, number[]> = {
@@ -32,12 +32,7 @@ const LegendaryTales: React.FC = () => {
   const [volume, setVolume] = useState(1.0);
   const [loading, setLoading] = useState(true);
   
-  // Latencia dinámica optimizada:
-  // Calculamos el desfase necesario según la velocidad de reproducción.
-  // A mayor velocidad (1.5x), el margen de error debe ser más agresivo para compensar
-  // el tiempo de renderizado de React frente al avance del buffer de audio.
   const dynamicLatency = useMemo(() => {
-    // Factor de corrección: -0.3s base * multiplicador de velocidad
     return -0.3 * playbackSpeed; 
   }, [playbackSpeed]);
   
@@ -83,7 +78,6 @@ const LegendaryTales: React.FC = () => {
     );
     const baseTimestamps = matchKey ? STORY_TIMESTAMPS[matchKey] : [0];
     const finalTimestamps = [...baseTimestamps];
-    // Relleno automático para relatos sin marcas específicas
     while (finalTimestamps.length < paragraphs.length) {
       const lastTime = finalTimestamps[finalTimestamps.length - 1];
       finalTimestamps.push(lastTime + 15);
@@ -93,10 +87,7 @@ const LegendaryTales: React.FC = () => {
 
   const handleTimeUpdate = () => {
     if (!audioRef.current || isFinished) return;
-    
-    // Aplicamos la latencia dinámica al tiempo actual reportado por el hardware
     const currentTime = audioRef.current.currentTime + dynamicLatency;
-    
     let index = 0;
     for (let i = timestamps.length - 1; i >= 0; i--) {
       if (currentTime >= timestamps[i]) {
@@ -104,7 +95,6 @@ const LegendaryTales: React.FC = () => {
         break;
       }
     }
-    
     if (index !== activeParagraphIndex && index < paragraphs.length) {
       setActiveParagraphIndex(index);
     }
@@ -333,34 +323,41 @@ const LegendaryTales: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto">
           {relatos.map((story) => (
             <div 
               key={story.id} 
               onClick={() => handleStartStory(story)} 
-              className="group bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 hover:shadow-gold transition-all duration-700 cursor-pointer flex flex-col"
+              className="group bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 hover:shadow-gold transition-all duration-700 cursor-pointer flex flex-col sm:flex-row"
             >
-              <div className="aspect-[4/3] relative overflow-hidden bg-vallenato-blue">
+              <div className="w-full sm:w-[40%] aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
                  <img src={story.imagen} alt={story.titulo} className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[2s]" />
-                 <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue via-transparent to-transparent opacity-80"></div>
+                 <div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent opacity-60"></div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="bg-white/20 backdrop-blur-xl p-6 rounded-full border border-white/30 text-white shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
-                       <Play size={32} fill="currentColor" />
+                    <div className="bg-white/20 backdrop-blur-xl p-5 rounded-full border border-white/30 text-white shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
+                       <Play size={24} fill="currentColor" />
                     </div>
                  </div>
               </div>
-              <div className="p-8 flex-grow flex flex-col">
-                 <h2 className="text-2xl font-serif text-vallenato-blue font-bold mb-3 group-hover:text-vallenato-red transition-colors leading-tight">{story.titulo}</h2>
-                 <p className="text-gray-500 font-serif italic text-sm md:text-base line-clamp-3 mb-6 leading-relaxed">{story.subtitulo}</p>
+
+              <div className="p-8 flex-grow flex flex-col justify-between">
+                 <div>
+                    <h2 className="text-2xl font-serif text-vallenato-blue font-bold mb-3 group-hover:text-vallenato-red transition-colors leading-tight">{story.titulo}</h2>
+                    <div className="w-8 h-0.5 bg-vallenato-mustard mb-4 opacity-50"></div>
+                    <p className="text-gray-500 font-serif italic text-sm md:text-base leading-relaxed line-clamp-[6] mb-6">
+                      {story.subtitulo}
+                    </p>
+                 </div>
+
                  <div className="mt-auto flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                       <div className="w-8 h-8 rounded-full bg-vallenato-blue/5 flex items-center justify-center text-vallenato-blue">
-                          <Clock size={14} />
+                       <div className="w-7 h-7 rounded-full bg-vallenato-blue/5 flex items-center justify-center text-vallenato-blue/30">
+                          <Clock size={12} />
                        </div>
                        <span className="text-[9px] font-bold uppercase tracking-widest text-vallenato-blue/40">{story.fecha}</span>
                     </div>
-                    <button className="bg-vallenato-blue text-white p-3 rounded-xl group-hover:bg-vallenato-red transition-colors">
-                       <ChevronRight size={16} />
+                    <button className="text-vallenato-blue font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:text-vallenato-red transition-all">
+                       Leer más <ChevronRight size={14} />
                     </button>
                  </div>
               </div>

@@ -272,7 +272,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
          </div>
       </section>
 
-      {/* Relatos Section */}
+      {/* Relatos Section - REDISEÑADA PARA FOTOS VERTICALES */}
       <section className="py-24 bg-vallenato-beige relative z-10 border-y border-vallenato-mustard/10 overflow-hidden">
          <div className="absolute top-0 right-0 w-96 h-96 bg-vallenato-mustard/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
          <div className="absolute bottom-0 left-0 w-96 h-96 bg-vallenato-red/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
@@ -288,34 +288,39 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                 <div className="w-24 h-1 bg-vallenato-mustard mx-auto mt-6"></div>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12 max-w-6xl mx-auto">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 max-w-6xl mx-auto">
                 {recentRelatos.map((relato) => (
                   <div 
                     key={relato.id} 
                     onClick={() => navigate('/relatos-legendarios')}
-                    className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col"
+                    className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col md:flex-row"
                   >
-                    <div className="aspect-[16/10] relative overflow-hidden bg-vallenato-blue">
+                    <div className="w-full md:w-[45%] aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
                        <img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] opacity-90" />
-                       <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/95 via-vallenato-blue/30 to-transparent"></div>
-                       
-                       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                          <h3 className="text-2xl md:text-3xl font-serif text-white font-bold leading-tight drop-shadow-lg mb-3">{relato.titulo}</h3>
-                          <p className="text-vallenato-mustard font-serif italic text-sm md:text-base leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2 md:line-clamp-3">
+                       <div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div>
+                       <div className="absolute bottom-4 left-4 right-4">
+                          <div className="bg-vallenato-red/90 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-fit">Crónica Viva</div>
+                       </div>
+                    </div>
+                    
+                    <div className="p-8 md:p-10 flex-grow flex flex-col justify-between">
+                       <div>
+                          <h3 className="text-2xl md:text-3xl font-serif text-vallenato-blue font-bold leading-tight mb-4 group-hover:text-vallenato-red transition-colors">{relato.titulo}</h3>
+                          <div className="w-10 h-0.5 bg-vallenato-mustard mb-6"></div>
+                          <p className="text-gray-600 font-serif italic text-sm md:text-base leading-relaxed line-clamp-5 md:line-clamp-[8]">
                              {relato.subtitulo}
                           </p>
                        </div>
-                    </div>
-                    <div className="p-6 md:p-8 flex-grow flex flex-col">
-                       <div className="mt-auto flex items-center justify-between">
+
+                       <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                             <div className="bg-vallenato-red/10 p-2.5 rounded-full text-vallenato-red">
-                                <BookOpen size={18} />
+                             <div className="bg-vallenato-blue/5 p-2 rounded-full text-vallenato-blue/40">
+                                <BookOpen size={16} />
                              </div>
-                             <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-blue/60">{relato.fecha}</span>
+                             <span className="text-[9px] font-bold uppercase tracking-widest text-vallenato-blue/40">{relato.fecha}</span>
                           </div>
-                          <button className="text-vallenato-blue font-bold uppercase text-[11px] md:text-xs tracking-widest flex items-center gap-3 group-hover:text-vallenato-red transition-colors">
-                             Escuchar Relato <Play size={14} fill="currentColor" />
+                          <button className="bg-vallenato-blue text-white p-3 rounded-2xl group-hover:bg-vallenato-red transition-all shadow-lg active:scale-95">
+                             <Play size={14} fill="currentColor" />
                           </button>
                        </div>
                     </div>

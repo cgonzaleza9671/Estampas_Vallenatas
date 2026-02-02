@@ -11,7 +11,7 @@ const CACHE_TTL = 30 * 60 * 1000;
 
 const getCacheKey = (base: string, limit: number, page: number, filters: any = {}) => {
   const filterStr = JSON.stringify(filters);
-  return `${base}_p${page}_l${limit}_f${filterStr}_v32`;
+  return `${base}_p${page}_l${limit}_f${filterStr}_v36`;
 };
 
 const setCache = (key: string, data: any) => {
@@ -51,7 +51,7 @@ const mapAudio = (db: any): AudioItem => {
     acordeonero: (db.acordeonero || db.accordion || 'Sin Acordeonero').trim(),
     fecha_publicacion: fechaLabel,
     anio: anio,
-    url_audio: db.audio_url || db.url_audio || db.url || db.audio || '',
+    url_audio: (db.audio_url || db.url_audio || db.url || db.audio || '').trim(),
     descripcion: db.descripcion || db.description || ""
   };
 };
@@ -70,9 +70,16 @@ const mapVideo = (db: any): VideoItem => {
     }
   }
 
-  let url = db.video_url || db.url_video || db.url || '';
+  let url = (db.video_url || db.url_video || db.url || '').trim();
+  
+  // Si la URL es solo un nombre de archivo, construir la ruta de Supabase Storage
   if (url && !url.startsWith('http')) {
     url = `${SUPABASE_URL}/storage/v1/object/public/Videos/${url}`;
+  }
+
+  let thumb = (db.thumbnail_url || db.poster || '').trim();
+  if (thumb && !thumb.startsWith('http')) {
+    thumb = `${SUPABASE_URL}/storage/v1/object/public/Imagenes/${thumb}`;
   }
 
   return {
@@ -82,7 +89,7 @@ const mapVideo = (db: any): VideoItem => {
     interprete: (db.interprete || db.interpreter || 'Intérprete Desconocido').trim(),
     anio: anio,
     url_video: url,
-    thumbnail_url: db.thumbnail_url || db.poster || '',
+    thumbnail_url: thumb,
     descripcion: db.descripcion || db.description || "",
     fecha_publicacion: fechaLabel
   };

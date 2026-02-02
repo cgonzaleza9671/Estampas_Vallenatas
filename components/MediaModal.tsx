@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { X, Calendar, User, Mic2, FileText, Music, Video, ListMusic, Info, Award, Loader2 } from 'lucide-react';
+import { X, Calendar, User, Mic2, FileText, Music, Video, ListMusic, Info, Award, Loader2, AlertCircle, ExternalLink } from 'lucide-react';
 import { AudioItem, VideoItem } from '../types.ts';
 import { fetchAudioDescription, fetchVideoDescription } from '../services/supabaseClient.ts';
 
@@ -63,7 +63,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
 
       <div className="relative bg-[#0a1120] w-full max-w-5xl h-full md:h-auto md:max-h-[92vh] md:rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,1)] overflow-hidden flex flex-col animate-fade-in-up border border-white/5">
         
-        {/* MOBILE HEADER: No absoluto, empuja el contenido hacia abajo para liberar el video */}
+        {/* CABECERA MÓVIL */}
         <div className="md:hidden flex items-start justify-between p-4 bg-black border-b border-white/10 z-30">
            <div className="flex flex-col gap-1 pr-4">
               <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                     {isVideo ? 'Videos' : 'Tesoro Sonoro'}
                  </span>
               </div>
-              <h2 className="text-white font-serif font-bold text-base leading-tight">
+              <h2 className="text-white font-serif font-bold text-sm leading-tight">
                 {item.titulo}
               </h2>
            </div>
@@ -84,7 +84,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
            </button>
         </div>
 
-        {/* DESKTOP HEADER: Mantiene el diseño original flotante */}
+        {/* CABECERA DESKTOP */}
         <div className="hidden md:flex absolute top-0 left-0 w-full z-20 p-8 justify-between items-start pointer-events-none">
            <div className="pointer-events-auto">
               <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 mb-2">
@@ -109,20 +109,18 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
         <div ref={scrollContainerRef} className="overflow-y-auto flex-grow custom-scrollbar">
           
           <div ref={playerRef} className="w-full relative aspect-video bg-black flex items-center justify-center">
-            {/* El gradiente se oculta en mobile para dar total visibilidad a los controles */}
             <div className="hidden md:block absolute inset-0 bg-gradient-to-b from-vallenato-dark/80 via-transparent to-vallenato-dark/60 z-10 pointer-events-none"></div>
             
             {isVideo && videoItem ? (
-               <video 
-                 key={videoItem.url_video}
-                 controls 
-                 playsInline
-                 preload="none"
-                 className="w-full h-full object-contain relative z-0" 
-                 poster={videoItem.thumbnail_url}
-               >
-                 <source src={videoItem.url_video} type="video/mp4" />
-               </video>
+              <video 
+                className="w-full h-full object-contain relative z-0" 
+                controls 
+                preload="metadata"
+                poster={videoItem.thumbnail_url}
+                src={videoItem.url_video}
+              >
+                Tu navegador no soporta la reproducción de video.
+              </video>
             ) : audioItem ? (
                <div className="w-full h-full flex flex-col items-center justify-center bg-vallenato-blue text-white p-6 md:p-10 relative overflow-hidden">
                  <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
@@ -156,7 +154,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                       </div>
                       <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-white/40">{isVideo ? 'Interpretación' : 'Voz Líder'}</span>
                    </div>
-                   <p className="font-serif text-sm md:text-lg text-white font-bold">{isVideo ? videoItem?.interprete : audioItem?.cantante}</p>
+                   <p className="font-serif text-sm md:text-lg text-white font-bold">{isVideo ? (item as VideoItem)?.interprete : (item as AudioItem)?.cantante}</p>
                 </div>
 
                 <div className="bg-white/5 backdrop-blur-sm p-3.5 md:p-5 rounded-[1.2rem] md:rounded-[1.5rem] border border-white/10 hover:border-vallenato-blue/50 transition-all group">
@@ -167,7 +165,7 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                       <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-white/40">{audioItem ? 'Acordeonero' : 'Registro Histórico'}</span>
                    </div>
                    <p className="font-serif text-sm md:text-lg text-white font-bold">
-                     {audioItem ? audioItem.acordeonero : (videoItem?.fecha_publicacion || `${videoItem?.anio}`)}
+                     {audioItem ? audioItem.acordeonero : ((item as VideoItem)?.fecha_publicacion || `${(item as VideoItem)?.anio}`)}
                    </p>
                 </div>
 
