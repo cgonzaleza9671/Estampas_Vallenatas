@@ -340,7 +340,7 @@ const LegendaryTales: React.FC = () => {
               onClick={() => handleStartStory(story)} 
               className="group bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 hover:shadow-gold transition-all duration-700 cursor-pointer flex flex-col"
             >
-              <div className="aspect-[16/10] relative overflow-hidden bg-vallenato-blue">
+              <div className="aspect-[4/3] relative overflow-hidden bg-vallenato-blue">
                  <img src={story.imagen} alt={story.titulo} className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[2s]" />
                  <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue via-transparent to-transparent opacity-80"></div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -351,7 +351,7 @@ const LegendaryTales: React.FC = () => {
               </div>
               <div className="p-8 flex-grow flex flex-col">
                  <h2 className="text-2xl font-serif text-vallenato-blue font-bold mb-3 group-hover:text-vallenato-red transition-colors leading-tight">{story.titulo}</h2>
-                 <p className="text-gray-500 font-serif italic text-sm line-clamp-2 mb-6">{story.subtitulo}</p>
+                 <p className="text-gray-500 font-serif italic text-sm md:text-base line-clamp-3 mb-6 leading-relaxed">{story.subtitulo}</p>
                  <div className="mt-auto flex items-center justify-between">
                     <div className="flex items-center gap-2">
                        <div className="w-8 h-8 rounded-full bg-vallenato-blue/5 flex items-center justify-center text-vallenato-blue">

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
@@ -289,33 +288,34 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                 <div className="w-24 h-1 bg-vallenato-mustard mx-auto mt-6"></div>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12 max-w-5xl mx-auto">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-12 max-w-6xl mx-auto">
                 {recentRelatos.map((relato) => (
                   <div 
                     key={relato.id} 
                     onClick={() => navigate('/relatos-legendarios')}
-                    className="bg-white rounded-[2.5rem] overflow-hidden shadow-md border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col"
+                    className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col"
                   >
-                    <div className="aspect-[21/9] relative overflow-hidden bg-vallenato-blue">
-                       <img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-90" />
-                       <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/90 via-vallenato-blue/40 to-transparent"></div>
-                       <div className="absolute top-4 left-4 right-4">
-                          <span className="bg-vallenato-mustard text-vallenato-blue text-[8px] md:text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full inline-block backdrop-blur-sm shadow-lg max-w-full truncate">{relato.subtitulo}</span>
-                       </div>
-                       <div className="absolute bottom-4 left-6">
-                          <h3 className="text-xl font-serif text-white font-bold leading-tight drop-shadow-lg">{relato.titulo}</h3>
+                    <div className="aspect-[16/10] relative overflow-hidden bg-vallenato-blue">
+                       <img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] opacity-90" />
+                       <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/95 via-vallenato-blue/30 to-transparent"></div>
+                       
+                       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                          <h3 className="text-2xl md:text-3xl font-serif text-white font-bold leading-tight drop-shadow-lg mb-3">{relato.titulo}</h3>
+                          <p className="text-vallenato-mustard font-serif italic text-sm md:text-base leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2 md:line-clamp-3">
+                             {relato.subtitulo}
+                          </p>
                        </div>
                     </div>
-                    <div className="p-6 flex-grow flex flex-col">
+                    <div className="p-6 md:p-8 flex-grow flex flex-col">
                        <div className="mt-auto flex items-center justify-between">
                           <div className="flex items-center gap-3">
-                             <div className="bg-vallenato-red/10 p-2 rounded-full text-vallenato-red">
-                                <BookOpen size={16} />
+                             <div className="bg-vallenato-red/10 p-2.5 rounded-full text-vallenato-red">
+                                <BookOpen size={18} />
                              </div>
-                             <span className="text-[10px] font-bold uppercase tracking-widest text-vallenato-blue/60">{relato.fecha}</span>
+                             <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-blue/60">{relato.fecha}</span>
                           </div>
-                          <button className="text-vallenato-blue font-bold uppercase text-[11px] tracking-widest flex items-center gap-2 group-hover:text-vallenato-red transition-colors">
-                             Escuchar <Play size={12} fill="currentColor" />
+                          <button className="text-vallenato-blue font-bold uppercase text-[11px] md:text-xs tracking-widest flex items-center gap-3 group-hover:text-vallenato-red transition-colors">
+                             Escuchar Relato <Play size={14} fill="currentColor" />
                           </button>
                        </div>
                     </div>
