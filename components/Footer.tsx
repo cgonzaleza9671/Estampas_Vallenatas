@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { MapPin, Youtube, Instagram } from 'lucide-react';
 
 const Footer: React.FC = () => {
   const navigate = useNavigate();
@@ -60,8 +60,8 @@ const Footer: React.FC = () => {
         </div>
 
         <div>
-          <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Contacto</h3>
-          <div className="space-y-4 font-sans text-sm">
+          <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Contacto y Redes</h3>
+          <div className="space-y-4 font-sans text-sm mb-8">
             <div className="flex items-start gap-3">
               <MapPin className="text-vallenato-red shrink-0 mt-1" size={18} />
               <div>
@@ -78,6 +78,27 @@ const Footer: React.FC = () => {
                 <a href="mailto:alvarogonzalez1945@hotmail.com" className="text-vallenato-mustard hover:underline">alvarogonzalez1945@hotmail.com</a>
               </div>
             </div>
+          </div>
+          
+          <div className="pt-6 border-t border-white/10 flex items-center gap-6">
+            <a 
+              href="https://www.youtube.com/@EstampasVallenatasColombia" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-white hover:text-vallenato-red transition-all transform hover:scale-110"
+              title="YouTube Oficial"
+            >
+              <Youtube size={24} />
+            </a>
+            <a 
+              href="https://www.instagram.com/estampasvallenatas.co?igsh=MTdudjJvcTVsNG02Yw%3D%3D&utm_source=qr" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-white hover:text-vallenato-mustard transition-all transform hover:scale-110"
+              title="Instagram Oficial"
+            >
+              <Instagram size={24} />
+            </a>
           </div>
         </div>
       </div>

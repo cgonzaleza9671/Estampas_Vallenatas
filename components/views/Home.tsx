@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
@@ -298,9 +299,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                     <div className="w-full md:w-[45%] aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
                        <img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] opacity-90" />
                        <div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div>
-                       <div className="absolute bottom-4 left-4 right-4">
-                          <div className="bg-vallenato-red/90 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full w-fit">Crónica Viva</div>
-                       </div>
                     </div>
                     
                     <div className="p-8 md:p-10 flex-grow flex flex-col justify-between">
