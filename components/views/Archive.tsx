@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { fetchAudios, fetchVideos, fetchAudioFilters, fetchVideoFilters } from '../../services/supabaseClient.ts';
 import { AudioItem, VideoItem } from '../../types.ts';
@@ -431,7 +430,8 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                             <span className="text-vallenato-red text-[10px] font-black uppercase tracking-[0.2em]">Archivo audiovisual completo</span>
                          </div>
                          <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mb-6 leading-tight">
-                            Explore nuestro canal oficial
+                            ¿Quiere ver más videos? <br className="hidden md:block" />
+                            <span className="text-vallenato-mustard">Explore nuestro canal oficial de YouTube</span>
                          </h2>
                          <p className="text-gray-400 font-serif italic text-lg mb-8 max-w-xl">
                             "Llevamos décadas preservando la esencia del folclor vallenato tradicional. Suscríbase para no perderse ninguna joya de nuestra fonoteca."
