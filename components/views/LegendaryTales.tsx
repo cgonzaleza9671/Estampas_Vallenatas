@@ -1,12 +1,23 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
-import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen } from 'lucide-react';
+import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen, RotateCcw, CheckCircle2 } from 'lucide-react';
 
 // Marcas de tiempo de alta precisión sincronizadas a 1x.
 const STORY_TIMESTAMPS: Record<string, number[]> = {
   "Rafael Escalona": [
-    0.0, 22.0, 40.0, 69.0, 84.0, 143.0, 155.0, 190.0, 219.0, 233.0, 243.0, 253.0
+    0.0,   // Párrafo 1: 0.0 - 19.0
+    20.0,  // Párrafo 2: 20.0 - 39.0
+    40.0,  // Párrafo 3: 40.0 - 1.08.0
+    69.0,  // Párrafo 4: 1.09.0 - 1.23.0
+    84.0,  // Párrafo 5: 1.24.0 - 2.22.0
+    143.0, // Párrafo 6: 2.23.0 - 2.34.0
+    155.0, // Párrafo 7: 2.35.0 - 3.09.0
+    190.0, // Párrafo 8: 3.10.0 - 3.38.0
+    219.0, // Párrafo 9: 3.39.0 - 3.52.0
+    233.0, // Párrafo 10: 3.53.0 - 4.02.0
+    243.0, // Párrafo 11: 4.03.0 - 4.12.0
+    253.0  // Párrafo 12: 4.13.0 - Final
   ],
   "La Gota Fría": [0, 14.8, 29.3, 45.7, 62.1, 78.5, 95.0, 112.0],
   "Pablo López": [
@@ -114,6 +125,30 @@ const LegendaryTales: React.FC = () => {
     }
   }, [activeParagraphIndex, isFinished]);
 
+  const restartStory = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      setActiveParagraphIndex(0);
+      setIsFinished(false);
+      setIsPlaying(true);
+      // Aseguramos que el audio comience de nuevo
+      audioRef.current.play().catch(console.error);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const togglePlay = () => {
+    if (isFinished) {
+      restartStory();
+    } else if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(console.error);
+      }
+    }
+  };
+
   const handleStartStory = (story: StoryItem) => {
     setSelectedStory(story);
     setActiveParagraphIndex(0);
@@ -167,6 +202,14 @@ const LegendaryTales: React.FC = () => {
           onPause={() => setIsPlaying(false)}
         />
 
+        {/* Barra de Progreso de Lectura Superior */}
+        <div className="fixed top-16 left-0 w-full h-1 z-[60] bg-white/5">
+           <div 
+             className="h-full bg-vallenato-mustard transition-all duration-700 ease-out shadow-[0_0_10px_rgba(234,170,0,0.5)]"
+             style={{ width: `${readingProgress}%` }}
+           ></div>
+        </div>
+
         <nav className="fixed top-0 left-0 w-full z-50 bg-vallenato-dark/80 backdrop-blur-xl border-b border-white/5 h-16 flex items-center px-4">
            <div className="container mx-auto grid grid-cols-3 items-center w-full">
               <div className="flex justify-start">
@@ -205,21 +248,25 @@ const LegendaryTales: React.FC = () => {
         <main className="container mx-auto px-6 mt-6 relative z-10 pb-16">
            <div className="max-w-2xl mx-auto space-y-10">
               {paragraphs.map((para, idx) => {
-                const isActive = activeParagraphIndex === idx;
-                const isReadable = isFinished || isActive;
+                const isActive = activeParagraphIndex === idx && !isFinished;
+                const isReadable = isFinished || activeParagraphIndex === idx;
 
                 return (
                   <div 
                     key={idx}
                     ref={el => paragraphsRef.current[idx] = el}
                     onClick={() => jumpToParagraph(idx)}
-                    className={`group relative transition-all duration-1000 cursor-pointer 
+                    className={`group relative transition-all duration-1000 cursor-pointer pl-4 md:pl-0
                       ${isReadable 
-                        ? 'opacity-100 blur-0 scale-[1.02]' 
-                        : 'opacity-10 blur-[1.5px] scale-95 hover:opacity-25'
+                        ? 'opacity-100 blur-0 scale-[1.01] md:scale-[1.02]' 
+                        : 'opacity-10 blur-[1px] md:blur-[1.5px] scale-95 hover:opacity-25'
                       }`}
                   >
-                    {isActive && !isFinished && (
+                    {isActive && (
+                      <div className="absolute -left-2 top-0 bottom-0 w-1 bg-vallenato-mustard rounded-full animate-pulse"></div>
+                    )}
+
+                    {isActive && (
                       <div className="absolute -inset-4 bg-vallenato-mustard/5 rounded-[2rem] blur-xl -z-10 animate-pulse"></div>
                     )}
 
@@ -243,19 +290,38 @@ const LegendaryTales: React.FC = () => {
                 );
               })}
 
-              <div className="pt-24 pb-12 text-center">
-                 <div className="inline-block relative">
-                    <div className="absolute inset-0 bg-vallenato-mustard/5 blur-3xl rounded-full"></div>
-                    <div className="relative z-10 bg-white/[0.03] border border-vallenato-mustard/10 px-8 py-6 rounded-[1.5rem] backdrop-blur-md">
-                       <div className="flex items-center justify-center gap-2 mb-3">
-                          <Feather size={14} className="text-vallenato-red" />
-                          <span className="text-[8px] font-black uppercase tracking-[0.4em] text-vallenato-red">Relato por</span>
+              {/* Mensaje de Finalización y Firma */}
+              {isFinished ? (
+                 <div className="pt-24 pb-12 text-center animate-fade-in-up">
+                    <div className="inline-block relative">
+                       <div className="absolute inset-0 bg-vallenato-mustard/5 blur-3xl rounded-full"></div>
+                       <div className="relative z-10 bg-white/[0.03] border border-vallenato-mustard/20 px-8 py-10 rounded-[2.5rem] backdrop-blur-md">
+                          <div className="flex items-center justify-center gap-3 mb-6">
+                             <CheckCircle2 size={24} className="text-vallenato-mustard" />
+                             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-vallenato-mustard">Relato completado</span>
+                          </div>
+                          
+                          <div className="mb-6">
+                             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-vallenato-red block mb-2">Relato por:</span>
+                             <h4 className="text-white font-calligraphy text-4xl md:text-6xl mb-2">Álvaro González Pimienta</h4>
+                             <div className="w-12 h-0.5 bg-vallenato-red/30 mx-auto mt-4 rounded-full"></div>
+                          </div>
+
+                          <button 
+                            onClick={restartStory}
+                            className="inline-flex items-center gap-3 bg-vallenato-mustard text-vallenato-blue px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white transition-all shadow-xl active:scale-95"
+                          >
+                             <RotateCcw size={16} /> Volver a escuchar desde el inicio
+                          </button>
                        </div>
-                       <h4 className="text-vallenato-mustard font-calligraphy text-4xl md:text-6xl mb-1">Álvaro González Pimienta</h4>
-                       <div className="w-12 h-0.5 bg-vallenato-red/30 mx-auto mt-4 rounded-full"></div>
                     </div>
                  </div>
-              </div>
+              ) : (
+                <div className="pt-24 pb-12 opacity-30 text-center filter grayscale transition-opacity duration-1000">
+                   <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/40 block mb-2">Relato por:</span>
+                   <h4 className="text-white font-calligraphy text-4xl md:text-6xl">Álvaro González Pimienta</h4>
+                </div>
+              )}
            </div>
         </main>
 
@@ -284,10 +350,16 @@ const LegendaryTales: React.FC = () => {
                  <div className="flex items-center gap-4">
                     <button onClick={() => skipSeconds(-10)} className="text-white/20 hover:text-white transition-colors"><SkipBack size={16} /></button>
                     <button 
-                      onClick={() => isPlaying ? audioRef.current?.pause() : audioRef.current?.play()} 
+                      onClick={togglePlay} 
                       className={`p-3 rounded-full transition-all active:scale-90 shadow-xl ${isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-mustard text-vallenato-blue'}`}
                     >
-                      {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-0.5" />}
+                      {isFinished ? (
+                         <RotateCcw size={18} />
+                      ) : isPlaying ? (
+                        <Pause size={18} fill="currentColor" />
+                      ) : (
+                        <Play size={18} fill="currentColor" className="ml-0.5" />
+                      )}
                     </button>
                     <button onClick={() => skipSeconds(10)} className="text-white/20 hover:text-white transition-colors"><SkipForward size={16} /></button>
                  </div>

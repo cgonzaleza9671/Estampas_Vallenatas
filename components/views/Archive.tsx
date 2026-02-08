@@ -442,7 +442,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                            rel="noopener noreferrer"
                            className="inline-flex items-center gap-4 bg-vallenato-red hover:bg-white text-white hover:text-vallenato-blue px-10 py-4 rounded-full font-bold uppercase text-xs tracking-[0.2em] transition-all shadow-xl hover:shadow-red-500/20 group/btn"
                          >
-                           Visitar @EstampasVallenatas <ExternalLink size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
+                           Haga clic aquí para visitar el canal de YouTube <ExternalLink size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                          </a>
                       </div>
                    </div>
