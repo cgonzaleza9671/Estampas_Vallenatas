@@ -19,6 +19,17 @@ const STORY_TIMESTAMPS: Record<string, number[]> = {
     243.0, // Párrafo 11: 4.03.0 - 4.12.0
     253.0  // Párrafo 12: 4.13.0 - Final
   ],
+  "Tobías Enrique Pumarejo": [
+    0.0,   // Párrafo 1: 0.0 - 20.0
+    21.0,  // Párrafo 2: 21.0 - 37.0
+    38.0,  // Párrafo 3: 38.0 - 1.12.0
+    73.0,  // Párrafo 4: 1.13.0 - 1.33.0
+    94.0,  // Párrafo 5: 1.34.0 - 1.57.0
+    118.0, // Párrafo 6: 1.58.0 - 2.30.0
+    151.0, // Párrafo 7: 2.31.0 - 2.49.0
+    170.0, // Párrafo 8: 2.50.0 - 3.15.0
+    195.0  // Párrafo 9: 3.15.0 - Final
+  ],
   "La Gota Fría": [0, 14.8, 29.3, 45.7, 62.1, 78.5, 95.0, 112.0],
   "Pablo López": [
     0.0,    // Párrafo 1
@@ -131,7 +142,6 @@ const LegendaryTales: React.FC = () => {
       setActiveParagraphIndex(0);
       setIsFinished(false);
       setIsPlaying(true);
-      // Aseguramos que el audio comience de nuevo
       audioRef.current.play().catch(console.error);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -272,7 +282,7 @@ const LegendaryTales: React.FC = () => {
 
                     <div className="flex gap-4 items-start">
                       <div className={`mt-1 transition-all duration-700 ${isActive ? 'text-vallenato-red' : 'text-white/10'}`}>
-                        <Quote size={16} fill="currentColor" />
+                        {isActive ? <Feather size={16} className="animate-bounce" /> : <Quote size={16} fill="currentColor" />}
                       </div>
                       
                       <div className="flex-grow">
@@ -358,7 +368,7 @@ const LegendaryTales: React.FC = () => {
                       ) : isPlaying ? (
                         <Pause size={18} fill="currentColor" />
                       ) : (
-                        <Play size={18} fill="currentColor" className="ml-0.5" />
+                        <Play size={18} fill="currentColor" className="ml-1" />
                       )}
                     </button>
                     <button onClick={() => skipSeconds(10)} className="text-white/20 hover:text-white transition-colors"><SkipForward size={16} /></button>
