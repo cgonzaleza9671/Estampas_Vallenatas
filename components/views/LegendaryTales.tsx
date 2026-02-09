@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
-import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen, RotateCcw, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen, RotateCcw, CheckCircle2, FastForward } from 'lucide-react';
 
 // Marcas de tiempo de alta precisión sincronizadas a 1x.
 const STORY_TIMESTAMPS: Record<string, number[]> = {
@@ -21,14 +21,14 @@ const STORY_TIMESTAMPS: Record<string, number[]> = {
   ],
   "Tobías Enrique Pumarejo": [
     0.0,   // Párrafo 1: 0.0 - 20.0
-    21.0,  // Párrafo 2: 21.0 - 37.0
-    38.0,  // Párrafo 3: 38.0 - 1.12.0
-    73.0,  // Párrafo 4: 1.13.0 - 1.33.0
-    94.0,  // Párrafo 5: 1.34.0 - 1.57.0
-    118.0, // Párrafo 6: 1.58.0 - 2.30.0
-    151.0, // Párrafo 7: 2.31.0 - 2.49.0
-    170.0, // Párrafo 8: 2.50.0 - 3.15.0
-    195.0  // Párrafo 9: 3.15.0 - Final
+    21.0,  // Párrafo 2: 21.0 - 36.0
+    37.0,  // Párrafo 3: 37.0 - 1.12.0 (72s)
+    73.0,  // Párrafo 4: 1.13.0 (73s) - 1.32.0 (92s)
+    93.0,  // Párrafo 5: 1.33.0 (93s) - 1.56.0 (116s)
+    117.0, // Párrafo 6: 1.57.0 (117s) - 2.30.0 (150s)
+    151.0, // Párrafo 7: 2.31.0 (151s) - 2.48.0 (168s)
+    169.0, // Párrafo 8: 2.49.0 (169s) - 3.14.0 (194s)
+    195.0  // Párrafo 9: 3.15.0 (195s) - Final
   ],
   "La Gota Fría": [0, 14.8, 29.3, 45.7, 62.1, 78.5, 95.0, 112.0],
   "Pablo López": [
@@ -53,6 +53,8 @@ const LegendaryTales: React.FC = () => {
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [volume, setVolume] = useState(1.0);
   const [loading, setLoading] = useState(true);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   
   const dynamicLatency = useMemo(() => {
     return -0.3 * playbackSpeed; 
@@ -107,18 +109,36 @@ const LegendaryTales: React.FC = () => {
     return finalTimestamps;
   }, [selectedStory, paragraphs.length]);
 
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
   const handleTimeUpdate = () => {
-    if (!audioRef.current || isFinished) return;
-    const currentTime = audioRef.current.currentTime + dynamicLatency;
+    if (!audioRef.current) return;
+    const time = audioRef.current.currentTime;
+    setCurrentTime(time);
+    
+    if (isFinished) return;
+    
+    const adjustedTime = time + dynamicLatency;
     let index = 0;
     for (let i = timestamps.length - 1; i >= 0; i--) {
-      if (currentTime >= timestamps[i]) {
+      if (adjustedTime >= timestamps[i]) {
         index = i;
         break;
       }
     }
     if (index !== activeParagraphIndex && index < paragraphs.length) {
       setActiveParagraphIndex(index);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
     }
   };
 
@@ -164,6 +184,7 @@ const LegendaryTales: React.FC = () => {
     setActiveParagraphIndex(0);
     setIsPlaying(false);
     setIsFinished(false);
+    setCurrentTime(0);
     window.scrollTo(0, 0);
   };
 
@@ -202,11 +223,12 @@ const LegendaryTales: React.FC = () => {
 
   if (selectedStory) {
     return (
-      <div className="min-h-screen bg-vallenato-dark text-white animate-fade-in pb-40">
+      <div className="min-h-screen bg-vallenato-dark text-white animate-fade-in pb-48">
         <audio 
           ref={audioRef} 
           src={selectedStory.audio_url} 
           onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleEnded}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
@@ -335,56 +357,103 @@ const LegendaryTales: React.FC = () => {
            </div>
         </main>
 
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-lg">
-           <div className="bg-vallenato-blue/80 backdrop-blur-3xl p-3 md:p-4 rounded-[2rem] shadow-[0_15px_40px_rgba(0,0,0,0.8)] border border-white/10 flex flex-col gap-2.5">
+        {/* REPRODUCTOR DE AUDIO POTENCIADO - ISLA FLOTANTE */}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-xl">
+           <div className="bg-[#001a33]/90 backdrop-blur-3xl p-5 md:p-6 rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.8)] border border-white/10 flex flex-col gap-5">
               
-              <div className="relative w-full h-[3px] bg-white/5 rounded-full overflow-hidden">
-                <div 
-                  className="absolute top-0 left-0 h-full bg-vallenato-mustard transition-all duration-300"
-                  style={{ width: `${audioRef.current ? (audioRef.current.currentTime / audioRef.current.duration) * 100 : 0}%` }}
-                ></div>
+              {/* Barra de Búsqueda y Tiempos */}
+              <div className="flex flex-col gap-2">
+                <div className="relative w-full group">
+                  <input 
+                    type="range"
+                    min="0"
+                    max={duration || 100}
+                    value={currentTime}
+                    onChange={(e) => {
+                      const time = parseFloat(e.target.value);
+                      if(audioRef.current) audioRef.current.currentTime = time;
+                      setCurrentTime(time);
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-vallenato-mustard to-vallenato-red transition-all duration-150 relative"
+                      style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
+                    >
+                      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg scale-0 group-hover:scale-100 transition-transform"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between text-[10px] font-mono text-white/40 font-bold px-1">
+                   <span>{formatTime(currentTime)}</span>
+                   <span className="text-vallenato-mustard/60">Sincronización 1x</span>
+                   <span>{formatTime(duration)}</span>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between gap-3">
-                 <div className="flex items-center gap-2 w-24">
-                    <button onClick={() => setVolume(v => v > 0 ? 0 : 1)} className="text-white/30 hover:text-vallenato-mustard transition-colors flex-shrink-0">
-                       {volume === 0 ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                    </button>
-                    <input 
-                      type="range" min="0" max="1" step="0.05" value={volume} 
-                      onChange={(e) => setVolume(parseFloat(e.target.value))}
-                      className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-vallenato-mustard"
-                    />
+              {/* Controles Principales */}
+              <div className="flex items-center justify-between gap-2">
+                 
+                 {/* Volumen Section */}
+                 <div className="flex flex-col items-center gap-1.5 w-16 group">
+                    <div className="flex items-center gap-2">
+                       <button onClick={() => setVolume(v => v > 0 ? 0 : 1)} className="text-white/40 hover:text-vallenato-mustard transition-colors">
+                          {volume === 0 ? <VolumeX size={16} /> : volume < 0.5 ? <Volume1 size={16} /> : <Volume2 size={16} />}
+                       </button>
+                    </div>
+                    <span className="text-[7px] font-black uppercase tracking-tighter text-white/20 group-hover:text-vallenato-mustard transition-colors">Volumen</span>
                  </div>
 
-                 <div className="flex items-center gap-4">
-                    <button onClick={() => skipSeconds(-10)} className="text-white/20 hover:text-white transition-colors"><SkipBack size={16} /></button>
-                    <button 
-                      onClick={togglePlay} 
-                      className={`p-3 rounded-full transition-all active:scale-90 shadow-xl ${isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-mustard text-vallenato-blue'}`}
-                    >
-                      {isFinished ? (
-                         <RotateCcw size={18} />
-                      ) : isPlaying ? (
-                        <Pause size={18} fill="currentColor" />
-                      ) : (
-                        <Play size={18} fill="currentColor" className="ml-1" />
-                      )}
-                    </button>
-                    <button onClick={() => skipSeconds(10)} className="text-white/20 hover:text-white transition-colors"><SkipForward size={16} /></button>
+                 {/* Playback Controls */}
+                 <div className="flex items-center gap-3 md:gap-6">
+                    <div className="flex flex-col items-center gap-1 group">
+                       <button onClick={() => skipSeconds(-15)} className="text-white/30 hover:text-white transition-all hover:scale-110 active:scale-90">
+                          <SkipBack size={20} />
+                       </button>
+                       <span className="text-[7px] font-black uppercase tracking-tighter text-white/20 group-hover:text-white transition-colors">-15s</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-2">
+                       <button 
+                         onClick={togglePlay} 
+                         className={`relative p-5 rounded-full transition-all duration-500 shadow-2xl active:scale-90 group ${isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-mustard text-vallenato-blue'}`}
+                       >
+                         {/* Aura animada */}
+                         {isPlaying && <div className="absolute inset-0 rounded-full bg-vallenato-red/30 animate-ping"></div>}
+                         
+                         <div className="relative z-10">
+                           {isFinished ? (
+                              <RotateCcw size={24} />
+                           ) : isPlaying ? (
+                             <Pause size={24} fill="currentColor" />
+                           ) : (
+                             <Play size={24} fill="currentColor" className="ml-1" />
+                           )}
+                         </div>
+                       </button>
+                       <span className="text-[8px] font-black uppercase tracking-widest text-white/40">{isFinished ? 'Reiniciar' : isPlaying ? 'Pausa' : 'Play'}</span>
+                    </div>
+
+                    <div className="flex flex-col items-center gap-1 group">
+                       <button onClick={() => skipSeconds(15)} className="text-white/30 hover:text-white transition-all hover:scale-110 active:scale-90">
+                          <SkipForward size={20} />
+                       </button>
+                       <span className="text-[7px] font-black uppercase tracking-tighter text-white/20 group-hover:text-white transition-colors">+15s</span>
+                    </div>
                  </div>
 
-                 <div className="flex items-center gap-2 w-24 justify-end">
+                 {/* Speed Section */}
+                 <div className="flex flex-col items-center gap-1.5 w-16 group">
                     <button 
                       onClick={() => setPlaybackSpeed(prev => prev === 1 ? 1.25 : prev === 1.25 ? 1.5 : 1)}
-                      className="bg-white/5 hover:bg-white/10 px-2 py-1 rounded-lg text-[8px] font-bold uppercase tracking-widest transition-all border border-white/5 flex items-center gap-1 group"
-                      title="Velocidad de reproducción"
+                      className={`px-2 py-1 rounded-lg text-[9px] font-bold border transition-all ${playbackSpeed > 1 ? 'bg-vallenato-mustard/20 border-vallenato-mustard text-vallenato-mustard' : 'bg-white/5 border-white/10 text-white/40 group-hover:text-white'}`}
                     >
-                      <Timer size={10} className="text-vallenato-mustard group-hover:rotate-12 transition-transform" />
                       {playbackSpeed}x
                     </button>
-                    <span className="text-[7px] font-black text-vallenato-mustard tracking-tighter">{readingProgress}%</span>
+                    <span className="text-[7px] font-black uppercase tracking-tighter text-white/20 group-hover:text-vallenato-mustard transition-colors">Velocidad</span>
                  </div>
+
               </div>
            </div>
         </div>
