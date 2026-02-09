@@ -133,7 +133,6 @@ const LegendaryTales: React.FC = () => {
     setIsPlaying(false);
   };
 
-  // Efecto mejorado de scroll para focalizar el párrafo activo
   useEffect(() => {
     if (!isFinished && selectedStory && activeParagraphIndex >= 0 && paragraphsRef.current[activeParagraphIndex]) {
       paragraphsRef.current[activeParagraphIndex]?.scrollIntoView({
@@ -150,7 +149,6 @@ const LegendaryTales: React.FC = () => {
       setIsFinished(false);
       setIsPlaying(true);
       audioRef.current.play().catch(console.error);
-      // Al reiniciar, focalizamos el primer párrafo
       setTimeout(() => {
         paragraphsRef.current[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
@@ -175,7 +173,6 @@ const LegendaryTales: React.FC = () => {
     setIsPlaying(false);
     setIsFinished(false);
     setCurrentTime(0);
-    // Focalización inicial del primer párrafo
     setTimeout(() => {
       paragraphsRef.current[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 500);
@@ -244,7 +241,7 @@ const LegendaryTales: React.FC = () => {
                    <div>
                       <span className="text-vallenato-mustard text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Relato completado</span>
                       <div className="w-12 h-0.5 bg-vallenato-red/40 mx-auto mb-6"></div>
-                      <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.3em] block mb-2">Narración de:</span>
+                      <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.3em] block mb-2">Escrito original de:</span>
                       <h4 className="text-white font-calligraphy text-5xl md:text-7xl mb-8 leading-tight drop-shadow-lg">Álvaro González Pimienta</h4>
                    </div>
 
@@ -357,10 +354,10 @@ const LegendaryTales: React.FC = () => {
                 );
               })}
 
-              {/* Pie de página sutil (firma cuando no ha terminado) */}
+              {/* Pie de página sutil */}
               {!isFinished && (
                 <div className="pt-24 pb-12 opacity-30 text-center filter grayscale transition-opacity duration-1000">
-                   <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/40 block mb-2">Relato por:</span>
+                   <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/40 block mb-2">Escrito original de:</span>
                    <h4 className="text-white font-calligraphy text-4xl md:text-6xl">Álvaro González Pimienta</h4>
                 </div>
               )}
@@ -402,7 +399,7 @@ const LegendaryTales: React.FC = () => {
               </div>
 
               <div className="flex items-center justify-between gap-4">
-                 {/* Sección de Volumen Potenciada */}
+                 {/* Sección de Volumen */}
                  <div className="flex flex-col items-center gap-1.5 w-24 group">
                     <div className="flex items-center gap-2 w-full">
                        <button onClick={() => setVolume(v => v > 0 ? 0 : 1)} className="text-white/40 hover:text-vallenato-mustard transition-colors flex-shrink-0">
