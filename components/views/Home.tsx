@@ -1,11 +1,10 @@
-
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
 import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
-import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star } from 'lucide-react';
+import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
 import { AccordionPlayIcon } from '../CustomIcons.tsx';
 
@@ -33,6 +32,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
   const [recentVideos, setRecentVideos] = useState<VideoItem[]>([]);
   const [recentRelatos, setRecentRelatos] = useState<StoryItem[]>([]);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [novedadIndex, setNovedadIndex] = useState(0); // 0: Audio, 1: Relato
   const [selectedMedia, setSelectedMedia] = useState<AudioItem | VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
@@ -74,6 +74,16 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
     return () => clearInterval(interval);
   }, []);
 
+  // Intervalo para el carrusel de novedades (6 segundos)
+  useEffect(() => {
+    if (latestAudio && recentRelatos.length > 0) {
+      const interval = setInterval(() => {
+        setNovedadIndex((prev) => (prev === 0 ? 1 : 0));
+      }, 6000);
+      return () => clearInterval(interval);
+    }
+  }, [latestAudio, recentRelatos]);
+
   useEffect(() => {
     const loadData = async () => {
       setLoadingData(true);
@@ -87,7 +97,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
         setLatestAudio(latest);
         setRecentAudios(audios);
         setRecentVideos(videos);
-        setRecentRelatos(relatos.slice(0, 2));
+        setRecentRelatos(relatos);
       } catch (error) {
         console.error("Home fetch error", error);
       } finally {
@@ -157,29 +167,66 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
     });
   };
 
+  const latestRelato = recentRelatos.length > 0 ? recentRelatos[0] : null;
+
   return (
     <div className="animate-fade-in-up relative">
       
-      {!loadingData && latestAudio && (
-        <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10">
+      {/* Carrusel de Novedad Exclusiva (Alternativa 1) */}
+      {!loadingData && (latestAudio || latestRelato) && (
+        <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10 min-h-[70px] flex items-center">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-           <div className="container mx-auto px-6 py-4 md:py-3 flex flex-col sm:flex-row items-center justify-center relative z-10 gap-5 md:gap-10">
-              <div className="flex items-center gap-3 max-w-2xl">
-                 <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse flex-shrink-0">
-                    <AccordionPlayIcon size={16} className="text-vallenato-blue" />
-                 </div>
-                 <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
-                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap mb-1 sm:mb-0">Novedad Exclusiva:</span>
-                    <span className="font-serif italic text-base md:text-lg line-clamp-2 md:line-clamp-1 leading-tight">"{latestAudio.titulo}" - {latestAudio.autor}</span>
-                 </div>
+           
+           <div className="container mx-auto px-6 py-4 md:py-3 relative z-10">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-10 transition-all duration-700">
+                
+                {/* Contenido dinámico según carrusel */}
+                {novedadIndex === 0 && latestAudio ? (
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-10 w-full animate-fade-in">
+                    <div className="flex items-center gap-3 max-w-2xl">
+                       <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse flex-shrink-0">
+                          <AccordionPlayIcon size={16} className="text-vallenato-blue" />
+                       </div>
+                       <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
+                          <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap mb-1 sm:mb-0">Audio exclusivo:</span>
+                          <span className="font-serif italic text-base md:text-lg line-clamp-2 md:line-clamp-1 leading-tight">"{latestAudio.titulo}" - {latestAudio.autor}</span>
+                       </div>
+                    </div>
+                    <button onClick={() => onPlayAudio?.(latestAudio, [latestAudio])} className={`relative overflow-hidden px-7 py-3 md:py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn shadow-xl ${currentAudioId === latestAudio.id && isPlaying ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue hover:scale-105 active:scale-95 active:brightness-90'}`}>
+                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-shimmer transition-transform duration-1000 pointer-events-none"></div>
+                      <span className="relative z-10 flex items-center gap-2">
+                        {currentAudioId === latestAudio.id && isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
+                        <span>{currentAudioId === latestAudio.id && isPlaying ? 'Pausar' : 'Escuchar'}</span>
+                      </span>
+                    </button>
+                  </div>
+                ) : latestRelato ? (
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-10 w-full animate-fade-in">
+                    <div className="flex items-center gap-3 max-w-2xl">
+                       <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse flex-shrink-0">
+                          <Feather size={16} className="text-vallenato-blue" />
+                       </div>
+                       <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
+                          <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap mb-1 sm:mb-0">Último Relato:</span>
+                          <span className="font-serif italic text-base md:text-lg line-clamp-2 md:line-clamp-1 leading-tight">"{latestRelato.titulo}"</span>
+                       </div>
+                    </div>
+                    <button onClick={() => navigate('/relatos-legendarios')} className="relative overflow-hidden px-7 py-3 md:py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue hover:scale-105 active:scale-95 active:brightness-90 group/btn shadow-xl">
+                      <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-shimmer transition-transform duration-1000 pointer-events-none"></div>
+                      <span className="relative z-10 flex items-center gap-2">
+                        <span>Leer Crónica</span>
+                        <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                      </span>
+                    </button>
+                  </div>
+                ) : null}
               </div>
-              <button onClick={() => onPlayAudio?.(latestAudio, [latestAudio])} className={`relative overflow-hidden px-7 py-3 md:py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] transition-all duration-500 flex items-center gap-2 border flex-shrink-0 group/btn shadow-xl ${currentAudioId === latestAudio.id && isPlaying ? 'bg-vallenato-red border-vallenato-red text-white shadow-[0_0_25px_rgba(200,16,46,0.5)]' : 'bg-gradient-to-tr from-[#9a7b0c] via-[#FFD700] to-[#EAAA00] border-[#FDE68A] text-vallenato-blue hover:scale-105 active:scale-95 active:brightness-90'}`}>
-                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-shimmer transition-transform duration-1000 pointer-events-none"></div>
-                <span className="relative z-10 flex items-center gap-2">
-                  {currentAudioId === latestAudio.id && isPlaying ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" className="ml-0.5" />}
-                  <span>{currentAudioId === latestAudio.id && isPlaying ? 'Pausar' : 'Reproducir'}</span>
-                </span>
-              </button>
+
+              {/* Indicadores de carrusel (Puntitos) */}
+              <div className="flex justify-center gap-1.5 mt-2 sm:mt-1">
+                 <div className={`w-1 h-1 rounded-full transition-all duration-500 ${novedadIndex === 0 ? 'bg-vallenato-mustard scale-125 w-3' : 'bg-white/20'}`}></div>
+                 <div className={`w-1 h-1 rounded-full transition-all duration-500 ${novedadIndex === 1 ? 'bg-vallenato-mustard scale-125 w-3' : 'bg-white/20'}`}></div>
+              </div>
            </div>
         </div>
       )}
@@ -273,7 +320,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
          </div>
       </section>
 
-      {/* Relatos Section - REDISEÑADA PARA FOTOS VERTICALES */}
+      {/* Relatos Section */}
       <section className="py-24 bg-vallenato-beige relative z-10 border-y border-vallenato-mustard/10 overflow-hidden">
          <div className="absolute top-0 right-0 w-96 h-96 bg-vallenato-mustard/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
          <div className="absolute bottom-0 left-0 w-96 h-96 bg-vallenato-red/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
@@ -290,7 +337,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 max-w-6xl mx-auto">
-                {recentRelatos.map((relato) => (
+                {recentRelatos.slice(0, 2).map((relato) => (
                   <div 
                     key={relato.id} 
                     onClick={() => navigate('/relatos-legendarios')}
