@@ -9,7 +9,7 @@ import Archive from './components/views/Archive.tsx';
 import Bio from './components/views/Bio.tsx';
 import LegendaryTales from './components/views/LegendaryTales.tsx';
 import AudioStoryCard from './components/AudioStoryCard.tsx';
-import { Play, Pause, SkipBack, SkipForward, Volume2, X, MessageSquareQuote, User, Mic2, Headphones } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, X, MessageSquareQuote, User, Mic2, Headphones, Youtube, ExternalLink, Star, ChevronRight } from 'lucide-react';
 
 // Componente para gestionar el scroll al cambiar de ruta
 const ScrollToTop = () => {
@@ -18,6 +18,63 @@ const ScrollToTop = () => {
     window.scrollTo(0, 0);
   }, [pathname, search]);
   return null;
+};
+
+// Componente Invitación Flotante YouTube
+const YouTubeFloatingInvite = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <div className="fixed bottom-6 right-6 z-[150] w-[calc(100%-3rem)] md:w-96 animate-fade-in-up">
+      <div className="relative overflow-hidden bg-vallenato-dark/80 backdrop-blur-2xl border border-white/10 p-6 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.6)] group">
+        {/* Fondo decorativo con brillo */}
+        <div className="absolute -right-10 -top-10 w-32 h-32 bg-vallenato-red/20 blur-3xl rounded-full group-hover:bg-vallenato-red/40 transition-colors duration-700"></div>
+        
+        {/* Botón Cerrar */}
+        <button 
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white/20 hover:text-vallenato-red transition-all p-1 z-20"
+        >
+          <X size={18} />
+        </button>
+
+        <div className="flex gap-5 relative z-10">
+          {/* Miniatura / Icono */}
+          <div className="relative flex-shrink-0">
+             <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden border border-white/10 shadow-lg">
+                <img src="https://i.imgur.com/wIBYz82.jpeg" className="w-full h-full object-cover scale-110 group-hover:scale-125 transition-transform duration-[5s]" alt="YT" />
+                <div className="absolute inset-0 bg-vallenato-red/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                   <Youtube size={24} className="text-white fill-white" />
+                </div>
+             </div>
+             {/* Se elimina el distintivo rojo que estaba aquí para limpiar la visual según solicitud */}
+          </div>
+
+          <div className="flex flex-col justify-center">
+             <div className="flex items-center gap-2 mb-1">
+                <Youtube size={14} className="text-vallenato-red fill-vallenato-red" />
+                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-vallenato-mustard">Colección en Video</span>
+                <Star size={8} className="text-vallenato-mustard fill-current animate-pulse" />
+             </div>
+             <h4 className="text-white font-serif text-lg font-bold leading-tight mb-2">
+                Lo invitamos a seguirnos en YouTube
+             </h4>
+             <p className="text-gray-400 text-[10px] md:text-xs leading-relaxed font-serif italic mb-3">
+                Suscríbase para ver los tesoros audiovisuales que preservamos.
+             </p>
+             
+             <a 
+               href="https://www.youtube.com/@EstampasVallenatasColombia" 
+               target="_blank" 
+               rel="noopener noreferrer"
+               onClick={onClose}
+               className="inline-flex items-center gap-2 bg-vallenato-red text-white px-4 py-2 rounded-full text-[9px] font-bold uppercase tracking-widest hover:bg-white hover:text-vallenato-blue transition-all shadow-xl group/btn active:scale-95"
+             >
+                clic para ir al canal <ChevronRight size={12} className="group-hover/btn:translate-x-1 transition-transform" />
+             </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const AppContent: React.FC = () => {
@@ -35,11 +92,27 @@ const AppContent: React.FC = () => {
   const [volume, setVolume] = useState(1);
   const [showStoryCard, setShowStoryCard] = useState(false);
   const [isTaleActive, setIsTaleActive] = useState(false);
+  const [showYouTubeInvite, setShowYouTubeInvite] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Lógica de Invitación una vez por sesión (Alternativa 2)
+  useEffect(() => {
+    const hasSeenInvite = sessionStorage.getItem('vallenato_yt_invite');
+    if (!hasSeenInvite) {
+      const timer = setTimeout(() => {
+        setShowYouTubeInvite(true);
+      }, 4000); // Aparece a los 4 segundos
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const closeYouTubeInvite = () => {
+    setShowYouTubeInvite(false);
+    sessionStorage.setItem('vallenato_yt_invite', 'true');
+  };
+
   const handlePlayAudio = (audio: AudioItem, list?: AudioItem[]) => {
-    // Si se inicia música, avisamos que no estamos en modo relato activo para pausar narraciones
     window.dispatchEvent(new CustomEvent('musicPlay'));
     
     if (list) {
@@ -65,7 +138,6 @@ const AppContent: React.FC = () => {
     }
   };
 
-  // Escuchar cuando un relato empieza a sonar para pausar la música
   useEffect(() => {
     const handleTaleStart = () => {
       setIsPlaying(false);
@@ -140,6 +212,9 @@ const AppContent: React.FC = () => {
       <ScrollToTop />
       <Header />
       
+      {/* Invitación Flotante YouTube */}
+      {showYouTubeInvite && <YouTubeFloatingInvite onClose={closeYouTubeInvite} />}
+
       <main className={`flex-grow relative transition-all duration-300 ${currentAudio ? 'pb-52 md:pb-40' : 'pb-0'}`}>
         <Routes>
           <Route path="/" element={
