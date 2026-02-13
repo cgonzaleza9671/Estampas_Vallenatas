@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
@@ -239,7 +240,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
             className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} 
             style={{ 
               backgroundImage: `url("${img}")`, 
-              filter: (img === "https://i.imgur.com/H7JgO73.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg" || img === "https://i.imgur.com/wDz7qUP.jpeg") ? 'brightness(0.7) contrast(1.05)' : 'none' 
+              filter: (img === "https://i.imgur.com/H7JgO73.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg" || img === "https://i.imgur.com/wDz7qUP.jpeg" || img === "https://i.imgur.com/MxktqOB.png") ? 'brightness(0.7) contrast(1.05)' : 'none' 
             }} 
           />
         ))}

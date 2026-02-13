@@ -7,7 +7,8 @@ export const HERO_GALLERY = [
   "https://i.imgur.com/H7JgO73.jpeg",
   "https://i.imgur.com/l4iOgsO.jpeg",
   "https://i.imgur.com/wDz7qUP.jpeg",
-  "https://i.imgur.com/e39bXRu.jpeg"
+  "https://i.imgur.com/e39bXRu.jpeg",
+  "https://i.imgur.com/MxktqOB.png"
 ];
 
 export const LEGENDARY_TALES: StoryItem[] = [
@@ -33,7 +34,7 @@ export const LEGENDARY_TALES: StoryItem[] = [
     fecha: "Febrero 2024",
     imagen: "https://i.imgur.com/cJhXAof.jpeg",
     autor: "Álvaro González Pimienta",
-    contenido: "Rafael Escalona Martínez no tocaba el acordeón, pero sus manos moldeaban la realidad en forma de canciones. Fue el cronista más grande que ha parido la tierra del Cacique Upar. Sus composiciones eran periódicos cantados que relataban desde amores imposibles hasta las peripecias de los contrabandistas en la Alta Guajira. 'La Casa en el Aire' no es solo una metáfora de protección paterna, es el símbolo de la imaginación vallenata que desafía las leyes de la física para honrar el sentimiento. Escalona elevó el vallenato de los corrales a los palacios presidenciales, demostrando que la poesía de provincia tiene un lenguaje universal. Su legado es un mapa sonoro de una Colombia que ya no existe, pero que vive eternamente in cada nota de sus composiciones.",
+    contenido: "Rafael Escalona Martínez no tocaba el acordeón, pero sus manos moldeaban la reality en forma de canciones. Fue el cronista más grande que ha parido la tierra del Cacique Upar. Sus composiciones eran periódicos cantados que relataban desde amores imposibles hasta las peripecias de los contrabandistas en la Alta Guajira. 'La Casa en el Aire' no es solo una metáfora de protección paterna, es el símbolo de la imaginación vallenata que desafía las leyes de la física para honrar el sentimiento. Escalona elevó el vallenato de los corrales a los palacios presidenciales, demostrando que la poesía de provincia tiene un lenguaje universal. Su legado es un mapa sonoro de una Colombia que ya no existe, pero que vive eternamente in cada nota de sus composiciones.",
     frases: [
       "El cronista del aire.",
       "Periódicos cantados.",
