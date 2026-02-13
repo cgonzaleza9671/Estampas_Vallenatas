@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
@@ -393,17 +394,17 @@ const LegendaryTales: React.FC = () => {
                 </div>
                 <div className="flex justify-between text-[10px] font-mono text-white/40 font-bold px-1">
                    <span>{formatTime(currentTime)}</span>
-                   <span className="text-vallenato-mustard/60">Sincronización 1x</span>
+                   <span className="text-vallenato-mustard/60">Avance del relato: {readingProgress}%</span>
                    <span>{formatTime(duration)}</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between gap-4">
-                 {/* Sección de Volumen */}
-                 <div className="flex flex-col items-center gap-1.5 w-24 group">
-                    <div className="flex items-center gap-2 w-full">
+              <div className="flex items-center justify-between gap-2 md:gap-4">
+                 {/* Sección de Volumen (Ajustada para no solapar) */}
+                 <div className="flex flex-col items-center gap-1.5 w-16 md:w-20 group">
+                    <div className="flex items-center gap-1.5 w-full">
                        <button onClick={() => setVolume(v => v > 0 ? 0 : 1)} className="text-white/40 hover:text-vallenato-mustard transition-colors flex-shrink-0">
-                          {volume === 0 ? <VolumeX size={16} /> : volume < 0.5 ? <Volume1 size={16} /> : <Volume2 size={16} />}
+                          {volume === 0 ? <VolumeX size={14} /> : volume < 0.5 ? <Volume1 size={14} /> : <Volume2 size={14} />}
                        </button>
                        <input 
                          type="range"
@@ -412,7 +413,7 @@ const LegendaryTales: React.FC = () => {
                          step="0.05"
                          value={volume}
                          onChange={(e) => setVolume(parseFloat(e.target.value))}
-                         className="flex-grow h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-vallenato-mustard"
+                         className="flex-grow h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-vallenato-mustard min-w-[30px]"
                          title="Ajustar volumen"
                        />
                     </div>
@@ -450,7 +451,7 @@ const LegendaryTales: React.FC = () => {
                  </div>
 
                  {/* Speed Section */}
-                 <div className="flex flex-col items-center gap-1.5 w-16 group">
+                 <div className="flex flex-col items-center gap-1.5 w-14 md:w-16 group">
                     <button 
                       onClick={() => setPlaybackSpeed(prev => prev === 1 ? 1.25 : prev === 1.25 ? 1.5 : 1)}
                       className={`px-2 py-1 rounded-lg text-[9px] font-bold border transition-all ${playbackSpeed > 1 ? 'bg-vallenato-mustard/20 border-vallenato-mustard text-vallenato-mustard' : 'bg-white/5 border-white/10 text-white/40 group-hover:text-white'}`}

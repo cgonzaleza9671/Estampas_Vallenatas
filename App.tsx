@@ -94,6 +94,7 @@ const AppContent: React.FC = () => {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
+  // Lógica de aparición inicial
   useEffect(() => {
     const hasSeenInvite = sessionStorage.getItem('vallenato_yt_invite');
     if (!hasSeenInvite) {
@@ -103,6 +104,16 @@ const AppContent: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Lógica de auto-cierre después de 7 segundos una vez mostrado
+  useEffect(() => {
+    if (showYouTubeInvite) {
+      const autoCloseTimer = setTimeout(() => {
+        closeYouTubeInvite();
+      }, 7000); // 7 segundos de visualización
+      return () => clearTimeout(autoCloseTimer);
+    }
+  }, [showYouTubeInvite]);
 
   const closeYouTubeInvite = () => {
     setShowYouTubeInvite(false);
