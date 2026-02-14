@@ -1,8 +1,6 @@
 
-import React, { useState } from 'react';
-import { saveQuestion } from '../../services/supabaseClient';
-import Button from '../Button';
-import { User, Sparkles, Award, Mic, Quote, History, Loader2, Camera, CheckCircle2, RotateCcw } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { User, Sparkles, Award, Mic, Quote, History, Camera, Images, ChevronRight } from 'lucide-react';
 
 const ANECDOTAS_TEXT = {
   p1: "Sin poder ocultar la nostalgia al recordar el recorrido folclórico que 'Estampas Vallenatas' protagonizó en la radio nacional, Álvaro González afirma que la mayor satisfacción fue llevarle a la población campesina y rural de Colombia un deleite espiritual con música que no habían escuchado anteriormente.",
@@ -10,43 +8,17 @@ const ANECDOTAS_TEXT = {
   p3: "De la amistad entrañable con 'El Pollo Vallenato', Luís Enrique Martínez, González Pimienta recuerda que durante la residencia del acordeonero en el sector de Fontibón, Luís Enrique salía de correduría y le dejaba instrucciones precisas a su esposa Rosa para que llamara al Doctor González, quien le solucionaría lo del arriendo (diez mil pesos de la época) mientras durara su recorrido musical. Cuando Luís Enrique regresa, va sagradamente a mi oficina a entregarme el valor de los arriendos que le había prestado a Rosa; nunca me aceptó que se los regalara."
 };
 
+const GALLERY_IMAGES = [
+  "https://i.imgur.com/ISYNhQI.jpeg",
+  "https://i.imgur.com/llfpnBt.jpeg",
+  "https://i.imgur.com/3CtCNHj.jpeg",
+  "https://i.imgur.com/pvn0ncS.jpeg",
+  "https://i.imgur.com/Wujs9OO.jpeg"
+];
+
 const Bio: React.FC = () => {
-  // Form State
-  const [questionInput, setQuestionInput] = useState('');
-  const [userData, setUserData] = useState({ name: '', city: '' });
-  const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const handleConsultation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!questionInput.trim() || !userData.name || !userData.city) return;
-
-    setLoading(true);
-    
-    try {
-      const isSaved = await saveQuestion({
-        nombre_apellido: userData.name,
-        ciudad: userData.city,
-        pregunta: questionInput
-      });
-
-      if (isSaved) {
-        setShowSuccess(true);
-        setQuestionInput('');
-      } else {
-        throw new Error("No se pudo guardar la pregunta");
-      }
-    } catch (error) {
-      console.error("Error en consulta:", error);
-      alert("Lo siento, compañero. Hubo un problema al registrar tu pregunta. Por favor intenta de nuevo.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetForm = () => {
-    setShowSuccess(false);
-  };
+  // Duplicamos las imágenes para el efecto de scroll infinito suave
+  const infiniteImages = useMemo(() => [...GALLERY_IMAGES, ...GALLERY_IMAGES], []);
 
   return (
     <div className="min-h-screen bg-white transition-colors duration-300 animate-fade-in-up font-sans selection:bg-vallenato-mustard selection:text-vallenato-blue">
@@ -151,6 +123,59 @@ const Bio: React.FC = () => {
          </div>
       </section>
 
+      {/* Galería de Retratos de una Época Dorada */}
+      <section className="py-24 bg-vallenato-beige overflow-hidden relative">
+         <div className="container mx-auto px-6 mb-12 text-center relative z-10">
+            <div className="inline-flex items-center gap-2 bg-vallenato-mustard/20 px-4 py-1.5 rounded-full mb-6 border border-vallenato-mustard/30">
+               <Images className="text-vallenato-mustard w-4 h-4" />
+               <span className="text-vallenato-mustard text-[10px] font-black uppercase tracking-[0.25em]">Crónica Visual</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue font-bold mb-4">Retratos de una Época Dorada</h2>
+            <p className="text-gray-600 font-serif italic text-lg max-w-2xl mx-auto">
+               Instantes capturados que narran la historia de un folclor inmarcesible y los encuentros que forjaron la leyenda.
+            </p>
+         </div>
+
+         {/* Contenedor del Scroll Infinito */}
+         <div className="relative group">
+            {/* Gradientes laterales para suavizar bordes */}
+            <div className="absolute inset-y-0 left-0 w-24 md:w-64 bg-gradient-to-r from-vallenato-beige to-transparent z-20 pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-24 md:w-64 bg-gradient-to-l from-vallenato-beige to-transparent z-20 pointer-events-none"></div>
+
+            <div className="flex w-full overflow-hidden">
+               <div className="flex animate-[marquee_40s_linear_infinite] group-hover:[animation-play-state:paused] py-4">
+                  {infiniteImages.map((img, idx) => (
+                     <div 
+                        key={idx} 
+                        className="flex-shrink-0 px-4 group/item"
+                     >
+                        {/* Marco Dinámico Multicapa - Bordes más pequeños y circulares */}
+                        <div className="relative p-1 md:p-1.5 bg-gradient-to-r from-vallenato-blue via-vallenato-red to-vallenato-mustard bg-[length:200%_auto] animate-border-flow shadow-gold rounded-[3.5rem] transition-all duration-700 group-hover/item:scale-[1.05]">
+                           
+                           {/* Marco de "Pan de Oro" Metálico Interno - Bordes proporcionales */}
+                           <div className="relative p-1 md:p-2 bg-gradient-to-br from-[#BF953F] via-[#FCF6BA] to-[#B38728] shadow-inner overflow-hidden rounded-[3.2rem]">
+                              
+                              {/* Brillo Metálico Animado */}
+                              <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-shimmer pointer-events-none"></div>
+
+                              <div className="relative w-[300px] md:w-[450px] aspect-[4/3] overflow-hidden bg-black shadow-2xl rounded-[3rem]">
+                                 <img 
+                                    src={img} 
+                                    alt={`Momento histórico ${idx + 1}`}
+                                    className="w-full h-full object-cover filter sepia-[0.3] group-hover/item:sepia-0 transition-all duration-700 cursor-crosshair"
+                                    loading="lazy"
+                                 />
+                                 <div className="absolute inset-0 bg-black/20 group-hover/item:bg-transparent transition-colors"></div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      </section>
+
       {/* Mission Section */}
       <section className="py-20 bg-white transition-colors">
          <div className="container mx-auto px-6 text-center max-w-4xl">
@@ -210,83 +235,20 @@ const Bio: React.FC = () => {
          </div>
       </section>
 
-      {/* Ask the Maestro Section */}
-      <section className="py-24 container mx-auto px-6 max-w-5xl">
-         <div className="bg-vallenato-cream rounded-[2.5rem] shadow-2xl border border-vallenato-mustard/20 overflow-hidden relative transition-colors">
-            <div className="bg-vallenato-blue p-8 md:p-10 text-center relative overflow-hidden">
-               <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-               <div className="relative z-10 flex flex-col items-center">
-                  <div className="bg-vallenato-mustard p-3 rounded-full mb-4 shadow-lg animate-pulse">
-                     <Sparkles className="text-vallenato-blue w-6 h-6" />
-                  </div>
-                  <h2 className="text-3xl md:text-4xl font-serif text-white mb-2">Pregúntale al Maestro</h2>
-               </div>
-            </div>
-
-            <div className="p-8 md:p-12">
-              {!showSuccess ? (
-                <form onSubmit={handleConsultation} className="max-w-2xl mx-auto space-y-6">
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                         <label className="text-xs font-bold uppercase text-vallenato-blue tracking-widest ml-1">Tu Nombre</label>
-                         <input 
-                           required
-                           type="text" 
-                           placeholder="Ej: Gabriel García"
-                           className="w-full p-4 rounded-xl border border-gray-200 bg-white text-gray-800 focus:border-vallenato-mustard transition-all outline-none"
-                           value={userData.name}
-                           onChange={(e) => setUserData({...userData, name: e.target.value})}
-                         />
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-xs font-bold uppercase text-vallenato-blue tracking-widest ml-1">Tu Ciudad</label>
-                         <input 
-                           required
-                           type="text" 
-                           placeholder="Ej: Barranquilla"
-                           className="w-full p-4 rounded-xl border border-gray-200 bg-white text-gray-800 focus:border-vallenato-mustard transition-all outline-none"
-                           value={userData.city}
-                           onChange={(e) => setUserData({...userData, city: e.target.value})}
-                         />
-                      </div>
-                   </div>
-
-                   <div className="space-y-2">
-                      <label className="text-xs font-bold uppercase text-vallenato-blue tracking-widest ml-1">Tu Pregunta sobre el Folclor</label>
-                      <textarea 
-                        required
-                        rows={3}
-                        placeholder="Maestro, cuénteme la historia detrás de la casa en el aire..."
-                        className="w-full p-4 rounded-xl border border-gray-200 bg-white text-gray-800 focus:border-vallenato-mustard transition-all outline-none resize-none"
-                        value={questionInput}
-                        onChange={(e) => setQuestionInput(e.target.value)}
-                      />
-                   </div>
-
-                   <Button type="submit" fullWidth disabled={loading} className="mt-4">
-                      {loading ? <span className="flex items-center gap-2"><Loader2 className="animate-spin" /> Registrando...</span> : 'Enviar Consulta'}
-                   </Button>
-                </form>
-              ) : (
-                <div className="max-w-md mx-auto py-12 text-center animate-fade-in-up">
-                   <div className="flex justify-center mb-6">
-                      <div className="bg-green-100 p-4 rounded-full text-green-600 shadow-inner">
-                         <CheckCircle2 size={64} />
-                      </div>
-                   </div>
-                   <h3 className="text-3xl font-serif text-vallenato-blue font-bold mb-4">¡Pregunta Registrada!</h3>
-                   <p className="text-gray-600 font-serif italic text-lg mb-8">
-                     Estimado {userData.name}, su inquietud ha sido guardada con éxito en los archivos del Magdalena Grande. El Maestro revisará su consulta pronto.
-                   </p>
-                   <Button onClick={resetForm} fullWidth variant="secondary" className="flex items-center gap-3">
-                     <RotateCcw size={20} /> Realizar otra consulta
-                   </Button>
-                </div>
-              )}
-            </div>
-         </div>
-      </section>
-
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes border-flow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-border-flow {
+          animation: border-flow 4s ease infinite;
+        }
+      `}</style>
     </div>
   );
 };

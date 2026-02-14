@@ -319,7 +319,8 @@ const LegendaryTales: React.FC = () => {
                 return (
                   <div 
                     key={idx}
-                    ref={el => paragraphsRef.current[idx] = el}
+                    // Fix: Wrap ref assignment in braces to avoid returning the HTMLDivElement, which causes TS error
+                    ref={(el) => { paragraphsRef.current[idx] = el; }}
                     onClick={() => jumpToParagraph(idx)}
                     className={`group relative transition-all duration-1000 cursor-pointer pl-4 md:pl-0
                       ${isReadable 

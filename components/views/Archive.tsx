@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { fetchAudios, fetchVideos, fetchAudioFilters, fetchVideoFilters } from '../../services/supabaseClient.ts';
 import { AudioItem, VideoItem } from '../../types.ts';
@@ -394,7 +395,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         <div className="p-10">
                             <div className="flex items-center gap-4 mb-4">
                               <div className="bg-vallenato-red h-1.5 w-16 rounded-full"></div>
-                              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-vallenato-red">Novedad</span>
+                              <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-vallenato-red">Estampas Vallenatas</span>
                             </div>
                             <h3 className="text-3xl font-serif text-vallenato-blue font-bold mb-6 group-hover:text-vallenato-red transition-colors leading-tight">{item.titulo}</h3>
                             <div className="grid grid-cols-2 gap-6">
