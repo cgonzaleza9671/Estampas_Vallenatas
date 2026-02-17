@@ -5,7 +5,7 @@ import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
 import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
-import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight } from 'lucide-react';
+import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight, Disc, ListMusic } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
 import { AccordionPlayIcon } from '../CustomIcons.tsx';
 
@@ -130,10 +130,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
     return () => clearInterval(timer);
   }, []);
 
-  const formatBadgeDate = (dateStr: string) => {
-    return dateStr.replace(/ de /g, ' ');
-  };
-
   const openMedia = (item: AudioItem | VideoItem) => {
     if ('interprete' in item) {
       onVideoOpen?.(); 
@@ -173,7 +169,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
   return (
     <div className="animate-fade-in-up relative">
       
-      {/* Carrusel de Novedad Exclusiva (Alternativa 1) */}
+      {/* Carrusel de Novedad Exclusiva */}
       {!loadingData && (latestAudio || latestRelato) && (
         <div className="bg-vallenato-blue text-white relative overflow-hidden border-b border-white/10 min-h-[70px] flex items-center">
            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -181,7 +177,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
            <div className="container mx-auto px-6 py-4 md:py-3 relative z-10">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-10 transition-all duration-700">
                 
-                {/* Contenido dinámico según carrusel */}
+                {/* Contenido dinámico */}
                 {novedadIndex === 0 && latestAudio ? (
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-5 md:gap-10 w-full animate-fade-in">
                     <div className="flex items-center gap-3 max-w-2xl">
@@ -223,7 +219,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                 ) : null}
               </div>
 
-              {/* Indicadores de carrusel (Puntitos) */}
+              {/* Indicadores de carrusel */}
               <div className="flex justify-center gap-1.5 mt-2 sm:mt-1">
                  <div className={`w-1 h-1 rounded-full transition-all duration-500 ${novedadIndex === 0 ? 'bg-vallenato-mustard scale-125 w-3' : 'bg-white/20'}`}></div>
                  <div className={`w-1 h-1 rounded-full transition-all duration-500 ${novedadIndex === 1 ? 'bg-vallenato-mustard scale-125 w-3' : 'bg-white/20'}`}></div>
@@ -277,41 +273,70 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
                 <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Audios</h2>
              </div>
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {recentAudios.map((item) => (
-                  <div 
-                    key={item.id} 
-                    onClick={() => onPlayAudio?.(item, recentAudios)} 
-                    className={`group relative min-h-[220px] bg-white rounded-[2rem] p-6 shadow-sm hover:shadow-gold transition-all duration-500 border-2 ${currentAudioId === item.id ? 'border-vallenato-red bg-vallenato-cream' : 'border-vallenato-mustard/40 hover:border-vallenato-mustard'} cursor-pointer flex flex-col overflow-hidden`}
-                  >
-                    <div className="absolute top-1/2 -right-10 w-24 h-24 bg-vallenato-blue rounded-full border-4 border-vallenato-mustard/10 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:-right-4 transition-all duration-700 pointer-events-none z-0"></div>
-                    <div className="z-10 flex items-center mb-4">
-                        <div className="bg-vallenato-mustard/10 text-vallenato-mustard px-2.5 py-1 rounded-full border border-vallenato-mustard/20">
-                          <span className="text-[8px] font-black uppercase tracking-widest whitespace-nowrap">{formatBadgeDate(item.fecha_publicacion)}</span>
-                        </div>
-                    </div>
-                    <div className="flex-grow flex flex-col justify-center relative z-10">
-                        <h3 className="text-lg md:text-xl font-serif text-vallenato-blue font-bold group-hover:text-vallenato-red transition-colors mb-4 pr-2 leading-tight line-clamp-2">{item.titulo}</h3>
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center gap-2.5 bg-vallenato-blue/5 px-3 py-1.5 rounded-xl group-hover:bg-vallenato-blue transition-colors group-hover:text-white border border-vallenato-blue/5 w-fit max-w-full overflow-hidden">
-                              <User size={12} className="text-vallenato-mustard shrink-0" />
-                              <span className="text-[10px] font-bold uppercase tracking-wider truncate">{item.autor}</span>
-                          </div>
-                          <div className="flex items-center gap-2.5 bg-vallenato-red/5 px-3 py-1.5 rounded-xl group-hover:bg-vallenato-red transition-colors group-hover:text-white border border-vallenato-red/5 w-fit max-w-full overflow-hidden">
-                              <Mic2 size={12} className="text-vallenato-red group-hover:text-white shrink-0" />
-                              <span className="text-[10px] font-bold uppercase tracking-wider truncate">{item.cantante}</span>
-                          </div>
-                        </div>
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between relative z-10">
-                      <div className="flex flex-col">
-                          <span className="text-[7.5px] uppercase font-black text-gray-400 tracking-tighter mb-0.5">ACORDEÓN</span>
-                          <span className="text-[11px] font-bold text-vallenato-blue leading-none">{item.acordeonero}</span>
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
+                {recentAudios.map((item) => {
+                  const isActive = currentAudioId === item.id;
+                  return (
+                    <div 
+                      key={item.id} 
+                      onClick={() => onPlayAudio?.(item, recentAudios)} 
+                      className={`group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden transition-all duration-500 border-2 ${isActive ? 'border-vallenato-red bg-vallenato-cream shadow-gold' : 'border-white hover:border-vallenato-mustard shadow-museum hover:-translate-y-2'} cursor-pointer`}
+                    >
+                      {/* Cabecera con fecha movida para no solapar */}
+                      <div className="h-28 bg-vallenato-blue/5 relative overflow-hidden flex items-center justify-center">
+                         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                         <Disc className={`text-vallenato-mustard/20 w-32 h-32 absolute -right-8 -top-8 transform rotate-12 transition-transform duration-1000 ${isActive && isPlaying ? 'animate-[spin_10s_linear_infinite]' : 'group-hover:rotate-45'}`} />
+                         
+                         <div className="absolute top-4 right-6 z-10">
+                            <div className="bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-vallenato-mustard/20 shadow-sm">
+                               <span className="text-[8px] font-black uppercase tracking-[0.1em] text-vallenato-blue/60">{item.fecha_publicacion}</span>
+                            </div>
+                         </div>
+
+                         <div className={`p-4 rounded-full transition-all duration-500 shadow-2xl relative z-0 ${isActive && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red group-hover:scale-110'}`}>
+                           {isActive && isPlaying ? <Pause size={28} fill="currentColor"/> : <Play size={28} fill="currentColor" className="ml-1"/>}
+                         </div>
                       </div>
-                      <div className={`p-3 rounded-full transition-all duration-500 shadow-lg ${currentAudioId === item.id && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:scale-110 group-hover:bg-vallenato-red'}`}>{currentAudioId === item.id && isPlaying ? <Pause size={18} fill="currentColor"/> : <Play size={18} fill="currentColor" className="ml-0.5"/>}</div>
+
+                      <div className="p-8 flex flex-col flex-grow">
+                         <h4 className={`text-xl md:text-2xl font-serif font-bold mb-6 leading-tight transition-colors line-clamp-2 ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>
+                            {item.titulo}
+                         </h4>
+
+                         <div className="space-y-4 mb-8">
+                            <div className="flex items-center gap-3">
+                               <div className="w-8 h-8 rounded-xl bg-vallenato-mustard/10 flex items-center justify-center text-vallenato-mustard">
+                                  <User size={14} />
+                               </div>
+                               <div className="flex flex-col">
+                                  <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">Compositor</span>
+                                  <span className="text-[11px] font-bold text-vallenato-blue/80 uppercase tracking-wider truncate">{item.autor}</span>
+                               </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                               <div className="w-8 h-8 rounded-xl bg-vallenato-red/10 flex items-center justify-center text-vallenato-red">
+                                  <Mic2 size={14} />
+                               </div>
+                               <div className="flex flex-col">
+                                  <span className="text-[8px] font-black uppercase tracking-widest text-gray-400">Voz Principal</span>
+                                  <span className="text-[11px] font-bold text-vallenato-blue/80 uppercase tracking-wider truncate">{item.cantante}</span>
+                               </div>
+                            </div>
+                         </div>
+
+                         <div className="mt-auto pt-6 border-t border-gray-100">
+                            <div className="flex items-center justify-between group/acordeon">
+                               <div className="flex flex-col">
+                                  <span className="text-[8px] uppercase font-black text-gray-400 tracking-[0.2em] mb-1.5">Maestro del Acordeón</span>
+                                  <span className="text-sm md:text-base font-serif font-bold text-vallenato-blue leading-tight group-hover/acordeon:text-vallenato-red transition-colors">{item.acordeonero}</span>
+                               </div>
+                               <ListMusic size={20} className="text-vallenato-mustard/30 group-hover/acordeon:text-vallenato-mustard transition-colors" />
+                            </div>
+                         </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
              </div>
              <div className="flex justify-center">
                 <Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">
