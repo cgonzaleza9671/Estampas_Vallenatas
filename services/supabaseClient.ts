@@ -33,7 +33,7 @@ const getCache = (key: string) => {
 const mapAudio = (db: any): AudioItem => {
   const rawDate = db.fecha || db.published_at || "";
   let anio = db.anio || 0;
-  let fechaLabel = "Colección Histórica";
+  let fechaLabel = "última estampa";
   
   if (rawDate) {
     const d = new Date(rawDate.includes('T') ? rawDate : rawDate + 'T12:00:00');

@@ -156,7 +156,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
     const groups: { [key: string]: AudioItem[] } = {};
     audios.forEach(item => {
       const parts = item.fecha_publicacion.split(' de ');
-      const key = parts.length >= 3 ? `${parts[1]} de ${parts[2]}` : "Colección Histórica";
+      const key = parts.length >= 3 ? `${parts[1]} de ${parts[2]}` : "última estampa";
       if (!groups[key]) groups[key] = [];
       groups[key].push(item);
     });
