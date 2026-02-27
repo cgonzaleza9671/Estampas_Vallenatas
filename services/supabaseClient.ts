@@ -11,7 +11,7 @@ const CACHE_TTL = 30 * 60 * 1000;
 
 const getCacheKey = (base: string, limit: number, page: number, filters: any = {}) => {
   const filterStr = JSON.stringify(filters);
-  return `${base}_p${page}_l${limit}_f${filterStr}_v36`;
+  return `${base}_p${page}_l${limit}_f${filterStr}_v37`;
 };
 
 const setCache = (key: string, data: any) => {
@@ -52,7 +52,8 @@ const mapAudio = (db: any): AudioItem => {
     fecha_publicacion: fechaLabel,
     anio: anio,
     url_audio: (db.audio_url || db.url_audio || db.url || db.audio || '').trim(),
-    descripcion: db.descripcion || db.description || ""
+    descripcion: db.descripcion || db.description || "",
+    reproducciones: db.reproducciones || 0
   };
 };
 
@@ -71,8 +72,6 @@ const mapVideo = (db: any): VideoItem => {
   }
 
   let url = (db.video_url || db.url_video || db.url || '').trim();
-  
-  // Si la URL es solo un nombre de archivo, construir la ruta de Supabase Storage
   if (url && !url.startsWith('http')) {
     url = `${SUPABASE_URL}/storage/v1/object/public/Videos/${url}`;
   }
@@ -134,6 +133,19 @@ export const fetchAudios = async (
   return items;
 };
 
+// Nueva función para incrementar reproducciones de audio
+export const incrementAudioPlayCount = async (id: number) => {
+  // Usamos rpc para una operación atómica y segura
+  const { error } = await supabase.rpc('increment_audio_plays', { row_id: id });
+  
+  // Si no hay rpc definido en DB, usamos una actualización manual (menos óptima pero funcional)
+  if (error) {
+     const { data } = await supabase.from('Audios').select('reproducciones').eq('id', id).single();
+     const currentCount = data?.reproducciones || 0;
+     await supabase.from('Audios').update({ reproducciones: currentCount + 1 }).eq('id', id);
+  }
+};
+
 export const fetchVideos = async (
   page: number = 0, 
   limit: number = 4,
@@ -177,11 +189,9 @@ export const fetchAudioFilters = async () => {
   
   const cleanAndSort = (list: any[], excludeAnon: boolean = false) => {
     let result = Array.from(new Set(list?.map(item => Object.values(item)[0] as string).filter(v => v && v.trim() !== "" && v !== "-") || []));
-    
     if (excludeAnon) {
       result = result.filter(v => v.toLowerCase() !== 'autor anónimo');
     }
-    
     return result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
   };
 
@@ -198,11 +208,9 @@ export const fetchVideoFilters = async () => {
   
   const cleanAndSort = (list: any[], excludeAnon: boolean = false) => {
     let result = Array.from(new Set(list?.map(item => Object.values(item)[0] as string).filter(v => v && v.trim() !== "" && v !== "-") || []));
-    
     if (excludeAnon) {
       result = result.filter(v => v.toLowerCase() !== 'autor anónimo');
     }
-    
     return result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
   };
 

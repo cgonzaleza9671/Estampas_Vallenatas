@@ -16,6 +16,7 @@ export interface AudioItem {
   anio: number;
   url_audio: string;
   descripcion: string;
+  reproducciones?: number;
 }
 
 export interface VideoItem {
