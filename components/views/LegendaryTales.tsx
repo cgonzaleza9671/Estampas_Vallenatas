@@ -34,6 +34,20 @@ const STORY_TIMESTAMPS: Record<string, number[]> = {
   "La Gota Fría": [0, 14.8, 29.3, 45.7, 62.1, 78.5, 95.0, 112.0],
   "Pablo López": [
     0.0, 42.0, 72.0, 106.0, 146.0, 180.0, 208.0, 230.0, 252.0
+  ],
+  "Guillermo Buitrago": [
+    0.0,   // Párrafo 1
+    22.0,  // Párrafo 2
+    40.0,  // Párrafo 3
+    68.0,  // Párrafo 4
+    94.0,  // Párrafo 5
+    131.0, // Párrafo 6
+    160.0, // Párrafo 7
+    192.0, // Párrafo 8
+    236.0, // Párrafo 9
+    253.0, // Párrafo 10
+    282.0, // Párrafo 11
+    312.0  // Párrafo 12
   ]
 };
 

@@ -294,7 +294,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
          <div className="container mx-auto px-6 relative">
              <div className="mb-16 text-center flex flex-col items-center">
                 <div className="inline-flex items-center gap-2 bg-vallenato-red px-4 py-1.5 rounded-full mb-4 shadow-lg animate-pulse"><Star size={12} className="text-white fill-current" /><span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Nueva Sección</span></div>
-                <span className="text-vallenato-red font-bold uppercase tracking-[0.4em] text-xs mb-2 block">Experiencia Inmersiva</span>
+                <span className="text-vallenato-red font-bold uppercase tracking-[0.4em] text-xs mb-2 block">experiencia de audio</span>
                 <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue font-bold">Relatos Legendarios</h2>
                 <div className="w-24 h-1 bg-vallenato-mustard mx-auto mt-6"></div>
              </div>
