@@ -317,9 +317,13 @@ const LegendaryTales: React.FC = () => {
                  <h1 className="text-3xl md:text-6xl font-serif font-bold leading-tight mb-3 drop-shadow-2xl animate-fade-in-up">
                     {selectedStory.titulo}
                  </h1>
-                 <p className="text-vallenato-mustard font-sans font-extrabold uppercase tracking-[0.25em] text-[8px] md:text-xs max-w-xl mx-auto opacity-70">
-                    {selectedStory.subtitulo}
-                 </p>
+                 <div className="max-w-2xl mx-auto">
+                    <div className="inline-block px-6 py-2 rounded-full bg-vallenato-mustard/10 border border-vallenato-mustard/20 backdrop-blur-sm">
+                       <p className="text-vallenato-mustard font-sans font-bold uppercase tracking-[0.3em] text-[9px] md:text-xs">
+                          {selectedStory.subtitulo}
+                       </p>
+                    </div>
+                 </div>
               </div>
            </div>
         </div>
@@ -502,7 +506,7 @@ const LegendaryTales: React.FC = () => {
               onClick={() => handleStartStory(story)} 
               className="group bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 hover:shadow-gold transition-all duration-700 cursor-pointer flex flex-col sm:flex-row"
             >
-              <div className="w-full sm:w-[40%] aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
+              <div className="w-full sm:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
                  <img src={story.imagen} alt={story.titulo} className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[2s]" />
                  <div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent opacity-60"></div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -516,21 +520,25 @@ const LegendaryTales: React.FC = () => {
                  <div>
                     <h2 className="text-2xl font-serif text-vallenato-blue font-bold mb-3 group-hover:text-vallenato-red transition-colors leading-tight">{story.titulo}</h2>
                     <div className="w-8 h-0.5 bg-vallenato-mustard mb-4 opacity-50"></div>
-                    <p className="text-gray-500 font-serif italic text-sm md:text-base leading-relaxed line-clamp-[6] mb-6">
-                      {story.subtitulo}
-                    </p>
+                    <div className="relative mb-6 pl-5 border-l-2 border-vallenato-mustard/50 bg-vallenato-beige/30 py-3 pr-4 rounded-r-2xl">
+                       <p className="text-vallenato-blue/80 font-serif italic text-sm md:text-base leading-relaxed line-clamp-[6]">
+                         {story.subtitulo}
+                       </p>
+                    </div>
                  </div>
 
-                 <div className="mt-auto flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                 <div className="mt-auto pt-4 border-t border-gray-50">
+                    <div className="flex items-center gap-2 mb-3">
                        <div className="w-7 h-7 rounded-full bg-vallenato-blue/5 flex items-center justify-center text-vallenato-blue/30">
                           <Clock size={12} />
                        </div>
                        <span className="text-[9px] font-bold uppercase tracking-widest text-vallenato-blue/40">{story.fecha}</span>
                     </div>
-                    <button className="text-vallenato-blue font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:text-vallenato-red transition-all">
-                       Leer más <ChevronRight size={14} />
-                    </button>
+                    <div className="flex justify-end">
+                      <button className="text-vallenato-blue font-bold uppercase text-[10px] tracking-widest flex items-center gap-2 group-hover:text-vallenato-red transition-all">
+                         Leer más <ChevronRight size={14} />
+                      </button>
+                    </div>
                  </div>
               </div>
             </div>

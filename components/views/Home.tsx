@@ -301,9 +301,17 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 max-w-6xl mx-auto">
                 {recentRelatos.slice(0, 2).map((relato) => (
                   <div key={relato.id} onClick={() => navigate('/relatos-legendarios')} className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col md:flex-row">
-                    <div className="w-full md:w-[45%] aspect-[3/4] relative overflow-hidden bg-vallenato-dark"><img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div></div>
+                    <div className="w-full md:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark"><img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div></div>
                     <div className="p-8 md:p-10 flex-grow flex flex-col justify-between">
-                       <div><h3 className="text-2xl md:text-3xl font-serif text-vallenato-blue font-bold leading-tight mb-4 group-hover:text-vallenato-red transition-colors">{relato.titulo}</h3><div className="w-10 h-0.5 bg-vallenato-mustard mb-6"></div><p className="text-gray-600 font-serif italic text-sm md:text-base leading-relaxed line-clamp-5 md:line-clamp-[8]">{relato.subtitulo}</p></div>
+                       <div>
+                         <h3 className="text-2xl md:text-3xl font-serif text-vallenato-blue font-bold leading-tight mb-4 group-hover:text-vallenato-red transition-colors">{relato.titulo}</h3>
+                         <div className="w-10 h-0.5 bg-vallenato-mustard mb-6"></div>
+                         <div className="relative mb-6 pl-4 border-l-2 border-vallenato-mustard/40 bg-vallenato-beige/20 py-2 pr-3 rounded-r-xl">
+                            <p className="text-vallenato-blue/70 font-serif italic text-sm leading-relaxed line-clamp-4 md:line-clamp-[6]">
+                              {relato.subtitulo}
+                            </p>
+                         </div>
+                       </div>
                        <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
                           <div className="flex items-center gap-3"><div className="bg-vallenato-blue/5 p-2 rounded-full text-vallenato-blue/40"><BookOpen size={16} /></div><span className="text-[9px] font-bold uppercase tracking-widest text-vallenato-blue/40">{relato.fecha}</span></div>
                           <button className="bg-vallenato-blue text-white p-3 rounded-2xl group-hover:bg-vallenato-red transition-all shadow-lg active:scale-95"><Play size={14} fill="currentColor" /></button>
