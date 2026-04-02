@@ -12,6 +12,7 @@ const Header: React.FC = () => {
     { label: 'Inicio', path: '/' },
     { label: 'La Memoria del Acordeón', path: '/la-memoria-del-acordeon' },
     { label: 'Relatos Legendarios', path: '/relatos-legendarios' },
+    { label: 'Impacto Global', path: '/impacto-global' },
     { label: 'Acerca del autor', path: '/acerca-del-autor' },
   ];
 

@@ -7,6 +7,7 @@ import Home from './components/views/Home.tsx';
 import Archive from './components/views/Archive.tsx';
 import Bio from './components/views/Bio.tsx';
 import LegendaryTales from './components/views/LegendaryTales.tsx';
+import GlobalImpact from './components/views/GlobalImpact.tsx';
 import AudioStoryCard from './components/AudioStoryCard.tsx';
 import { Play, Pause, SkipBack, SkipForward, X, MessageSquareQuote, User, Headphones, Youtube, Star, ChevronRight } from 'lucide-react';
 import { AudioItem } from './types.ts';
@@ -197,6 +198,7 @@ const AppContent: React.FC = () => {
           <Route path="/" element={<Home onPlayAudio={handlePlayAudio} onVideoOpen={handleVideoOpen} currentAudioId={currentAudio?.id} isPlaying={isPlaying} />} />
           <Route path="/la-memoria-del-acordeon" element={<Archive initialTab={archiveTab} onPlayAudio={handlePlayAudio} onVideoOpen={handleVideoOpen} currentAudioId={currentAudio?.id} isPlaying={isPlaying} />} />
           <Route path="/relatos-legendarios" element={<LegendaryTales />} />
+          <Route path="/impacto-global" element={<GlobalImpact />} />
           <Route path="/acerca-del-autor" element={<Bio />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

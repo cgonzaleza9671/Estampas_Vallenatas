@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
+import { LEGENDARY_TALES } from '../../constants.ts';
 import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen, RotateCcw, CheckCircle2, FastForward } from 'lucide-react';
 
 // Marcas de tiempo de alta precisión sincronizadas a 1x.
@@ -48,6 +49,20 @@ const STORY_TIMESTAMPS: Record<string, number[]> = {
     253.0, // Párrafo 10
     282.0, // Párrafo 11
     312.0  // Párrafo 12
+  ],
+  "Leandro": [
+    0.0,   // Párrafo 1: 0 - 32:00
+    33.0,  // Párrafo 2: 33:00 - 1:06:00
+    67.0,  // Párrafo 3: 1:07:00 - 1:40:00
+    101.0, // Párrafo 4: 1:41:00 - 2:04:00
+    125.0, // Párrafo 5: 2:05:00 - 2:31:00
+    152.0, // Párrafo 6: 2:32:00 - 2:43:00
+    164.0, // Párrafo 7: 2:44:00 - 3:08:00
+    189.0, // Párrafo 8: 3:09:00 - 3:30:00
+    211.0, // Párrafo 9: 3:31:00 - 3:39:00
+    220.0, // Párrafo 10: 3:40:00 - 3:55:00
+    236.0, // Párrafo 11: 3:56:00 - 4:28:00
+    269.0  // Párrafo 12: 4:29:00 - fin
   ]
 };
 
@@ -83,7 +98,14 @@ const LegendaryTales: React.FC = () => {
       setLoading(true);
       try {
         const data = await fetchRelatos();
-        setRelatos(data);
+        // Combinar datos de Supabase con locales para asegurar que Leandro Díaz aparezca
+        const combined = [...data];
+        LEGENDARY_TALES.forEach(local => {
+          if (!combined.find(c => c.id === local.id || c.titulo === local.titulo)) {
+            combined.push(local);
+          }
+        });
+        setRelatos(combined);
       } catch (err) {
         console.error(err);
       } finally {
