@@ -349,31 +349,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              <div className="flex justify-center"><Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="group border-vallenato-mustard/30">Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
       </section>
-       <section className="py-24 bg-vallenato-dark relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(191,149,63,0.1),transparent_70%)]"></div>
-          <div className="container mx-auto px-6 relative z-10">
-              <div className="max-w-4xl mx-auto text-center">
-                  <div className="inline-flex items-center gap-2 bg-vallenato-mustard/20 border border-vallenato-mustard/30 px-4 py-1.5 rounded-full mb-8">
-                    <Globe size={14} className="text-vallenato-mustard animate-pulse" />
-                    <span className="text-vallenato-mustard text-[10px] font-black uppercase tracking-[0.25em]">Presencia Mundial</span>
-                  </div>
-                  <h2 className="text-4xl md:text-6xl font-serif text-white font-bold mb-8 leading-tight">
-                    El Vallenato no tiene <span className="text-vallenato-mustard italic">Fronteras</span>
-                  </h2>
-                  <p className="text-gray-400 font-serif italic text-lg md:text-xl leading-relaxed mb-12 max-w-2xl mx-auto">
-                    Descubra cómo nuestra cultura resuena en cada rincón del planeta. 
-                    Una comunidad global unida por el sentimiento del acordeón.
-                  </p>
-                  <button 
-                    onClick={() => navigate('/impacto-global')}
-                    className="bg-vallenato-mustard text-vallenato-blue hover:bg-white hover:text-vallenato-blue px-10 py-6 rounded-full text-xs font-bold uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(191,149,63,0.3)] group flex items-center gap-3 mx-auto transition-all"
-                  >
-                    Ver Impacto Global <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
-                  </button>
-              </div>
-          </div>
-       </section>
-
        <MediaModal item={selectedMedia} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );

@@ -64,12 +64,6 @@ const Footer: React.FC = () => {
               </button>
             </li>
             <li>
-              <button onClick={(e) => handleNav(e, '/impacto-global')} className="hover:text-vallenato-mustard transition-colors text-left flex items-center gap-2 group">
-                <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                Impacto Global
-              </button>
-            </li>
-            <li>
               <button onClick={(e) => handleNav(e, '/acerca-del-autor')} className="hover:text-vallenato-mustard transition-colors text-left flex items-center gap-2 group">
                 <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 Acerca del autor
