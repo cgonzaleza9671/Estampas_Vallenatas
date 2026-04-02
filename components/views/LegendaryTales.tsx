@@ -148,6 +148,10 @@ const LegendaryTales: React.FC = () => {
     
     if (isFinished) return;
     
+    updateParagraphFromTime(time);
+  };
+
+  const updateParagraphFromTime = (time: number) => {
     const adjustedTime = time + dynamicLatency;
     let index = 0;
     for (let i = timestamps.length - 1; i >= 0; i--) {
@@ -226,8 +230,11 @@ const LegendaryTales: React.FC = () => {
 
   const skipSeconds = (seconds: number) => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.max(0, Math.min(audioRef.current.duration, audioRef.current.currentTime + seconds));
-      if (isFinished && audioRef.current.currentTime < audioRef.current.duration) {
+      const newTime = Math.max(0, Math.min(audioRef.current.duration, audioRef.current.currentTime + seconds));
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+      updateParagraphFromTime(newTime);
+      if (isFinished && newTime < audioRef.current.duration) {
         setIsFinished(false);
       }
     }
@@ -278,6 +285,14 @@ const LegendaryTales: React.FC = () => {
                    <div>
                       <span className="text-vallenato-mustard text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Relato completado</span>
                       <div className="w-12 h-0.5 bg-vallenato-red/40 mx-auto mb-6"></div>
+                      
+                      <h3 className="text-white text-2xl md:text-4xl font-serif font-bold mb-2 leading-tight drop-shadow-lg animate-fade-in">
+                        {selectedStory.titulo}
+                      </h3>
+                      <p className="text-vallenato-mustard/90 text-[10px] md:text-xs font-sans font-bold uppercase tracking-[0.3em] mb-10 max-w-md mx-auto leading-relaxed">
+                        {selectedStory.subtitulo}
+                      </p>
+
                       <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.3em] block mb-2">Escrito original de:</span>
                       <h4 className="text-white font-calligraphy text-5xl md:text-7xl mb-8 leading-tight drop-shadow-lg">Álvaro González Pimienta</h4>
                    </div>
@@ -421,6 +436,10 @@ const LegendaryTales: React.FC = () => {
                       const time = parseFloat(e.target.value);
                       if(audioRef.current) audioRef.current.currentTime = time;
                       setCurrentTime(time);
+                      updateParagraphFromTime(time);
+                      if (isFinished && time < (duration || 0)) {
+                        setIsFinished(false);
+                      }
                     }}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
