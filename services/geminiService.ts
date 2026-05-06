@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai/web";
 
 // The Maestro Álvaro personality prompt
 const SYSTEM_INSTRUCTION = `

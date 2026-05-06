@@ -181,41 +181,41 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
           <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] leading-[1.1]"><span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-2">El Museo Digital del</span><span className="text-vallenato-red">Folclor Vallenato</span></h1>
           <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-[0_2px_6px_rgba(0,0,0,1)] min-h-[5em] md:min-h-[4em]">{renderTypedDescription()}<span className={`inline-block w-1.5 h-4 md:h-5 bg-vallenato-mustard ml-1 ${charCount < totalChars ? 'animate-pulse' : 'hidden'}`}></span></h2>
           
-          <div className="mt-8 w-full max-w-4xl bg-black/30 backdrop-blur-xl border border-white/20 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row group/cta p-2 md:p-3">
-            <div className="md:w-5/12 p-6 md:p-8 flex flex-col justify-center items-center md:items-start text-center md:text-left relative overflow-hidden bg-white/5 rounded-[2rem] border border-white/5">
+          <div className="mt-6 md:mt-8 w-[95%] md:w-4/5 lg:max-w-3xl bg-black/30 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl flex flex-col md:flex-row group/cta p-1.5 md:p-2">
+            <div className="md:w-5/12 p-4 md:p-5 flex flex-col justify-center items-center md:items-start text-center md:text-left relative overflow-hidden bg-white/5 rounded-[1.5rem] border border-white/5">
                 <div className="absolute inset-0 bg-gradient-to-br from-vallenato-mustard/20 to-transparent opacity-0 group-hover/cta:opacity-100 transition-opacity duration-1000"></div>
-                <div className="bg-white/10 p-2.5 rounded-full mb-4 border border-white/10 relative z-10 hidden md:block">
-                   <Sparkles size={20} className="text-vallenato-mustard animate-pulse" />
+                <div className="bg-white/10 p-1.5 rounded-full mb-2 border border-white/10 relative z-10 hidden md:block">
+                   <Sparkles size={16} className="text-vallenato-mustard animate-pulse" />
                 </div>
-                <h3 className="text-xl md:text-2xl font-serif text-white font-bold mb-3 relative z-10 leading-tight">Empieza tu recorrido <br/><span className="text-vallenato-mustard italic">histórico</span></h3>
-                <p className="text-gray-300 text-xs font-light mb-6 relative z-10 leading-relaxed hidden md:block">Descubre la esencia del folclor a través de nuestra colección de relatos y joyas musicales.</p>
+                <h3 className="text-lg md:text-xl font-serif text-white font-bold mb-1.5 relative z-10 leading-tight">Empieza tu recorrido <br/><span className="text-vallenato-mustard italic">histórico</span></h3>
+                <p className="text-gray-300 text-[10px] font-light mb-3 relative z-10 leading-relaxed hidden md:block">Descubre la esencia del folclor a través de nuestra colección de relatos y joyas musicales.</p>
                 <button 
                   onClick={() => navigate('/la-memoria-del-acordeon')}
-                  className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-6 py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(234,170,0,0.4)] hover:shadow-[0_4px_25px_rgba(255,255,255,0.6)] flex items-center gap-2 relative z-10 hover:scale-105 active:scale-95"
+                  className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-4 py-2 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(234,170,0,0.4)] hover:shadow-[0_4px_25px_rgba(255,255,255,0.6)] flex items-center gap-1.5 relative z-10 hover:scale-105 active:scale-95"
                 >
-                  Explorar Archivo <ArrowRight size={14} />
+                  Explorar Archivo <ArrowRight size={12} />
                 </button>
             </div>
 
-            <div className="md:w-7/12 p-2 md:p-4 grid grid-cols-2 gap-3 md:gap-4">
-                <div onClick={() => navigate('/relatos-legendarios')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-vallenato-mustard/40 hover:bg-vallenato-mustard/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
-                   <BookOpen size={24} className="text-vallenato-mustard mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-vallenato-mustard transition-colors">Relatos<br/>Legendarios</h4>
+            <div className="md:w-7/12 p-1.5 md:p-2 grid grid-cols-2 gap-1.5 md:gap-2">
+                <div onClick={() => navigate('/relatos-legendarios')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-vallenato-mustard/40 hover:bg-vallenato-mustard/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <BookOpen size={18} className="text-vallenato-mustard mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-vallenato-mustard transition-colors">Relatos<br/>Legendarios</h4>
                    <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Crónicas y vivencias invaluables.</p>
                 </div>
-                <div onClick={() => navigate('/la-memoria-del-acordeon')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-vallenato-red/40 hover:bg-vallenato-red/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
-                   <Headphones size={24} className="text-vallenato-red mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-vallenato-red transition-colors">Audios<br/>Inéditos</h4>
+                <div onClick={() => navigate('/la-memoria-del-acordeon')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-vallenato-red/40 hover:bg-vallenato-red/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <Headphones size={18} className="text-vallenato-red mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-vallenato-red transition-colors">Audios<br/>Inéditos</h4>
                    <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Joyas musicales del folclor.</p>
                 </div>
-                <div onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-white/40 hover:bg-white/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
-                   <Video size={24} className="text-white mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-white transition-colors">Videoteca<br/>Histórica</h4>
+                <div onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-white/40 hover:bg-white/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <Video size={18} className="text-white mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-white transition-colors">Videoteca<br/>Histórica</h4>
                    <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Presentaciones inolvidables.</p>
                 </div>
-                <div onClick={() => navigate('/acerca-del-autor')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-[#3b82f6]/40 hover:bg-[#3b82f6]/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
-                   <User size={24} className="text-[#3b82f6] mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-[#3b82f6] transition-colors">Acerca<br/>del Autor</h4>
+                <div onClick={() => navigate('/acerca-del-autor')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-[#3b82f6]/40 hover:bg-[#3b82f6]/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <User size={18} className="text-[#3b82f6] mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-[#3b82f6] transition-colors">Acerca<br/>del Autor</h4>
                    <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Álvaro González Pimienta.</p>
                 </div>
             </div>
