@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
-import { FESTIVAL_DATE, HERO_GALLERY } from '../../constants.ts';
+import { HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
 import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight, Disc, ListMusic } from 'lucide-react';
@@ -16,18 +16,8 @@ interface HomeProps {
   isPlaying?: boolean;
 }
 
-interface TimeLeft {
-  months: number;
-  weeks: number;
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-}
-
 const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, isPlaying }) => {
   const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({ months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [latestAudio, setLatestAudio] = useState<AudioItem | null>(null);
   const [recentAudios, setRecentAudios] = useState<AudioItem[]>([]);
   const [recentVideos, setRecentVideos] = useState<VideoItem[]>([]);
@@ -112,28 +102,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
     return () => window.removeEventListener('audioPlayIncremented', handleIncremented);
   }, []);
 
-  useEffect(() => {
-    const calculateTimeLeft = () => {
-      const difference = +FESTIVAL_DATE - +new Date();
-      let timeLeft: TimeLeft = { months: 0, weeks: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
-      if (difference > 0) {
-        const totalSeconds = Math.floor(difference / 1000);
-        const totalDays = Math.floor(totalSeconds / (3600 * 24));
-        timeLeft = {
-          months: Math.floor(totalDays / 30),
-          weeks: Math.floor((totalDays % 30) / 7),
-          days: Math.floor(totalDays % 7),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        };
-      }
-      return timeLeft;
-    };
-    const timer = setInterval(() => setTimeLeft(calculateTimeLeft()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const openMedia = (item: AudioItem | VideoItem) => {
     if ('interprete' in item) {
       onVideoOpen?.(); 
@@ -147,8 +115,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
     if (num < 1000000) return (num / 1000).toFixed(1) + 'k';
     return (num / 1000000).toFixed(1) + 'M';
   };
-
-  const labelMap: Record<string, string> = { months: 'Meses', weeks: 'Semanas', days: 'Días', hours: 'Horas', minutes: 'Minutos', seconds: 'Segundos' };
 
   const renderTypedDescription = () => {
     let currentPos = 0;
@@ -214,17 +180,45 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
           <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Estampas Vallenatas</span>
           <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] leading-[1.1]"><span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-2">El Museo Digital del</span><span className="text-vallenato-red">Folclor Vallenato</span></h1>
           <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-[0_2px_6px_rgba(0,0,0,1)] min-h-[5em] md:min-h-[4em]">{renderTypedDescription()}<span className={`inline-block w-1.5 h-4 md:h-5 bg-vallenato-mustard ml-1 ${charCount < totalChars ? 'animate-pulse' : 'hidden'}`}></span></h2>
-          <div className="mt-2 w-full max-w-4xl flex flex-col items-center">
-             <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-4 p-4 md:p-6 rounded-2xl bg-black/40 backdrop-blur-md border border-white/20 shadow-2xl w-full">
-                {Object.entries(timeLeft).map(([label, value]) => (
-                  <div key={label} className={`flex flex-col items-center justify-center bg-black/30 rounded-xl py-3 border border-white/10 transition-all duration-300 ${label === 'seconds' ? 'border-vallenato-mustard/60 scale-105 shadow-[0_0_15px_rgba(234,170,0,0.3)] bg-vallenato-mustard/5' : ''}`}>
-                     <span className={`text-2xl md:text-3xl font-mono font-bold mb-1 text-vallenato-mustard ${label === 'seconds' ? 'drop-shadow-[0_0_8px_rgba(234,170,0,0.8)] animate-pulse' : ''}`}>{String(value).padStart(2, '0')}</span>
-                     <span className="text-[10px] md:text-xs uppercase tracking-widest font-bold opacity-90 text-white">{labelMap[label]}</span>
-                  </div>
-                ))}
-             </div>
-             <p className="text-white text-xs md:text-sm mt-4 uppercase tracking-widest font-bold font-sans mb-6 drop-shadow-[0_2px_4px_rgba(0,0,0,1)] text-center">Cuenta regresiva para el inicio del 59° Festival de la Leyenda Vallenata</p>
-             <a href="https://festivalvallenato.com/" target="_blank" rel="noopener noreferrer" className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-8 py-3 rounded-full font-bold uppercase text-xs md:text-sm tracking-widest transition-all duration-300 shadow-2xl flex items-center gap-3 border border-vallenato-mustard/20">Sitio oficial del Festival <Globe size={18} /></a>
+          
+          <div className="mt-8 w-full max-w-4xl bg-black/30 backdrop-blur-xl border border-white/20 rounded-[2.5rem] shadow-2xl flex flex-col md:flex-row group/cta p-2 md:p-3">
+            <div className="md:w-5/12 p-6 md:p-8 flex flex-col justify-center items-center md:items-start text-center md:text-left relative overflow-hidden bg-white/5 rounded-[2rem] border border-white/5">
+                <div className="absolute inset-0 bg-gradient-to-br from-vallenato-mustard/20 to-transparent opacity-0 group-hover/cta:opacity-100 transition-opacity duration-1000"></div>
+                <div className="bg-white/10 p-2.5 rounded-full mb-4 border border-white/10 relative z-10 hidden md:block">
+                   <Sparkles size={20} className="text-vallenato-mustard animate-pulse" />
+                </div>
+                <h3 className="text-xl md:text-2xl font-serif text-white font-bold mb-3 relative z-10 leading-tight">Empieza tu recorrido <br/><span className="text-vallenato-mustard italic">histórico</span></h3>
+                <p className="text-gray-300 text-xs font-light mb-6 relative z-10 leading-relaxed hidden md:block">Descubre la esencia del folclor a través de nuestra colección de relatos y joyas musicales.</p>
+                <button 
+                  onClick={() => navigate('/la-memoria-del-acordeon')}
+                  className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-6 py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(234,170,0,0.4)] hover:shadow-[0_4px_25px_rgba(255,255,255,0.6)] flex items-center gap-2 relative z-10 hover:scale-105 active:scale-95"
+                >
+                  Explorar Archivo <ArrowRight size={14} />
+                </button>
+            </div>
+
+            <div className="md:w-7/12 p-2 md:p-4 grid grid-cols-2 gap-3 md:gap-4">
+                <div onClick={() => navigate('/relatos-legendarios')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-vallenato-mustard/40 hover:bg-vallenato-mustard/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <BookOpen size={24} className="text-vallenato-mustard mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-vallenato-mustard transition-colors">Relatos<br/>Legendarios</h4>
+                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Crónicas y vivencias invaluables.</p>
+                </div>
+                <div onClick={() => navigate('/la-memoria-del-acordeon')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-vallenato-red/40 hover:bg-vallenato-red/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <Headphones size={24} className="text-vallenato-red mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-vallenato-red transition-colors">Audios<br/>Inéditos</h4>
+                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Joyas musicales del folclor.</p>
+                </div>
+                <div onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-white/40 hover:bg-white/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <Video size={24} className="text-white mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-white transition-colors">Videoteca<br/>Histórica</h4>
+                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Presentaciones inolvidables.</p>
+                </div>
+                <div onClick={() => navigate('/acerca-del-autor')} className="bg-white/5 backdrop-blur-md p-5 rounded-[2rem] border border-white/10 hover:border-[#3b82f6]/40 hover:bg-[#3b82f6]/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <User size={24} className="text-[#3b82f6] mb-3 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-sm md:text-base mb-1.5 relative z-10 leading-tight group-hover/card:text-[#3b82f6] transition-colors">Acerca<br/>del Autor</h4>
+                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Álvaro González Pimienta.</p>
+                </div>
+            </div>
           </div>
         </div>
       </section>
