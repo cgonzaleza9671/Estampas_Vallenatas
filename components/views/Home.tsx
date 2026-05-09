@@ -187,8 +187,8 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                 <div className="bg-white/10 p-1.5 rounded-full mb-2 border border-white/10 relative z-10 hidden md:block">
                    <Sparkles size={16} className="text-vallenato-mustard animate-pulse" />
                 </div>
-                <h3 className="text-lg md:text-xl font-serif text-white font-bold mb-1.5 relative z-10 leading-tight">Empieza tu recorrido <br/><span className="text-vallenato-mustard italic">histórico</span></h3>
-                <p className="text-gray-300 text-[10px] font-light mb-3 relative z-10 leading-relaxed hidden md:block">Descubre la esencia del folclor a través de nuestra colección de relatos y joyas musicales.</p>
+                <h3 className="text-lg md:text-xl font-serif text-white font-bold mb-1.5 relative z-10 leading-tight">Empiece su recorrido <br/><span className="text-vallenato-mustard italic">histórico</span></h3>
+                <p className="text-gray-300 text-[10px] font-light mb-3 relative z-10 leading-relaxed hidden md:block">Descubra la esencia del folclor a través de nuestra colección de relatos y joyas musicales.</p>
                 <button 
                   onClick={() => navigate('/la-memoria-del-acordeon')}
                   className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-4 py-2 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(234,170,0,0.4)] hover:shadow-[0_4px_25px_rgba(255,255,255,0.6)] flex items-center gap-1.5 relative z-10 hover:scale-105 active:scale-95"
