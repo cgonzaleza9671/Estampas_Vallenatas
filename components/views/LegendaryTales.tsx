@@ -63,6 +63,21 @@ const STORY_TIMESTAMPS: Record<string, number[]> = {
     219.0, // Párrafo 10: 3:39:00 - 3:55:00
     236.0, // Párrafo 11: 3:56:00 - 4:28:00
     269.0  // Párrafo 12: 4:29:00 - fin
+  ],
+  "Emiliano Zuleta": [
+    0.0,   // Párrafo 1: 0:00 - 4:50
+    5.0,   // Párrafo 2: 5:00 - 35:00
+    36.0,  // Párrafo 3: 36:00 - 1:06:00
+    66.5,  // Párrafo 4: 1:06:50 - 1:38:00
+    98.5,  // Párrafo 5: 1:38:50 - 1:57:00
+    118.0, // Párrafo 6: 1:58:00 - 2:16:00
+    136.5, // Párrafo 7: 2:16:50 - 2:58:00
+    178.5, // Párrafo 8: 2:58:50 - 3:14:00
+    195.0, // Párrafo 9: 3:15:00 - 3:22:00
+    203.0, // Párrafo 10: 3:23:00 - 3:51:00
+    231.5, // Párrafo 11: 3:51:50 - 3:57:00
+    237.5, // Párrafo 12: 3:57:50 - 4:05:00
+    246.0  // Párrafo 13: 4:06:00 - fin
   ]
 };
 
@@ -347,7 +362,7 @@ const LegendaryTales: React.FC = () => {
         </nav>
 
         <div className="relative w-full h-[50vh] overflow-hidden">
-           <img src={selectedStory.imagen} className="w-full h-full object-cover opacity-30 scale-105" alt="" />
+           <img src={selectedStory.imagen} className="w-full h-full object-cover opacity-30 scale-105 grayscale" alt="" />
            <div className="absolute inset-0 bg-gradient-to-b from-vallenato-dark/40 via-vallenato-dark/80 to-vallenato-dark"></div>
            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
               <div className="container mx-auto max-w-4xl pt-10">
@@ -548,7 +563,7 @@ const LegendaryTales: React.FC = () => {
               className="group bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 hover:shadow-gold transition-all duration-700 cursor-pointer flex flex-col sm:flex-row"
             >
               <div className="w-full sm:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
-                 <img src={story.imagen} alt={story.titulo} className="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-[2s]" />
+                 <img src={story.imagen} alt={story.titulo} className="w-full h-full object-cover opacity-80 grayscale group-hover:scale-110 transition-transform duration-[2s]" />
                  <div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent opacity-60"></div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <div className="bg-white/20 backdrop-blur-xl p-5 rounded-full border border-white/30 text-white shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">

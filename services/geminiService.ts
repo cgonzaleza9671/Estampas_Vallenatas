@@ -1,6 +1,4 @@
 
-import { GoogleGenAI } from "@google/genai";
-
 // The Maestro Álvaro personality prompt
 const SYSTEM_INSTRUCTION = `
 Eres Álvaro González Pimienta, un experto folclorista y juglar de 79 años.
@@ -23,29 +21,23 @@ Base de conocimiento prioritaria:
  * getGeminiResponse calls the Gemini API to get a response from the Maestro Álvaro persona.
  */
 export const getGeminiResponse = async (userMessage: string, userName: string, userCity: string): Promise<string> => {
-  // Always create a new GoogleGenAI instance inside the function to use the latest API key.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
   try {
-    const contextPrompt = `
-    El usuario se llama ${userName} y escribe desde ${userCity}. 
-    Pregunta: "${userMessage}"
-    `;
-
-    // Use gemini-3-flash-preview for basic Q&A as per guidelines.
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
-      contents: contextPrompt,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.7,
-      }
+    const response = await fetch('/api/gemini', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userMessage, userName, userCity }),
     });
 
-    // response.text is a property, not a method.
-    return response.text || "Lo siento compadre, se me fue la nota. Intenta preguntarme de nuevo.";
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.text || "Lo siento compadre, se me fue la nota. Intenta preguntarme de nuevo.";
   } catch (error) {
-    console.error("Error calling Gemini:", error);
+    console.error("Error calling Gemini local API:", error);
     return "¡Caramba! Hubo un problema conectando con mi memoria. Inténtalo más tarde, compañero.";
   }
 };

@@ -295,7 +295,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 max-w-6xl mx-auto">
                 {recentRelatos.slice(0, 2).map((relato) => (
                   <div key={relato.id} onClick={() => navigate('/relatos-legendarios')} className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col md:flex-row">
-                    <div className="w-full md:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark"><img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s] opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div></div>
+                    <div className="w-full md:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark"><img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover grayscale group-hover:scale-110 transition-transform duration-[2s] opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div></div>
                     <div className="p-8 md:p-10 flex-grow flex flex-col justify-between">
                        <div>
                          <h3 className="text-2xl md:text-3xl font-serif text-vallenato-blue font-bold leading-tight mb-4 group-hover:text-vallenato-red transition-colors">{relato.titulo}</h3>
