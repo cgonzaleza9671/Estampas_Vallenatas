@@ -30,7 +30,48 @@ const getCache = (key: string) => {
   } catch (e) { return null; }
 };
 
-const mapAudio = (db: any): AudioItem => {
+let globalAudioNumbers: Record<number, number> | null = null;
+let globalVideoNumbers: Record<number, number> | null = null;
+
+const getGlobalAudioNumbers = async (): Promise<Record<number, number>> => {
+  if (globalAudioNumbers) return globalAudioNumbers;
+  const cached = getCache('globalAudioNumbers_v1');
+  if (cached) {
+    globalAudioNumbers = cached;
+    return cached;
+  }
+  const { data } = await supabase.from('Audios').select('id').order('fecha', { ascending: true });
+  const map: Record<number, number> = {};
+  if (data) {
+    data.forEach((row, idx) => {
+      map[row.id] = idx + 1;
+    });
+  }
+  globalAudioNumbers = map;
+  setCache('globalAudioNumbers_v1', map);
+  return map;
+};
+
+const getGlobalVideoNumbers = async (): Promise<Record<number, number>> => {
+  if (globalVideoNumbers) return globalVideoNumbers;
+  const cached = getCache('globalVideoNumbers_v1');
+  if (cached) {
+    globalVideoNumbers = cached;
+    return cached;
+  }
+  const { data } = await supabase.from('Videos').select('id').order('fecha', { ascending: true });
+  const map: Record<number, number> = {};
+  if (data) {
+    data.forEach((row, idx) => {
+      map[row.id] = idx + 1;
+    });
+  }
+  globalVideoNumbers = map;
+  setCache('globalVideoNumbers_v1', map);
+  return map;
+};
+
+const mapAudio = (db: any, numbersMap?: Record<number, number>): AudioItem => {
   const rawDate = db.fecha || db.published_at || "";
   let anio = db.anio || 0;
   let fechaLabel = "última estampa";
@@ -53,11 +94,12 @@ const mapAudio = (db: any): AudioItem => {
     anio: anio,
     url_audio: (db.audio_url || db.url_audio || db.url || db.audio || '').trim(),
     descripcion: db.descripcion || db.description || "",
-    reproducciones: db.reproducciones || 0
+    reproducciones: db.reproducciones || 0,
+    numero: numbersMap ? numbersMap[db.id] : undefined
   };
 };
 
-const mapVideo = (db: any): VideoItem => {
+const mapVideo = (db: any, numbersMap?: Record<number, number>): VideoItem => {
   const rawDate = db.fecha || "";
   let anio = db.anio || 0;
   let fechaLabel = "Registro Histórico";
@@ -90,7 +132,8 @@ const mapVideo = (db: any): VideoItem => {
     url_video: url,
     thumbnail_url: thumb,
     descripcion: db.descripcion || db.description || "",
-    fecha_publicacion: fechaLabel
+    fecha_publicacion: fechaLabel,
+    numero: numbersMap ? numbersMap[db.id] : undefined
   };
 };
 
@@ -123,12 +166,13 @@ export const fetchAudios = async (
     query = query.eq('acordeonero', filters.accordion);
   }
 
-  const { data, error } = await query
-    .order('fecha', { ascending: false })
-    .range(from, to);
+  const [{ data, error }, numbersMap] = await Promise.all([
+    query.order('fecha', { ascending: false }).range(from, to),
+    getGlobalAudioNumbers()
+  ]);
 
   if (error) return [];
-  const items = data ? data.map(mapAudio) : [];
+  const items = data ? data.map(db => mapAudio(db, numbersMap)) : [];
   if (page === 0 && items.length > 0) setCache(cacheKey, items);
   return items;
 };
@@ -172,12 +216,13 @@ export const fetchVideos = async (
     query = query.eq('interprete', filters.interpreter);
   }
 
-  const { data, error } = await query
-    .order('fecha', { ascending: false })
-    .range(from, to);
+  const [{ data, error }, numbersMap] = await Promise.all([
+    query.order('fecha', { ascending: false }).range(from, to),
+    getGlobalVideoNumbers()
+  ]);
     
   if (error) return [];
-  const items = data ? data.map(mapVideo) : [];
+  const items = data ? data.map(db => mapVideo(db, numbersMap)) : [];
   if (page === 0 && items.length > 0) setCache(cacheKey, items);
   return items;
 };

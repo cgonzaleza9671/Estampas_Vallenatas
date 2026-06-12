@@ -282,6 +282,13 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                                   <div className="h-28 bg-vallenato-blue/5 relative overflow-hidden flex items-center justify-center">
                                      <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                                      <Disc className={`text-vallenato-mustard/20 w-32 h-32 absolute -right-8 -top-8 transform rotate-12 transition-transform duration-1000 ${isActive && isPlaying ? 'animate-[spin_10s_linear_infinite]' : 'group-hover:rotate-45'}`} />
+                                     <div className="absolute top-4 left-4 z-10">
+                                        {item.numero && (
+                                          <div className="bg-vallenato-red text-white backdrop-blur-md px-2.5 py-1 rounded-full border border-vallenato-red/20 shadow-md">
+                                             <span className="text-[10px] font-black uppercase tracking-widest text-white">#{item.numero}</span>
+                                          </div>
+                                        )}
+                                     </div>
                                      <div className="absolute top-4 right-6 z-10 flex gap-2">
                                         {(item.reproducciones || 0) > 0 && (
                                           <div className="bg-vallenato-blue/10 backdrop-blur-md px-2.5 py-1 rounded-full border border-vallenato-blue/10 flex items-center gap-1.5">
@@ -342,14 +349,26 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                                        {isActive && isPlaying && <Disc size={14} className="absolute -top-1 -right-1 text-vallenato-mustard animate-spin" />}
                                     </div>
                                     <div className="flex-grow min-w-0 grid grid-cols-1 md:grid-cols-12 items-center gap-4 md:gap-0">
-                                       <div className="md:col-span-5 min-w-0 pr-4">
-                                          <div className="flex items-center gap-3">
-                                            <h4 className={`text-lg md:text-xl font-serif font-bold truncate transition-colors ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
-                                            {(item.reproducciones || 0) > 0 && (
-                                              <span className="flex items-center gap-1 text-[9px] font-black text-gray-300 group-hover:text-vallenato-mustard transition-colors"><Headphones size={10} /> {formatPlays(item.reproducciones)}</span>
-                                            )}
+                                       <div className="md:col-span-5 min-w-0 pr-4 flex flex-col md:flex-row md:items-center gap-3">
+                                          {item.numero && (
+                                            <div className="hidden md:flex flex-shrink-0 bg-vallenato-red/10 px-2 py-1 rounded-md border border-vallenato-red/20">
+                                              <span className="text-[10px] font-black uppercase tracking-widest text-vallenato-red">#{item.numero}</span>
+                                            </div>
+                                          )}
+                                          <div className="flex flex-col">
+                                            <div className="flex items-center gap-3">
+                                              {item.numero && (
+                                                <div className="md:hidden flex-shrink-0 bg-vallenato-red/10 px-2 py-0.5 rounded-md border border-vallenato-red/20">
+                                                  <span className="text-[9px] font-black uppercase tracking-widest text-vallenato-red">#{item.numero}</span>
+                                                </div>
+                                              )}
+                                              <h4 className={`text-lg md:text-xl font-serif font-bold truncate transition-colors ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
+                                              {(item.reproducciones || 0) > 0 && (
+                                                <span className="flex items-center gap-1 text-[9px] font-black text-gray-300 group-hover:text-vallenato-mustard transition-colors"><Headphones size={10} /> {formatPlays(item.reproducciones)}</span>
+                                              )}
+                                            </div>
+                                            <p className="text-[10px] font-serif italic text-gray-400 mt-1">{item.fecha_publicacion}</p>
                                           </div>
-                                          <p className="text-[10px] font-serif italic text-gray-400 mt-1">{item.fecha_publicacion}</p>
                                        </div>
                                        <div className="md:col-span-2 border-l border-gray-100 md:pl-6">
                                           <div className="flex flex-col"><span className="text-[7.5px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Autor</span><span className="text-[10px] md:text-[11px] font-bold text-vallenato-blue/80 truncate uppercase tracking-wider">{item.autor}</span></div>
@@ -389,6 +408,13 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         <div className="aspect-video relative overflow-hidden bg-black">
                             {item.thumbnail_url && <img src={item.thumbnail_url} className="w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-[2s]" alt={item.titulo} loading="lazy" />}
                             <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div className="absolute top-4 left-4 z-10 opacity-100 transition-opacity duration-500">
+                              {item.numero && (
+                                <div className="bg-vallenato-red text-white backdrop-blur-md px-2.5 py-1 rounded-full border border-vallenato-red/20 shadow-md">
+                                   <span className="text-[10px] font-black uppercase tracking-widest text-white">#{item.numero}</span>
+                                </div>
+                              )}
+                            </div>
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="bg-white/20 backdrop-blur-xl p-8 rounded-full border border-white/40 shadow-2xl transform group-hover:scale-125 transition-transform duration-500"><Play size={48} className="text-white fill-white" /></div>
                             </div>

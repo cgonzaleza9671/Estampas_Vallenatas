@@ -142,6 +142,9 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                        <div className="bg-vallenato-mustard p-1.5 rounded-full animate-pulse flex-shrink-0"><AccordionPlayIcon size={16} className="text-vallenato-blue" /></div>
                        <div className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2 text-center sm:text-left">
                           <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-vallenato-mustard whitespace-nowrap mb-1 sm:mb-0">Canción más reciente:</span>
+                          {latestAudio.numero && (
+                             <span className="text-[10px] font-black uppercase tracking-widest text-white bg-vallenato-red px-2 py-0.5 rounded-md self-center shadow-sm">#{latestAudio.numero}</span>
+                          )}
                           <span className="font-serif italic text-base md:text-lg line-clamp-2 md:line-clamp-1 leading-tight">"{latestAudio.titulo}" - {latestAudio.autor}</span>
                        </div>
                     </div>
@@ -237,6 +240,13 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                       <div className="h-28 bg-vallenato-blue/5 relative overflow-hidden flex items-center justify-center">
                          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                          <Disc className={`text-vallenato-mustard/20 w-32 h-32 absolute -right-8 -top-8 transform rotate-12 transition-transform duration-1000 ${isActive && isPlaying ? 'animate-[spin_10s_linear_infinite]' : 'group-hover:rotate-45'}`} />
+                         <div className="absolute top-4 left-4 z-10">
+                           {item.numero && (
+                             <div className="bg-vallenato-red text-white backdrop-blur-md px-2.5 py-1 rounded-full border border-vallenato-red/20 shadow-md">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white">#{item.numero}</span>
+                             </div>
+                           )}
+                         </div>
                          <div className="absolute top-4 right-6 z-10 flex gap-2">
                             {(item.reproducciones || 0) > 0 && (
                               <div className="bg-vallenato-blue/10 backdrop-blur-md px-2 py-0.5 rounded-full border border-vallenato-blue/10 flex items-center gap-1">
@@ -327,7 +337,19 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {recentVideos.map((item) => (
                    <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-[2.5rem] shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
-                      <div className="aspect-video relative overflow-hidden bg-black">{item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}<div className="absolute inset-0 flex items-center justify-center"><div className="bg-white/20 backdrop-blur-md p-6 rounded-full border border-white/50 group-hover:scale-110 transition-transform"><Play size={32} className="text-white fill-white" /></div></div></div>
+                      <div className="aspect-video relative overflow-hidden bg-black">
+                        {item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}
+                        <div className="absolute top-4 left-4 z-10">
+                          {item.numero && (
+                            <div className="bg-vallenato-red text-white backdrop-blur-md px-2.5 py-1 rounded-full border border-vallenato-red/20 shadow-md">
+                               <span className="text-[10px] font-black uppercase tracking-widest text-white">#{item.numero}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-white/20 backdrop-blur-md p-6 rounded-full border border-white/50 group-hover:scale-110 transition-transform"><Play size={32} className="text-white fill-white" /></div>
+                        </div>
+                      </div>
                       <div className="p-8 flex-grow">
                          <h3 className="text-2xl font-serif text-vallenato-blue font-bold mb-4 group-hover:text-vallenato-red transition-colors leading-tight">{item.titulo}</h3>
                          <div className="space-y-1 mb-4">

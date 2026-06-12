@@ -10,8 +10,8 @@ const Header: React.FC = () => {
 
   const navItems = [
     { label: 'Inicio', path: '/' },
-    { label: 'La Memoria del Acordeón', path: '/la-memoria-del-acordeon' },
-    { label: 'Relatos Legendarios', path: '/relatos-legendarios' },
+    { label: 'La memoria del acordeón', path: '/la-memoria-del-acordeon' },
+    { label: 'Relatos legendarios', path: '/relatos-legendarios' },
     { label: 'Acerca del autor', path: '/acerca-del-autor' },
   ];
 
@@ -58,7 +58,7 @@ const Header: React.FC = () => {
               <div key={item.path} className="relative flex flex-col items-center">
                 <button
                   onClick={() => handleNav(item.path)}
-                  className={`text-xs xl:text-sm font-bold uppercase tracking-widest transition-colors duration-300 ${
+                  className={`text-lg xl:text-xl font-serif tracking-wide transition-colors duration-300 ${
                     isActive(item.path)
                       ? 'text-vallenato-mustard border-b-2 border-vallenato-mustard pb-1' 
                       : 'text-gray-200 hover:text-white pb-1 border-b-2 border-transparent hover:border-white/50'
@@ -94,7 +94,7 @@ const Header: React.FC = () => {
                 key={item.path}
                 onClick={() => handleNav(item.path)}
                 className={`
-                  w-full py-4 px-4 rounded-xl text-sm font-bold uppercase tracking-widest transition-all duration-200 flex items-center justify-between group
+                  w-full py-4 px-4 rounded-xl text-lg font-serif tracking-wide transition-all duration-200 flex items-center justify-between group
                   ${
                     isActive(item.path)
                       ? 'bg-vallenato-mustard text-vallenato-blue shadow-md' 

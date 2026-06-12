@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
         {/* Columna 2: Navegación */}
         <div className="lg:pl-8">
           <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Navegación</h3>
-          <ul className="space-y-4 font-sans text-xs tracking-widest font-bold uppercase">
+          <ul className="space-y-4 font-serif text-lg tracking-wide">
             <li>
               <button onClick={(e) => handleNav(e, '/')} className="hover:text-vallenato-mustard transition-colors text-left flex items-center gap-2 group">
                 <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red opacity-0 group-hover:opacity-100 transition-opacity"></span>
@@ -54,13 +54,13 @@ const Footer: React.FC = () => {
             <li>
               <button onClick={(e) => handleNav(e, '/la-memoria-del-acordeon')} className="hover:text-vallenato-mustard transition-colors text-left flex items-center gap-2 group">
                 <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                La Memoria del Acordeón
+                La memoria del acordeón
               </button>
             </li>
             <li>
               <button onClick={(e) => handleNav(e, '/relatos-legendarios')} className="hover:text-vallenato-mustard transition-colors text-left flex items-center gap-2 group">
                 <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                Relatos Legendarios
+                Relatos legendarios
               </button>
             </li>
             <li>

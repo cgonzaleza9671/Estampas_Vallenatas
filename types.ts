@@ -17,6 +17,7 @@ export interface AudioItem {
   url_audio: string;
   descripcion: string;
   reproducciones?: number;
+  numero?: number;
 }
 
 export interface VideoItem {
@@ -29,6 +30,7 @@ export interface VideoItem {
   thumbnail_url?: string;
   descripcion?: string;
   fecha_publicacion: string;
+  numero?: number;
 }
 
 export interface StoryItem {

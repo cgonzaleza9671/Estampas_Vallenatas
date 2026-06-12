@@ -71,6 +71,11 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
                  <span className="text-[9px] font-bold uppercase tracking-widest text-white/50">
                     {isVideo ? 'Videos' : 'Tesoro Sonoro'}
                  </span>
+                 {item.numero && (
+                   <span className="text-[9px] font-black uppercase tracking-widest text-vallenato-red bg-vallenato-red/10 px-1.5 py-0.5 rounded-md border border-vallenato-red/20">
+                     #{item.numero}
+                   </span>
+                 )}
               </div>
               <h2 className="text-white font-serif font-bold text-sm leading-tight">
                 {item.titulo}
@@ -87,11 +92,16 @@ const MediaModal: React.FC<MediaModalProps> = ({ item, isOpen, onClose }) => {
         {/* CABECERA DESKTOP */}
         <div className="hidden md:flex absolute top-0 left-0 w-full z-20 p-8 justify-between items-start pointer-events-none">
            <div className="pointer-events-auto">
-              <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 mb-2">
+              <div className="flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 mb-2 w-max">
                  {isVideo ? <Video className="text-vallenato-mustard w-4 h-4" /> : <Music className="text-vallenato-mustard w-4 h-4" />}
                  <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/80">
                    {isVideo ? 'Videos' : 'Tesoro Sonoro'}
                  </span>
+                 {item.numero && (
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-vallenato-red bg-vallenato-red/10 px-2 py-0.5 rounded-md border border-vallenato-red/20 ml-2">
+                     #{item.numero}
+                   </span>
+                 )}
               </div>
               <h2 className="text-3xl font-serif text-white font-bold drop-shadow-2xl leading-tight max-w-2xl">{item.titulo}</h2>
            </div>
