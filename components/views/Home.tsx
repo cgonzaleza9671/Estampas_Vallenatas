@@ -5,7 +5,7 @@ import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
 import { HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
-import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight, Disc, ListMusic } from 'lucide-react';
+import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight, Disc, ListMusic, Quote } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
 import { AccordionPlayIcon } from '../CustomIcons.tsx';
 
@@ -310,8 +310,9 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                        <div>
                          <h3 className="text-2xl md:text-3xl font-serif text-vallenato-blue font-bold leading-tight mb-4 group-hover:text-vallenato-red transition-colors">{relato.titulo}</h3>
                          <div className="w-10 h-0.5 bg-vallenato-mustard mb-6"></div>
-                         <div className="relative mb-6 pl-4 border-l-2 border-vallenato-mustard/40 bg-vallenato-beige/20 py-2 pr-3 rounded-r-xl">
-                            <p className="text-vallenato-blue/70 font-serif italic text-sm leading-relaxed line-clamp-4 md:line-clamp-[6]">
+                         <div className="relative mb-6 pl-6 py-4.5 pr-5 bg-vallenato-beige/20 border-l-4 border-vallenato-mustard rounded-r-[1.5rem] shadow-[inset_1px_1px_5px_rgba(234,170,0,0.05)] transition-all duration-500 group-hover:bg-vallenato-mustard/[0.08]">
+                            <Quote className="absolute right-4 bottom-3 text-vallenato-mustard/10 pointer-events-none transform rotate-180 transition-transform duration-700 group-hover:scale-110 group-hover:text-vallenato-mustard/15" size={24} fill="currentColor" />
+                            <p className="text-vallenato-blue font-serif italic text-[14px] md:text-[15px] leading-relaxed line-clamp-4 md:line-clamp-[6] relative z-10 font-medium">
                               {relato.subtitulo}
                             </p>
                          </div>

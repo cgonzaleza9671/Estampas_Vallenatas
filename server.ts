@@ -41,17 +41,24 @@ async function startServer() {
     }
 
     try {
-      const ai = new GoogleGenAI({ apiKey });
+      const ai = new GoogleGenAI({
+        apiKey,
+        httpOptions: {
+          headers: {
+            'User-Agent': 'aistudio-build',
+          }
+        }
+      });
       const contextPrompt = `
       El usuario se llama ${userName} y escribe desde ${userCity}. 
       Pregunta: "${userMessage}"
       `;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-3.1-flash',
+        model: 'gemini-3.5-flash',
         contents: contextPrompt,
         config: {
-          systemInstruction: Object.keys(SYSTEM_INSTRUCTION).length ? SYSTEM_INSTRUCTION : undefined,
+          systemInstruction: SYSTEM_INSTRUCTION ? SYSTEM_INSTRUCTION : undefined,
           temperature: 0.7,
         }
       });

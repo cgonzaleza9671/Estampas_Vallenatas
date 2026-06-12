@@ -304,8 +304,8 @@ const LegendaryTales: React.FC = () => {
                       <h3 className="text-white text-2xl md:text-4xl font-serif font-bold mb-2 leading-tight drop-shadow-lg animate-fade-in">
                         {selectedStory.titulo}
                       </h3>
-                      <p className="text-vallenato-mustard/90 text-[10px] md:text-xs font-sans font-bold uppercase tracking-[0.3em] mb-10 max-w-md mx-auto leading-relaxed">
-                        {selectedStory.subtitulo}
+                      <p className="text-vallenato-mustard/90 font-serif italic text-base md:text-lg mb-10 max-w-lg mx-auto leading-relaxed">
+                        "{selectedStory.subtitulo}"
                       </p>
 
                       <span className="text-white/40 text-[9px] font-bold uppercase tracking-[0.3em] block mb-2">Escrito original de:</span>
@@ -370,9 +370,9 @@ const LegendaryTales: React.FC = () => {
                     {selectedStory.titulo}
                  </h1>
                  <div className="max-w-2xl mx-auto">
-                    <div className="inline-block px-6 py-2 rounded-full bg-vallenato-mustard/10 border border-vallenato-mustard/20 backdrop-blur-sm">
-                       <p className="text-vallenato-mustard font-sans font-bold uppercase tracking-[0.3em] text-[9px] md:text-xs">
-                          {selectedStory.subtitulo}
+                    <div className="mt-4">
+                       <p className="text-vallenato-mustard font-serif italic text-base md:text-xl md:leading-relaxed drop-shadow-md">
+                          "{selectedStory.subtitulo}"
                        </p>
                     </div>
                  </div>
@@ -576,8 +576,9 @@ const LegendaryTales: React.FC = () => {
                  <div>
                     <h2 className="text-2xl font-serif text-vallenato-blue font-bold mb-3 group-hover:text-vallenato-red transition-colors leading-tight">{story.titulo}</h2>
                     <div className="w-8 h-0.5 bg-vallenato-mustard mb-4 opacity-50"></div>
-                    <div className="relative mb-6 pl-5 border-l-2 border-vallenato-mustard/50 bg-vallenato-beige/30 py-3 pr-4 rounded-r-2xl">
-                       <p className="text-vallenato-blue/80 font-serif italic text-sm md:text-base leading-relaxed line-clamp-[6]">
+                    <div className="relative mb-6 pl-6 py-4.5 pr-5 bg-vallenato-beige/20 border-l-4 border-vallenato-mustard rounded-r-[1.5rem] shadow-[inset_1px_1px_5px_rgba(234,170,0,0.05)] transition-all duration-500 group-hover:bg-vallenato-mustard/[0.08]">
+                       <Quote className="absolute right-4 bottom-3 text-vallenato-mustard/10 pointer-events-none transform rotate-180 transition-transform duration-700 group-hover:scale-110 group-hover:text-vallenato-mustard/15" size={28} fill="currentColor" />
+                       <p className="text-vallenato-blue font-serif italic text-[15px] md:text-[16px] leading-relaxed line-clamp-[6] relative z-10 font-medium">
                          {story.subtitulo}
                        </p>
                     </div>
