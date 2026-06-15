@@ -8,6 +8,7 @@ import MediaModal from '../MediaModal.tsx';
 import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight, Disc, ListMusic, Quote } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
 import { AccordionPlayIcon } from '../CustomIcons.tsx';
+import ScrollReveal from '../ScrollReveal.tsx';
 
 interface HomeProps {
   onPlayAudio?: (audio: AudioItem, list?: AudioItem[]) => void;
@@ -227,6 +228,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
       </section>
 
       <section className="pt-20 pb-12 bg-white relative z-10">
+         <ScrollReveal>
          <div className="container mx-auto px-6">
              <div className="mb-12">
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
@@ -290,11 +292,13 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              </div>
              <div className="flex justify-center"><Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">Ver más audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
+         </ScrollReveal>
       </section>
 
       <section className="py-24 bg-vallenato-beige relative z-10 border-y border-vallenato-mustard/10 overflow-hidden">
          <div className="absolute top-0 right-0 w-96 h-96 bg-vallenato-mustard/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
          <div className="absolute bottom-0 left-0 w-96 h-96 bg-vallenato-red/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+         <ScrollReveal direction="up" delay={0.1}>
          <div className="container mx-auto px-6 relative">
              <div className="mb-16 text-center flex flex-col items-center">
                 <div className="inline-flex items-center gap-2 bg-vallenato-red px-4 py-1.5 rounded-full mb-4 shadow-lg animate-pulse"><Star size={12} className="text-white fill-current" /><span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Nueva Sección</span></div>
@@ -327,9 +331,11 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              </div>
              <div className="flex justify-center"><Button variant="outline" onClick={() => navigate('/relatos-legendarios')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">Explorar todos los relatos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
+         </ScrollReveal>
       </section>
 
       <section className="pt-16 pb-24 bg-vallenato-cream/50 relative z-10">
+         <ScrollReveal direction="up" delay={0.1}>
          <div className="container mx-auto px-6">
              <div className="mb-12">
                 <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
@@ -365,6 +371,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              </div>
              <div className="flex justify-center"><Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="group border-vallenato-mustard/30">Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
+         </ScrollReveal>
       </section>
        <MediaModal item={selectedMedia} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>

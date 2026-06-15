@@ -1,6 +1,7 @@
 
 import React, { useMemo } from 'react';
 import { User, Sparkles, Award, Mic, Quote, History, Camera, Images, ChevronRight } from 'lucide-react';
+import ScrollReveal from '../ScrollReveal.tsx';
 
 const ANECDOTAS_TEXT = {
   p1: "Sin poder ocultar la nostalgia al recordar el recorrido folclórico que 'Estampas Vallenatas' protagonizó en la radio nacional, Álvaro González afirma que la mayor satisfacción fue llevarle a la población campesina y rural de Colombia un deleite espiritual con música que no habían escuchado anteriormente.",
@@ -41,6 +42,7 @@ const Bio: React.FC = () => {
 
       {/* Bio Image and Quote */}
       <section className="py-20 container mx-auto px-6">
+        <ScrollReveal>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="relative group cursor-pointer">
              <div className="absolute inset-0 bg-vallenato-blue rounded-3xl transform translate-x-4 translate-y-4 transition-transform group-hover:translate-x-2 group-hover:translate-y-2"></div>
@@ -90,10 +92,12 @@ const Bio: React.FC = () => {
              </blockquote>
           </div>
         </div>
+        </ScrollReveal>
       </section>
 
       {/* Merit Badges */}
       <section className="py-12 bg-gray-50 border-y border-gray-100 transition-colors">
+         <ScrollReveal delay={0.1}>
          <div className="container mx-auto px-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                <div className="bg-white p-8 rounded-2xl shadow-museum flex items-start gap-6 hover:-translate-y-1 transition-all group">
@@ -121,6 +125,7 @@ const Bio: React.FC = () => {
                </div>
             </div>
          </div>
+         </ScrollReveal>
       </section>
 
       {/* Galería de Retratos de una Época Dorada */}

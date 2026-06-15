@@ -4,6 +4,7 @@ import { fetchAudios, fetchVideos, fetchAudioFilters, fetchVideoFilters } from '
 import { AudioItem, VideoItem } from '../../types.ts';
 import MediaModal from '../MediaModal.tsx';
 import Button from '../Button.tsx';
+import ScrollReveal from '../ScrollReveal.tsx';
 import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar, ChevronDown, X, ExternalLink, Youtube, Info, Disc, Headphones } from 'lucide-react';
 
 interface ArchiveProps {
@@ -267,7 +268,8 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                 ) : (
                   <>
                     {Object.entries(groupedAudios).map(([groupName, items]: [string, any]) => (
-                      <div key={groupName} className="space-y-8">
+                      <ScrollReveal key={groupName} delay={0.1}>
+                      <div className="space-y-8">
                         <div className="flex items-center gap-8">
                           <h3 className="text-vallenato-blue font-serif text-3xl md:text-4xl font-bold capitalize whitespace-nowrap tracking-tight">{toTitleCase(groupName)}</h3>
                           <div className="h-[1.5px] bg-gradient-to-r from-vallenato-mustard/60 via-vallenato-mustard/20 to-transparent flex-grow"></div>
@@ -389,6 +391,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                           </div>
                         )}
                       </div>
+                      </ScrollReveal>
                     ))}
                   </>
                 )}
@@ -404,7 +407,8 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                     </div>
                   ) : (
                     videos.map((item) => (
-                      <div key={item.id} className="bg-white rounded-[3rem] overflow-hidden shadow-sm hover:shadow-gold transition-all duration-500 cursor-pointer group relative border border-white" onClick={() => { onVideoOpen?.(); setSelectedVideo(item); setIsModalOpen(true); }}>
+                      <ScrollReveal key={item.id} delay={0.1}>
+                      <div className="bg-white rounded-[3rem] overflow-hidden shadow-sm hover:shadow-gold transition-all duration-500 cursor-pointer group relative border border-white" onClick={() => { onVideoOpen?.(); setSelectedVideo(item); setIsModalOpen(true); }}>
                         <div className="aspect-video relative overflow-hidden bg-black">
                             {item.thumbnail_url && <img src={item.thumbnail_url} className="w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-[2s]" alt={item.titulo} loading="lazy" />}
                             <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -437,6 +441,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                             </div>
                         </div>
                       </div>
+                      </ScrollReveal>
                     ))
                   )}
                 </div>

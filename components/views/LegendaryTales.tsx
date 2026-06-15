@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
 import { fetchRelatos } from '../../services/supabaseClient.ts';
 import { LEGENDARY_TALES } from '../../constants.ts';
+import ScrollReveal from '../ScrollReveal.tsx';
 import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen, RotateCcw, CheckCircle2, FastForward } from 'lucide-react';
 
 // Marcas de tiempo de alta precisión sincronizadas a 1x.
@@ -544,6 +545,7 @@ const LegendaryTales: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-vallenato-beige pt-8 pb-32 animate-fade-in-up">
+      <ScrollReveal direction="up" delay={0.1}>
       <div className="container mx-auto px-6">
         <div className="text-center mb-16 flex flex-col items-center">
           <div className="inline-flex items-center gap-2 bg-vallenato-red px-4 py-1.5 rounded-full mb-6 shadow-lg">
@@ -602,6 +604,7 @@ const LegendaryTales: React.FC = () => {
           ))}
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 };
