@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
         {/* Columna 2: Navegación */}
         <div className="lg:pl-8">
           <h3 className="text-vallenato-mustard font-serif text-xl mb-6">Navegación</h3>
-          <ul className="space-y-4 font-serif text-lg tracking-wide">
+          <ul className="space-y-3.5 font-sans font-medium uppercase tracking-[0.12em] text-sm md:text-base text-gray-200">
             <li>
               <button onClick={(e) => handleNav(e, '/')} className="hover:text-vallenato-mustard transition-colors text-left flex items-center gap-2 group">
                 <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red opacity-0 group-hover:opacity-100 transition-opacity"></span>

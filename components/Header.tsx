@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { motion } from 'motion/react';
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -52,27 +53,32 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center gap-8">
-          <nav className="flex gap-8">
-            {navItems.map((item) => (
-              <div key={item.path} className="relative flex flex-col items-center">
-                <button
-                  onClick={() => handleNav(item.path)}
-                  className={`text-lg xl:text-xl font-serif tracking-wide transition-colors duration-300 ${
-                    isActive(item.path)
-                      ? 'text-vallenato-mustard border-b-2 border-vallenato-mustard pb-1' 
-                      : 'text-gray-200 hover:text-white pb-1 border-b-2 border-transparent hover:border-white/50'
-                  }`}
-                >
-                  {item.label}
-                </button>
-                {item.path === '/relatos-legendarios' && (
-                  <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 font-calligraphy text-lg text-vallenato-mustard lowercase tracking-widest pointer-events-none drop-shadow-lg animate-pulse">
-                    nuevo
-                  </span>
-                )}
-              </div>
-            ))}
+        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+          <nav className="flex items-center gap-1 xl:gap-2">
+            {navItems.map((item) => {
+              const active = isActive(item.path);
+              return (
+                <div key={item.path} className="relative flex flex-col items-center">
+                  <button
+                    onClick={() => handleNav(item.path)}
+                    className={`relative z-10 px-4 py-2 rounded-full text-xs lg:text-sm xl:text-base font-sans font-semibold uppercase tracking-[0.14em] transition-colors duration-300 ${
+                      active
+                        ? 'text-vallenato-blue font-bold'
+                        : 'text-gray-200 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="activeHeaderIndicator"
+                        className="absolute inset-0 bg-gradient-to-r from-vallenato-mustard to-amber-400 rounded-full -z-10 shadow-md"
+                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                      />
+                    )}
+                    {item.label}
+                  </button>
+                </div>
+              );
+            })}
           </nav>
         </div>
 
@@ -94,7 +100,7 @@ const Header: React.FC = () => {
                 key={item.path}
                 onClick={() => handleNav(item.path)}
                 className={`
-                  w-full py-4 px-4 rounded-xl text-lg font-serif tracking-wide transition-all duration-200 flex items-center justify-between group
+                  w-full py-3.5 px-4 rounded-xl text-sm md:text-base font-sans font-semibold uppercase tracking-[0.15em] transition-all duration-200 flex items-center justify-between group
                   ${
                     isActive(item.path)
                       ? 'bg-vallenato-mustard text-vallenato-blue shadow-md' 
@@ -104,9 +110,6 @@ const Header: React.FC = () => {
               >
                 <div className="flex flex-col items-start">
                   <span>{item.label}</span>
-                  {item.path === '/relatos-legendarios' && (
-                    <span className={`font-calligraphy text-lg lowercase leading-none -mt-1 tracking-widest ${isActive(item.path) ? 'text-vallenato-blue' : 'text-vallenato-mustard'}`}>nuevo</span>
-                  )}
                 </div>
                 {isActive(item.path) && (
                   <div className="w-1.5 h-1.5 rounded-full bg-vallenato-blue" />
