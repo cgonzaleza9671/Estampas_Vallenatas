@@ -29,36 +29,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
 
-  const [charCount, setCharCount] = useState(0);
-  const segments = useMemo(() => [
-    { text: "Una ", bold: false },
-    { text: "colección digital", bold: true },
-    { text: " recopilada por el estudioso vallenato ", bold: false },
-    { text: "Álvaro González Pimienta", bold: true },
-    { text: ", conformada por ", bold: false },
-    { text: "grabaciones", bold: true },
-    { text: " y materiales basados en años de ", bold: false },
-    { text: "aprendizaje del folclor", bold: true },
-    { text: ". Cada descripción es un ", bold: false },
-    { text: "comentario personal", bold: true },
-    { text: " de Álvaro, fruto de su ", bold: false },
-    { text: "experiencia", bold: true },
-    { text: " y ", bold: false },
-    { text: "pasión", bold: true },
-    { text: " por la ", bold: false },
-    { text: "música vallenata", bold: true },
-    { text: ".", bold: false },
-  ], []);
-
-  const totalChars = segments.reduce((acc, s) => acc + s.text.length, 0);
-
-  useEffect(() => {
-    if (charCount < totalChars) {
-      const timer = setTimeout(() => setCharCount(prev => prev + 1), 25);
-      return () => clearTimeout(timer);
-    }
-  }, [charCount, totalChars]);
-
   useEffect(() => {
     const interval = setInterval(() => setHeroIndex((prev) => (prev + 1) % HERO_GALLERY.length), 7000);
     return () => clearInterval(interval);
@@ -117,17 +87,6 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
     return (num / 1000000).toFixed(1) + 'M';
   };
 
-  const renderTypedDescription = () => {
-    let currentPos = 0;
-    return segments.map((seg, i) => {
-      const start = currentPos;
-      currentPos += seg.text.length;
-      if (charCount <= start) return null;
-      const visibleText = seg.text.substring(0, charCount - start);
-      return <span key={i} className={seg.bold ? "font-bold text-white drop-shadow-sm" : ""}>{visibleText}</span>;
-    });
-  };
-
   const latestRelato = recentRelatos.length > 0 ? recentRelatos[0] : null;
 
   return (
@@ -183,7 +142,19 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">
           <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Estampas Vallenatas</span>
           <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] leading-[1.1]"><span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-2">El Museo Digital del</span><span className="text-vallenato-red">Folclor Vallenato</span></h1>
-          <h2 className="text-gray-100 text-sm md:text-lg font-light mb-6 max-w-3xl mx-auto border-l-2 border-vallenato-mustard pl-6 text-left drop-shadow-[0_2px_6px_rgba(0,0,0,1)] min-h-[5em] md:min-h-[4em]">{renderTypedDescription()}<span className={`inline-block w-1.5 h-4 md:h-5 bg-vallenato-mustard ml-1 ${charCount < totalChars ? 'animate-pulse' : 'hidden'}`}></span></h2>
+          
+          <div className="flex flex-col items-center justify-center my-6 md:my-8 animate-fade-in-up">
+            <p className="text-gray-200 font-sans text-xs md:text-sm uppercase tracking-[0.3em] mb-2 font-medium drop-shadow-md">Hemos llegado ya a</p>
+            <div className="relative group">
+              <div className="absolute inset-0 bg-vallenato-mustard blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 animate-pulse rounded-full"></div>
+              <span className="relative text-5xl md:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-[#FFD700] to-[#EAAA00] drop-shadow-[0_2px_15px_rgba(234,170,0,0.6)] tracking-tight leading-none px-4">
+                100 CANCIONES
+              </span>
+            </div>
+            <p className="text-vallenato-mustard font-calligraphy text-2xl md:text-4xl mt-3 md:mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+              joyas de nuestra memoria vallenata
+            </p>
+          </div>
           
           <div className="mt-6 md:mt-8 w-[95%] md:w-4/5 lg:max-w-3xl bg-black/30 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl flex flex-col md:flex-row group/cta p-1.5 md:p-2">
             <div className="md:w-5/12 p-4 md:p-5 flex flex-col justify-center items-center md:items-start text-center md:text-left relative overflow-hidden bg-white/5 rounded-[1.5rem] border border-white/5">
