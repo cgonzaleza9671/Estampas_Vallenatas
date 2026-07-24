@@ -24,6 +24,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
   const [recentVideos, setRecentVideos] = useState<VideoItem[]>([]);
   const [recentRelatos, setRecentRelatos] = useState<StoryItem[]>([]);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState<number[]>([0]);
   const [novedadIndex, setNovedadIndex] = useState(0); // 0: Audio, 1: Relato
   const [selectedMedia, setSelectedMedia] = useState<AudioItem | VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,6 +34,16 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
     const interval = setInterval(() => setHeroIndex((prev) => (prev + 1) % HERO_GALLERY.length), 7000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    setLoadedImages((prev) => {
+      const nextIndex = (heroIndex + 1) % HERO_GALLERY.length;
+      if (!prev.includes(heroIndex) || !prev.includes(nextIndex)) {
+        return Array.from(new Set([...prev, heroIndex, nextIndex]));
+      }
+      return prev;
+    });
+  }, [heroIndex]);
 
   useEffect(() => {
     if (latestAudio && recentRelatos.length > 0) {
@@ -136,7 +147,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
 
       <section className="relative min-h-[85vh] md:min-h-[90vh] w-full overflow-hidden flex items-center justify-center pt-12 pb-8 md:pb-12">
         {HERO_GALLERY.map((img, index) => (
-          <div key={index} className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundImage: `url("${img}")`, filter: (img === "https://i.imgur.com/H7JgO73.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg" || img === "https://i.imgur.com/wDz7qUP.jpeg" || img === "https://i.imgur.com/MxktqOB.png") ? 'brightness(0.7) contrast(1.05)' : 'none' }} />
+          <div key={index} className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === heroIndex ? 'opacity-100' : 'opacity-0'}`} style={{ backgroundImage: loadedImages.includes(index) ? `url("${img}")` : 'none', filter: (img === "https://i.imgur.com/H7JgO73.jpeg" || img === "https://i.imgur.com/l4iOgsO.jpeg" || img === "https://i.imgur.com/wDz7qUP.jpeg" || img === "https://i.imgur.com/MxktqOB.png") ? 'brightness(0.7) contrast(1.05)' : 'none' }} />
         ))}
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-black/80 z-10"></div>
         <div className="relative z-20 text-center max-w-5xl px-4 flex flex-col items-center">

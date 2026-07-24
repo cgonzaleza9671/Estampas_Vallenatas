@@ -19,5 +19,12 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom', 'motion/react', 'lucide-react']
+        }
+      }
+    }
   }
 });
