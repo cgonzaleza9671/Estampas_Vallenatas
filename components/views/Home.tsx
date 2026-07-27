@@ -159,7 +159,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
             <div className="relative group">
               <div className="absolute inset-0 bg-vallenato-mustard blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 animate-pulse rounded-full"></div>
               <span className="relative text-5xl md:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-[#FFD700] to-[#EAAA00] drop-shadow-[0_2px_15px_rgba(234,170,0,0.6)] tracking-tight leading-none px-4">
-                100 CANCIONES
+                <span className="text-[0.5em] align-middle mr-1">+</span>100 CANCIONES
               </span>
             </div>
             <p className="text-vallenato-mustard font-calligraphy text-2xl md:text-4xl mt-3 md:mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
