@@ -8,6 +8,7 @@ import Archive from './components/views/Archive.tsx';
 import Bio from './components/views/Bio.tsx';
 import LegendaryTales from './components/views/LegendaryTales.tsx';
 import AudioStoryCard from './components/AudioStoryCard.tsx';
+import { SEOMeta } from './components/SEOMeta.tsx';
 import { Play, Pause, SkipBack, SkipForward, X, MessageSquareQuote, User, Headphones, Youtube, Star, ChevronRight } from 'lucide-react';
 import { AudioItem } from './types.ts';
 import { incrementAudioPlayCount } from './services/supabaseClient.ts';
@@ -190,6 +191,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-vallenato-beige selection:bg-vallenato-mustard selection:text-vallenato-blue transition-colors duration-300 overflow-x-hidden">
       <ScrollToTop />
+      <SEOMeta />
       <Header />
       {showYouTubeInvite && <YouTubeFloatingInvite onClose={closeYouTubeInvite} />}
       <main className={`flex-grow relative transition-all duration-300 ${currentAudio ? 'pb-52 md:pb-40' : 'pb-0'}`}>
