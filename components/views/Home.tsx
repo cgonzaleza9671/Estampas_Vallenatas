@@ -1,13 +1,14 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
 import { HERO_GALLERY } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
 import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight, Disc, ListMusic, Quote } from 'lucide-react';
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
-import { AccordionPlayIcon } from '../CustomIcons.tsx';
+import { AccordionPlayIcon, AcordeonMinimal, GuacharacaMinimal, CajaMinimal, NotaMusicalMinimal } from '../CustomIcons.tsx';
 import ScrollReveal from '../ScrollReveal.tsx';
 
 interface HomeProps {
@@ -209,18 +210,48 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
         </div>
       </section>
 
-      <section className="pt-20 pb-12 bg-white relative z-10">
+      <div className="relative bg-vallenato-beige texture-acordeon overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-white/90 before:z-0">
+         <div className="camino-line absolute left-6 md:left-12 lg:left-16 top-0 bottom-0 w-10 z-10"></div>
+         
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-10 top-[15%] z-20 text-vallenato-mustard w-10 h-10 flex items-center justify-center">
+            <AcordeonMinimal className="w-6 h-6" />
+         </motion.div>
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-10 top-[28%] z-20 text-vallenato-blue w-10 h-10 flex items-center justify-center">
+            <GuacharacaMinimal className="w-6 h-6" />
+         </motion.div>
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 8] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-8 top-[42%] z-20 text-vallenato-red w-10 h-10 flex items-center justify-center">
+            <NotaMusicalMinimal className="w-6 h-6" />
+         </motion.div>
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -8] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-8 top-[55%] z-20 text-vallenato-mustard w-10 h-10 flex items-center justify-center">
+            <CajaMinimal className="w-6 h-6" />
+         </motion.div>
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-10 top-[70%] z-20 text-vallenato-blue w-10 h-10 flex items-center justify-center">
+            <AcordeonMinimal className="w-6 h-6" />
+         </motion.div>
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-10 top-[85%] z-20 text-vallenato-red w-10 h-10 flex items-center justify-center">
+            <NotaMusicalMinimal className="w-6 h-6" />
+         </motion.div>
+
+      <section className="pt-20 pb-12 relative z-10 pl-14 md:pl-20 lg:pl-28">
          <ScrollReveal>
+         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-vallenato-blue rounded-full animate-ping opacity-30"></div>
+            <div className="w-8 h-8 rounded-full bg-vallenato-blue text-white flex items-center justify-center shadow-lg relative z-10"><Headphones size={14}/></div>
+         </div>
          <div className="container mx-auto px-6">
-             <div className="mb-12">
-                <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
-                <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Audios</h2>
+             <div className="mb-12 flex flex-col items-start text-left">
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-sm border border-gray-100 text-vallenato-red text-[11px] font-black uppercase tracking-widest">
+                  Primera Parada
+                </div>
+                <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mt-2 mb-2">La Memoria del Acordeón</h2>
+                <p className="text-gray-500 italic font-serif text-lg md:text-xl">Joyas musicales inéditas que marcaron la historia de nuestro folclor.</p>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
                 {recentAudios.map((item) => {
                   const isActive = currentAudioId === item.id;
                   return (
                     <div key={item.id} onClick={() => onPlayAudio?.(item, recentAudios)} className={`group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden transition-all duration-500 border-2 ${isActive ? 'border-vallenato-red bg-vallenato-cream shadow-gold' : 'border-white hover:border-vallenato-mustard shadow-museum hover:-translate-y-2'} cursor-pointer`}>
+                      <div className="absolute inset-0 texture-caja opacity-30 pointer-events-none"></div>
                       <div className="h-28 bg-vallenato-blue/5 relative overflow-hidden flex items-center justify-center">
                          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                          <Disc className={`text-vallenato-mustard/20 w-32 h-32 absolute -right-8 -top-8 transform rotate-12 transition-transform duration-1000 ${isActive && isPlaying ? 'animate-[spin_10s_linear_infinite]' : 'group-hover:rotate-45'}`} />
@@ -246,7 +277,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                            {isActive && isPlaying ? <Pause size={28} fill="currentColor"/> : <Play size={28} fill="currentColor" className="ml-1"/>}
                          </div>
                       </div>
-                      <div className="p-8 flex flex-col flex-grow">
+                      <div className="p-8 flex flex-col flex-grow relative z-10">
                          <h4 className={`text-xl md:text-2xl font-serif font-bold mb-6 leading-tight transition-colors line-clamp-2 ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
                          <div className="space-y-4 mb-8">
                             <div className="flex items-center gap-3">
@@ -272,27 +303,32 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                   );
                 })}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">Ver más audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-start"><Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard bg-white">Ver más audios <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
          </ScrollReveal>
       </section>
 
-      <section className="py-24 bg-vallenato-beige relative z-10 border-y border-vallenato-mustard/10 overflow-hidden">
-         <div className="absolute top-0 right-0 w-96 h-96 bg-vallenato-mustard/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
-         <div className="absolute bottom-0 left-0 w-96 h-96 bg-vallenato-red/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
+      <section className="py-24 relative z-10 overflow-hidden pl-14 md:pl-20 lg:pl-28">
          <ScrollReveal direction="up" delay={0.1}>
+         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-vallenato-red rounded-full animate-ping opacity-30"></div>
+            <div className="w-8 h-8 rounded-full bg-vallenato-red text-white flex items-center justify-center shadow-lg relative z-10"><BookOpen size={14}/></div>
+         </div>
          <div className="container mx-auto px-6 relative">
-             <div className="mb-16 text-center flex flex-col items-center">
-                <div className="inline-flex items-center gap-2 bg-vallenato-red px-4 py-1.5 rounded-full mb-4 shadow-lg animate-pulse"><Star size={12} className="text-white fill-current" /><span className="text-white text-[10px] font-black uppercase tracking-[0.25em]">Nueva Sección</span></div>
-                <span className="text-vallenato-red font-bold uppercase tracking-[0.4em] text-xs mb-2 block">experiencia de audio</span>
-                <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue font-bold">Relatos Legendarios</h2>
-                <div className="w-24 h-1 bg-vallenato-mustard mx-auto mt-6"></div>
+             <div className="mb-16 flex flex-col items-start text-left">
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-sm border border-gray-100 text-vallenato-blue text-[11px] font-black uppercase tracking-widest">
+                  Segunda Parada
+                </div>
+                <h2 className="text-4xl md:text-5xl font-serif text-vallenato-red font-bold mt-2 mb-2">Relatos Legendarios</h2>
+                <p className="text-gray-500 italic font-serif text-lg md:text-xl">Crónicas, mitos y vivencias invaluables de los grandes juglares.</p>
+                <div className="w-24 h-1 bg-vallenato-mustard mt-6"></div>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 max-w-6xl mx-auto">
                 {recentRelatos.slice(0, 2).map((relato) => (
-                  <div key={relato.id} onClick={() => navigate('/relatos-legendarios')} className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col md:flex-row">
+                  <div key={relato.id} onClick={() => navigate('/relatos-legendarios')} className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col md:flex-row relative">
+                    <div className="absolute inset-0 texture-guacharaca opacity-30 pointer-events-none"></div>
                     <div className="w-full md:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark"><img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover grayscale group-hover:scale-110 transition-transform duration-[2s] opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div></div>
-                    <div className="p-8 md:p-10 flex-grow flex flex-col justify-between">
+                    <div className="p-8 md:p-10 flex-grow flex flex-col justify-between relative z-10">
                        <div>
                          <h3 className="text-2xl md:text-3xl font-serif text-vallenato-blue font-bold leading-tight mb-4 group-hover:text-vallenato-red transition-colors">{relato.titulo}</h3>
                          <div className="w-10 h-0.5 bg-vallenato-mustard mb-6"></div>
@@ -311,21 +347,29 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                   </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => navigate('/relatos-legendarios')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard">Explorar todos los relatos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-start"><Button variant="outline" onClick={() => navigate('/relatos-legendarios')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard bg-white">Explorar todos los relatos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
          </ScrollReveal>
       </section>
 
-      <section className="pt-16 pb-24 bg-vallenato-cream/50 relative z-10">
+      <section className="pt-16 pb-24 relative z-10 pl-14 md:pl-20 lg:pl-28">
          <ScrollReveal direction="up" delay={0.1}>
+         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-vallenato-mustard rounded-full animate-ping opacity-30"></div>
+            <div className="w-8 h-8 rounded-full bg-vallenato-mustard text-white flex items-center justify-center shadow-lg relative z-10"><Video size={14}/></div>
+         </div>
          <div className="container mx-auto px-6">
-             <div className="mb-12">
-                <span className="text-vallenato-red font-bold uppercase tracking-widest text-sm">Últimas Estampas</span>
-                <h2 className="text-4xl font-serif text-vallenato-blue mt-2">Videos</h2>
+             <div className="mb-12 flex flex-col items-start text-left">
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-sm border border-gray-100 text-vallenato-blue text-[11px] font-black uppercase tracking-widest">
+                  Última Parada
+                </div>
+                <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mt-2 mb-2">Videoteca Histórica</h2>
+                <p className="text-gray-500 italic font-serif text-lg md:text-xl">Parrandas inolvidables y momentos capturados en el tiempo.</p>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {recentVideos.map((item) => (
-                   <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-[2.5rem] shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1">
+                   <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-[2.5rem] shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative">
+                      <div className="absolute inset-0 texture-caja opacity-30 pointer-events-none"></div>
                       <div className="aspect-video relative overflow-hidden bg-black">
                         {item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}
                         <div className="absolute top-4 left-4 z-10">
@@ -339,7 +383,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                           <div className="bg-white/20 backdrop-blur-md p-6 rounded-full border border-white/50 group-hover:scale-110 transition-transform"><Play size={32} className="text-white fill-white" /></div>
                         </div>
                       </div>
-                      <div className="p-8 flex-grow">
+                      <div className="p-8 flex-grow relative z-10">
                          <h3 className="text-2xl font-serif text-vallenato-blue font-bold mb-4 group-hover:text-vallenato-red transition-colors leading-tight">{item.titulo}</h3>
                          <div className="space-y-1 mb-4">
                             <p className="text-vallenato-mustard text-xs font-bold flex items-center gap-2 uppercase tracking-wide"><User size={14} /> {item.autor}</p>
@@ -347,14 +391,15 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                          </div>
                          <div className="flex items-center gap-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest"><Calendar size={12} /><span>{item.fecha_publicacion}</span></div>
                       </div>
-                      <div className="mt-auto bg-vallenato-blue p-5 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300"><span className="text-white text-xs font-bold uppercase tracking-[0.2em]">Ver ahora</span><Play size={14} className="text-white fill-white" /></div>
+                      <div className="mt-auto bg-vallenato-blue p-5 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300 relative z-10"><span className="text-white text-xs font-bold uppercase tracking-[0.2em]">Ver ahora</span><Play size={14} className="text-white fill-white" /></div>
                    </div>
                 ))}
              </div>
-             <div className="flex justify-center"><Button variant="outline" onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="group border-vallenato-mustard/30">Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
+             <div className="flex justify-start"><Button variant="outline" onClick={() => window.open('https://www.youtube.com/@EstampasVallenatasColombia', '_blank', 'noopener,noreferrer')} className="group border-vallenato-mustard/30 bg-white">Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
          </div>
          </ScrollReveal>
       </section>
+      </div>
        <MediaModal item={selectedMedia} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );

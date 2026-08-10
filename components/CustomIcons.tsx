@@ -37,3 +37,51 @@ export const AppleMusicLogo = ({ className = "w-6 h-6" }: { className?: string }
     <path d="M20 3H9v10.75c-.53-.29-1.13-.5-1.77-.5-1.78 0-3.23 1.45-3.23 3.23s1.45 3.23 3.23 3.23 3.23-1.45 3.23-3.23V7h7v5.75c-.53-.29-1.13-.5-1.77-.5-1.78 0-3.23 1.45-3.23 3.23s1.45 3.23 3.23 3.23 3.23-1.45 3.23-3.23V3z"/>
   </svg>
 );
+export const AcordeonMinimal = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="3" y="5" width="4" height="14" rx="1" />
+    <rect x="17" y="5" width="4" height="14" rx="1" />
+    <path d="M7 7h10" />
+    <path d="M7 11h10" />
+    <path d="M7 15h10" />
+    <circle cx="5" cy="8" r="0.5" fill="currentColor" />
+    <circle cx="5" cy="12" r="0.5" fill="currentColor" />
+    <circle cx="5" cy="16" r="0.5" fill="currentColor" />
+  </svg>
+);
+
+export const GuacharacaMinimal = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M6 3l12 12" />
+    <path d="M4 5l12 12" />
+    <path d="M6 3c-1.5 1.5 -1.5 3.5 0 5l7 7" />
+    <path d="M16 13c1.5 -1.5 1.5 -3.5 0 -5l-7 -7" />
+    <line x1="8" y1="5" x2="6" y2="7" />
+    <line x1="10" y1="7" x2="8" y2="9" />
+    <line x1="12" y1="9" x2="10" y2="11" />
+    <line x1="14" y1="11" x2="12" y2="13" />
+    <line x1="16" y1="13" x2="14" y2="15" />
+    <path d="M14 20l4 -4" />
+    <circle cx="15.5" cy="18.5" r="0.5" fill="currentColor" />
+  </svg>
+);
+
+export const CajaMinimal = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <ellipse cx="12" cy="7" rx="6" ry="3" />
+    <path d="M6 17c0 1.657 2.686 3 6 3s6 -1.343 6 -3" />
+    <path d="M6 7v10" />
+    <path d="M18 7v10" />
+    <path d="M6 10l6 4l6 -4" />
+    <path d="M6 14l6 4l6 -4" />
+  </svg>
+);
+
+export const NotaMusicalMinimal = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M9 18V5l12 -2v13" />
+    <path d="M9 9l12 -2" />
+    <circle cx="6" cy="18" r="3" />
+    <circle cx="18" cy="16" r="3" />
+  </svg>
+);

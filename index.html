@@ -168,6 +168,26 @@
       * {
         scrollbar-color: #EAAA00 #F5F5DC;
       }
+      .texture-acordeon {
+        background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 10px);
+      }
+      .texture-guacharaca {
+        background-image: repeating-linear-gradient(-45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 8px);
+      }
+      .texture-caja {
+        background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+        background-size: 8px 8px;
+      }
+      .camino-line {
+        background: linear-gradient(to bottom, #C8102E, #EAAA00, #003366);
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='40' height='400' viewBox='0 0 40 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20,0 C35,66 35,133 20,200 C5,266 5,333 20,400' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg width='40' height='400' viewBox='0 0 40 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20,0 C35,66 35,133 20,200 C5,266 5,333 20,400' fill='none' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+        -webkit-mask-repeat: repeat-y;
+        mask-repeat: repeat-y;
+        -webkit-mask-size: 100% 400px;
+        mask-size: 100% 400px;
+        opacity: 0.6;
+      }
     </style>
   </head>
   <body>
