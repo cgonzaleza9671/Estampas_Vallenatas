@@ -213,35 +213,37 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
       <div className="relative bg-vallenato-beige texture-acordeon overflow-hidden before:content-[''] before:absolute before:inset-0 before:bg-white/90 before:z-0">
          <div className="camino-line absolute left-6 md:left-12 lg:left-16 top-0 bottom-0 w-10 z-10"></div>
          
-         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-10 top-[15%] z-20 text-vallenato-mustard w-10 h-10 flex items-center justify-center">
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 5] }} animate={{ y: [0, -10, 0] }} transition={{ y: { duration: 4, repeat: Infinity, ease: "easeInOut" } }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-10 top-[15%] z-20 text-vallenato-mustard w-10 h-10 flex items-center justify-center">
             <AcordeonMinimal className="w-6 h-6" />
          </motion.div>
-         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-10 top-[28%] z-20 text-vallenato-blue w-10 h-10 flex items-center justify-center">
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -5] }} animate={{ y: [0, 10, 0] }} transition={{ y: { duration: 5, repeat: Infinity, ease: "easeInOut" } }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-10 top-[28%] z-20 text-vallenato-blue w-10 h-10 flex items-center justify-center">
             <GuacharacaMinimal className="w-6 h-6" />
          </motion.div>
-         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 8] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-8 top-[42%] z-20 text-vallenato-red w-10 h-10 flex items-center justify-center">
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 8] }} animate={{ y: [0, -8, 0] }} transition={{ y: { duration: 4.5, repeat: Infinity, ease: "easeInOut" } }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-8 top-[42%] z-20 text-vallenato-red w-10 h-10 flex items-center justify-center">
             <NotaMusicalMinimal className="w-6 h-6" />
          </motion.div>
-         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -8] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-8 top-[55%] z-20 text-vallenato-mustard w-10 h-10 flex items-center justify-center">
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -8] }} animate={{ y: [0, 12, 0] }} transition={{ y: { duration: 5.5, repeat: Infinity, ease: "easeInOut" } }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-8 top-[55%] z-20 text-vallenato-mustard w-10 h-10 flex items-center justify-center">
             <CajaMinimal className="w-6 h-6" />
          </motion.div>
-         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-10 top-[70%] z-20 text-vallenato-blue w-10 h-10 flex items-center justify-center">
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, 5] }} animate={{ y: [0, -10, 0] }} transition={{ y: { duration: 4.2, repeat: Infinity, ease: "easeInOut" } }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 ml-10 top-[70%] z-20 text-vallenato-blue w-10 h-10 flex items-center justify-center">
             <AcordeonMinimal className="w-6 h-6" />
          </motion.div>
-         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -5] }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-10 top-[85%] z-20 text-vallenato-red w-10 h-10 flex items-center justify-center">
+         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: [0.1, 0.8], scale: [0.8, 1], rotate: [0, -5] }} animate={{ y: [0, 10, 0] }} transition={{ y: { duration: 4.8, repeat: Infinity, ease: "easeInOut" } }} viewport={{ once: true, margin: "-10%" }} className="absolute left-6 md:left-12 lg:left-16 -ml-10 top-[85%] z-20 text-vallenato-red w-10 h-10 flex items-center justify-center">
             <NotaMusicalMinimal className="w-6 h-6" />
          </motion.div>
 
       <section className="pt-20 pb-12 relative z-10 pl-14 md:pl-20 lg:pl-28">
          <ScrollReveal>
-         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center">
-            <div className="absolute inset-0 bg-vallenato-blue rounded-full animate-ping opacity-30"></div>
-            <div className="w-8 h-8 rounded-full bg-vallenato-blue text-white flex items-center justify-center shadow-lg relative z-10"><Headphones size={14}/></div>
+         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center group cursor-default">
+            <div className="absolute inset-0 bg-vallenato-blue rounded-full animate-ping opacity-30 group-hover:opacity-60 transition-opacity"></div>
+            <div className="w-8 h-8 rounded-full bg-vallenato-blue text-white flex items-center justify-center shadow-[0_0_15px_rgba(0,51,102,0.5)] relative z-10 group-hover:scale-110 transition-transform duration-300"><Headphones size={14}/></div>
          </div>
          <div className="container mx-auto px-6">
-             <div className="mb-12 flex flex-col items-start text-left">
-                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-sm border border-gray-100 text-vallenato-red text-[11px] font-black uppercase tracking-widest">
+             <div className="mb-12 flex flex-col items-start text-left relative">
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-[0_4px_10px_rgba(0,51,102,0.1)] border border-vallenato-blue/10 text-vallenato-blue text-[11px] font-black uppercase tracking-widest relative overflow-hidden group">
+                  <span className="w-1.5 h-1.5 rounded-full bg-vallenato-blue animate-pulse"></span>
                   Primera Parada
+                  <div className="absolute inset-0 bg-vallenato-blue/5 translate-y-[100%] group-hover:translate-y-0 transition-transform"></div>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mt-2 mb-2">La Memoria del Acordeón</h2>
                 <p className="text-gray-500 italic font-serif text-lg md:text-xl">Joyas musicales inéditas que marcaron la historia de nuestro folclor.</p>
@@ -310,14 +312,16 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
 
       <section className="py-24 relative z-10 overflow-hidden pl-14 md:pl-20 lg:pl-28">
          <ScrollReveal direction="up" delay={0.1}>
-         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center">
-            <div className="absolute inset-0 bg-vallenato-red rounded-full animate-ping opacity-30"></div>
-            <div className="w-8 h-8 rounded-full bg-vallenato-red text-white flex items-center justify-center shadow-lg relative z-10"><BookOpen size={14}/></div>
+         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center group cursor-default">
+            <div className="absolute inset-0 bg-vallenato-red rounded-full animate-ping opacity-30 group-hover:opacity-60 transition-opacity"></div>
+            <div className="w-8 h-8 rounded-full bg-vallenato-red text-white flex items-center justify-center shadow-[0_0_15px_rgba(200,16,46,0.5)] relative z-10 group-hover:scale-110 transition-transform duration-300"><BookOpen size={14}/></div>
          </div>
          <div className="container mx-auto px-6 relative">
              <div className="mb-16 flex flex-col items-start text-left">
-                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-sm border border-gray-100 text-vallenato-blue text-[11px] font-black uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-[0_4px_10px_rgba(200,16,46,0.1)] border border-vallenato-red/10 text-vallenato-red text-[11px] font-black uppercase tracking-widest relative overflow-hidden group">
+                  <span className="w-1.5 h-1.5 rounded-full bg-vallenato-red animate-pulse"></span>
                   Segunda Parada
+                  <div className="absolute inset-0 bg-vallenato-red/5 translate-y-[100%] group-hover:translate-y-0 transition-transform"></div>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-serif text-vallenato-red font-bold mt-2 mb-2">Relatos Legendarios</h2>
                 <p className="text-gray-500 italic font-serif text-lg md:text-xl">Crónicas, mitos y vivencias invaluables de los grandes juglares.</p>
@@ -354,14 +358,16 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
 
       <section className="pt-16 pb-24 relative z-10 pl-14 md:pl-20 lg:pl-28">
          <ScrollReveal direction="up" delay={0.1}>
-         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center">
-            <div className="absolute inset-0 bg-vallenato-mustard rounded-full animate-ping opacity-30"></div>
-            <div className="w-8 h-8 rounded-full bg-vallenato-mustard text-white flex items-center justify-center shadow-lg relative z-10"><Video size={14}/></div>
+         <div className="absolute left-6 md:left-12 lg:left-16 mt-6 w-10 h-10 flex items-center justify-center group cursor-default">
+            <div className="absolute inset-0 bg-vallenato-mustard rounded-full animate-ping opacity-30 group-hover:opacity-60 transition-opacity"></div>
+            <div className="w-8 h-8 rounded-full bg-vallenato-mustard text-white flex items-center justify-center shadow-[0_0_15px_rgba(234,170,0,0.5)] relative z-10 group-hover:scale-110 transition-transform duration-300"><Video size={14}/></div>
          </div>
          <div className="container mx-auto px-6">
              <div className="mb-12 flex flex-col items-start text-left">
-                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-sm border border-gray-100 text-vallenato-blue text-[11px] font-black uppercase tracking-widest">
+                <div className="inline-flex items-center gap-2 bg-white px-4 py-1.5 rounded-full mb-4 shadow-[0_4px_10px_rgba(0,51,102,0.1)] border border-vallenato-blue/10 text-vallenato-blue text-[11px] font-black uppercase tracking-widest relative overflow-hidden group">
+                  <span className="w-1.5 h-1.5 rounded-full bg-vallenato-blue animate-pulse"></span>
                   Última Parada
+                  <div className="absolute inset-0 bg-vallenato-blue/5 translate-y-[100%] group-hover:translate-y-0 transition-transform"></div>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mt-2 mb-2">Videoteca Histórica</h2>
                 <p className="text-gray-500 italic font-serif text-lg md:text-xl">Parrandas inolvidables y momentos capturados en el tiempo.</p>

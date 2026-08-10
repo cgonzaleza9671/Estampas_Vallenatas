@@ -69,7 +69,7 @@ const AudioStoryCard: React.FC<AudioStoryCardProps> = ({ audio, onClose }) => {
 
         <div className="p-6 md:p-8 relative z-10">
           {/* Metadatos del Audio */}
-          <div className="flex flex-wrap gap-x-4 gap-y-2 mb-5">
+          <div className="flex flex-wrap gap-x-4 gap-y-2 mb-5 pr-10">
             <div className="flex items-center gap-1.5 text-vallenato-blue/60">
               <User size={12} className="shrink-0" />
               <span className="text-[9px] font-bold uppercase tracking-widest leading-none">Autor: {audio.autor}</span>
@@ -82,7 +82,7 @@ const AudioStoryCard: React.FC<AudioStoryCardProps> = ({ audio, onClose }) => {
 
           <div className="relative">
             <Quote size={24} className="text-vallenato-red/10 absolute -left-3 -top-3" />
-            <h4 className="text-vallenato-blue font-serif text-xl md:text-2xl font-bold leading-tight mb-4 pr-8">
+            <h4 className="text-vallenato-blue font-serif text-xl md:text-2xl font-bold leading-tight mb-4 pr-12">
               {audio.titulo}
             </h4>
             

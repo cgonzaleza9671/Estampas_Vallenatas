@@ -232,7 +232,17 @@ const AppContent: React.FC = () => {
                       <MessageSquareQuote size={20} />
                     </button>
                     <div className="flex flex-col min-w-0">
-                      <h5 className="text-[12px] md:text-sm font-serif font-bold truncate text-white leading-tight mb-1">{currentAudio.titulo}</h5>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h5 className="text-[12px] md:text-sm font-serif font-bold truncate text-white leading-tight">{currentAudio.titulo}</h5>
+                        {isPlaying && (
+                          <div className="flex items-center gap-[2px] h-4">
+                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-1 rounded-full"></div>
+                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-2 rounded-full"></div>
+                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-3 rounded-full"></div>
+                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-4 rounded-full"></div>
+                          </div>
+                        )}
+                      </div>
                       <div className="flex items-center gap-1.5">
                         <User size={10} className="text-vallenato-mustard shrink-0" />
                         <span className="text-[9px] md:text-[10px] text-vallenato-mustard font-bold uppercase tracking-widest truncate">{currentAudio.autor}</span>

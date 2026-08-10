@@ -232,18 +232,36 @@ export const fetchAudioFilters = async () => {
   const { data: singers } = await supabase.from('Audios').select('cantante').not('cantante', 'is', null);
   const { data: accordions } = await supabase.from('Audios').select('acordeonero').not('acordeonero', 'is', null);
   
-  const cleanAndSort = (list: any[], excludeAnon: boolean = false) => {
-    let result = Array.from(new Set(list?.map(item => Object.values(item)[0] as string).filter(v => v && v.trim() !== "" && v !== "-") || []));
+  const cleanSortAndTop = (list: any[], excludeAnon: boolean = false) => {
+    const counts: Record<string, number> = {};
+    list?.forEach(item => {
+      const val = Object.values(item)[0] as string;
+      if (val && val.trim() !== "" && val !== "-") {
+         counts[val] = (counts[val] || 0) + 1;
+      }
+    });
+    
+    let result = Object.keys(counts);
     if (excludeAnon) {
       result = result.filter(v => v.toLowerCase() !== 'autor anónimo');
     }
-    return result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+    const top = [...result].sort((a, b) => counts[b] - counts[a]).slice(0, 3);
+    const sorted = result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+    
+    return { all: sorted, top };
   };
 
+  const authorsResult = cleanSortAndTop(authors || [], true);
+  const singersResult = cleanSortAndTop(singers || []);
+  const accordionsResult = cleanSortAndTop(accordions || []);
+
   return {
-    authors: cleanAndSort(authors || [], true),
-    singers: cleanAndSort(singers || []),
-    accordions: cleanAndSort(accordions || [])
+    authors: authorsResult.all,
+    topAuthors: authorsResult.top,
+    singers: singersResult.all,
+    topSingers: singersResult.top,
+    accordions: accordionsResult.all,
+    topAccordions: accordionsResult.top
   };
 };
 
@@ -251,17 +269,33 @@ export const fetchVideoFilters = async () => {
   const { data: authors } = await supabase.from('Videos').select('autor').not('autor', 'is', null);
   const { data: interpreters } = await supabase.from('Videos').select('interprete').not('interprete', 'is', null);
   
-  const cleanAndSort = (list: any[], excludeAnon: boolean = false) => {
-    let result = Array.from(new Set(list?.map(item => Object.values(item)[0] as string).filter(v => v && v.trim() !== "" && v !== "-") || []));
+  const cleanSortAndTop = (list: any[], excludeAnon: boolean = false) => {
+    const counts: Record<string, number> = {};
+    list?.forEach(item => {
+      const val = Object.values(item)[0] as string;
+      if (val && val.trim() !== "" && val !== "-") {
+         counts[val] = (counts[val] || 0) + 1;
+      }
+    });
+    
+    let result = Object.keys(counts);
     if (excludeAnon) {
       result = result.filter(v => v.toLowerCase() !== 'autor anónimo');
     }
-    return result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+    const top = [...result].sort((a, b) => counts[b] - counts[a]).slice(0, 3);
+    const sorted = result.sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+    
+    return { all: sorted, top };
   };
 
+  const authorsResult = cleanSortAndTop(authors || [], true);
+  const interpretersResult = cleanSortAndTop(interpreters || []);
+
   return {
-    authors: cleanAndSort(authors || [], true),
-    interpreters: cleanAndSort(interpreters || [])
+    authors: authorsResult.all,
+    topAuthors: authorsResult.top,
+    interpreters: interpretersResult.all,
+    topInterpreters: interpretersResult.top
   };
 };
 
