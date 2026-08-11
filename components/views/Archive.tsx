@@ -5,7 +5,7 @@ import { AudioItem, VideoItem } from '../../types.ts';
 import MediaModal from '../MediaModal.tsx';
 import Button from '../Button.tsx';
 import ScrollReveal from '../ScrollReveal.tsx';
-import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar, ChevronDown, ChevronRight, X, ExternalLink, Youtube, Info, Disc, Headphones } from 'lucide-react';
+import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar, ChevronDown, ChevronRight, X, ExternalLink, Youtube, Info, Disc, Headphones, PenTool } from 'lucide-react';
 
 interface ArchiveProps {
   initialTab?: 'audio' | 'video';
@@ -188,6 +188,8 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
     setSelectedVideoInterpreter('All');
   };
 
+  const hasActiveFilters = searchQuery !== '' || selectedAudioAuthor !== 'All' || selectedAudioSinger !== 'All' || selectedAudioAccordion !== 'All' || selectedVideoAuthor !== 'All' || selectedVideoInterpreter !== 'All';
+
   return (
     <div className="min-h-screen bg-vallenato-beige pt-8 pb-32 animate-fade-in-up">
       <div className="container mx-auto px-4 md:px-6">
@@ -205,10 +207,15 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
         </div>
         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-museum mb-10 border border-vallenato-mustard/10 max-w-7xl mx-auto">
            <div className="flex flex-col gap-6">
-              <div className="relative group w-full">
-                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-vallenato-mustard group-focus-within:text-vallenato-red transition-colors" size={20} />
-                 <input type="text" placeholder="Buscar por título, autor..." className="w-full pl-12 pr-10 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm font-sans" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                 {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-vallenato-red"><X size={16} /></button>}
+              <div className="flex flex-col md:flex-row gap-4 items-center w-full">
+                <div className="relative group flex-grow w-full">
+                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-vallenato-mustard group-focus-within:text-vallenato-red transition-colors" size={20} />
+                   <input type="text" placeholder="Buscar por título, autor..." className="w-full pl-12 pr-10 py-4 rounded-2xl bg-gray-50 border-2 border-transparent focus:border-vallenato-mustard focus:bg-white focus:outline-none transition-all text-sm font-sans" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                   {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-vallenato-red"><X size={16} /></button>}
+                </div>
+                <button onClick={resetFilters} className={`shrink-0 flex items-center justify-center gap-2 w-full md:w-auto px-6 py-4 rounded-2xl transition-all text-xs font-bold uppercase tracking-widest border-2 ${hasActiveFilters ? 'bg-vallenato-mustard text-vallenato-blue border-transparent hover:bg-vallenato-red hover:text-white shadow-md' : 'bg-gray-50 text-gray-500 border-transparent hover:bg-gray-100 hover:text-vallenato-red'}`}>
+                  <X size={16} /> Limpiar filtros
+                </button>
               </div>
               {activeTab === 'audio' ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -218,9 +225,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         {filterOptions.audioAuthors.map(a => <option key={a} value={a}>{toTitleCase(a)}</option>)}
                     </select>
                     <div className="flex flex-wrap gap-2 px-1">
-                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest">🔥 Populares:</span>
+                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest flex items-center gap-1"><PenTool size={10} /> Populares:</span>
                       {filterOptions.topAudioAuthors.map(a => (
-                        <button key={a} onClick={() => setSelectedAudioAuthor(a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedAudioAuthor === a ? 'bg-vallenato-mustard text-vallenato-blue shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
+                        <button key={a} onClick={() => setSelectedAudioAuthor(selectedAudioAuthor === a ? 'All' : a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedAudioAuthor === a ? 'bg-vallenato-mustard text-vallenato-blue shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
                       ))}
                     </div>
                   </div>
@@ -230,9 +237,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         {filterOptions.audioSingers.map(s => <option key={s} value={s}>{toTitleCase(s)}</option>)}
                     </select>
                     <div className="flex flex-wrap gap-2 px-1">
-                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest">🔥 Populares:</span>
+                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest flex items-center gap-1"><Mic2 size={10} /> Populares:</span>
                       {filterOptions.topAudioSingers.map(a => (
-                        <button key={a} onClick={() => setSelectedAudioSinger(a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedAudioSinger === a ? 'bg-vallenato-blue text-white shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
+                        <button key={a} onClick={() => setSelectedAudioSinger(selectedAudioSinger === a ? 'All' : a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedAudioSinger === a ? 'bg-vallenato-blue text-white shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
                       ))}
                     </div>
                   </div>
@@ -242,9 +249,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         {filterOptions.audioAccordions.map(a => <option key={a} value={a}>{toTitleCase(a)}</option>)}
                     </select>
                     <div className="flex flex-wrap gap-2 px-1">
-                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest">🔥 Populares:</span>
+                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest flex items-center gap-1"><ListMusic size={10} /> Populares:</span>
                       {filterOptions.topAudioAccordions.map(a => (
-                        <button key={a} onClick={() => setSelectedAudioAccordion(a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedAudioAccordion === a ? 'bg-vallenato-red text-white shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
+                        <button key={a} onClick={() => setSelectedAudioAccordion(selectedAudioAccordion === a ? 'All' : a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedAudioAccordion === a ? 'bg-vallenato-red text-white shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
                       ))}
                     </div>
                   </div>
@@ -257,9 +264,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         {filterOptions.videoAuthors.map(a => <option key={a} value={a}>{toTitleCase(a)}</option>)}
                     </select>
                     <div className="flex flex-wrap gap-2 px-1">
-                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest">🔥 Populares:</span>
+                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest flex items-center gap-1"><PenTool size={10} /> Populares:</span>
                       {filterOptions.topVideoAuthors.map(a => (
-                        <button key={a} onClick={() => setSelectedVideoAuthor(a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedVideoAuthor === a ? 'bg-vallenato-mustard text-vallenato-blue shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
+                        <button key={a} onClick={() => setSelectedVideoAuthor(selectedVideoAuthor === a ? 'All' : a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedVideoAuthor === a ? 'bg-vallenato-mustard text-vallenato-blue shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
                       ))}
                     </div>
                   </div>
@@ -269,9 +276,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                         {filterOptions.videoInterpreters.map(i => <option key={i} value={i}>{toTitleCase(i)}</option>)}
                     </select>
                     <div className="flex flex-wrap gap-2 px-1">
-                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest">🔥 Populares:</span>
+                      <span className="text-[9px] uppercase font-bold text-gray-400 self-center tracking-widest flex items-center gap-1"><Mic2 size={10} /> Populares:</span>
                       {filterOptions.topVideoInterpreters.map(a => (
-                        <button key={a} onClick={() => setSelectedVideoInterpreter(a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedVideoInterpreter === a ? 'bg-vallenato-blue text-white shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
+                        <button key={a} onClick={() => setSelectedVideoInterpreter(selectedVideoInterpreter === a ? 'All' : a)} className={`px-2 py-1 rounded-md text-[10px] font-bold transition-all duration-300 ${selectedVideoInterpreter === a ? 'bg-vallenato-blue text-white shadow-sm' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}>{toTitleCase(a)}</button>
                       ))}
                     </div>
                   </div>
@@ -279,7 +286,6 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
               )}
            </div>
         </div>
-
         {loading ? (
            <div className="flex flex-col justify-center items-center h-80 text-vallenato-blue">
              <div className="relative">
