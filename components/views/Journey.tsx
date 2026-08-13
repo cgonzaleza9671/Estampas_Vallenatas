@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import CountUp from 'react-countup';
 import { ComposableMap, Geographies, Geography, Line, Marker } from 'react-simple-maps';
 import { geoInterpolate } from 'd3-geo';
-import { X, ChevronDown, MapPin } from 'lucide-react';
+import { X, ChevronRight, MapPin } from 'lucide-react';
 import { reachData, reachStats, ReachCountry } from '../../src/data/reachData.ts';
 
 // Import Generated Images
 import globeImg from '../../src/assets/images/globe_avatar_1786635466243.jpg';
 import pinImg from '../../src/assets/images/pin_avatar_1786635476432.jpg';
 import peopleImg from '../../src/assets/images/people_avatar_1786635486441.jpg';
+
+import { createPortal } from 'react-dom';
 
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 
@@ -35,7 +37,7 @@ const mapToEsName = (geoName: string) => {
   return map[geoName] || geoName;
 };
 
-const COLOMBIA_COORDS: [number, number] = [-74.0721, 4.7110];
+const COLOMBIA_COORDS: [number, number] = [-73.2452, 10.4631]; // Valledupar, Colombia
 const ANIMATION_ROUTES: [number, number][] = [
   [-3.7038, 40.4168], // Madrid, Spain
   [-80.1918, 25.7617], // Miami, US
@@ -62,9 +64,7 @@ const AccordionIcon = () => (
   </g>
 );
 
-const Journey: React.FC = () => {
-  const [selectedCountry, setSelectedCountry] = useState<ReachCountry | null>(null);
-  const [expandedCountry, setExpandedCountry] = useState<string | null>(null);
+const TravelingAccordion = () => {
   const [activeRouteIdx, setActiveRouteIdx] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -99,8 +99,19 @@ const Journey: React.FC = () => {
 
   const currentDestination = ANIMATION_ROUTES[activeRouteIdx];
   const interpolate = geoInterpolate(COLOMBIA_COORDS, currentDestination);
-  // Typecast is required as geoInterpolate returns number[] instead of [number, number]
   const currentCoords = interpolate(progress) as [number, number];
+
+  if (progress <= 0 || progress >= 1) return null;
+
+  return (
+    <Marker coordinates={currentCoords} style={{ pointerEvents: 'none' }}>
+      <AccordionIcon />
+    </Marker>
+  );
+};
+
+const Journey: React.FC = () => {
+  const [selectedCountry, setSelectedCountry] = useState<ReachCountry | null>(null);
 
   return (
     <div className="min-h-screen bg-vallenato-beige animate-fade-in-up pb-32">
@@ -209,22 +220,18 @@ const Journey: React.FC = () => {
                   stroke="#D4AF37"
                   strokeWidth={1.5}
                   strokeLinecap="round"
-                  style={{ opacity: 0.25 }}
+                  style={{ opacity: 0.25, pointerEvents: 'none' }}
                 />
               ))}
 
               {/* Origin Glowing Marker */}
-              <Marker coordinates={COLOMBIA_COORDS}>
+              <Marker coordinates={COLOMBIA_COORDS} style={{ pointerEvents: 'none' }}>
                 <circle r={8} fill="#B02A2A" opacity={0.3} className="animate-ping" />
                 <circle r={3} fill="#B02A2A" />
               </Marker>
 
               {/* Traveling Accordion */}
-              {progress > 0 && progress < 1 && (
-                <Marker coordinates={currentCoords}>
-                  <AccordionIcon />
-                </Marker>
-              )}
+              <TravelingAccordion />
             </ComposableMap>
           </div>
         </div>
@@ -237,8 +244,8 @@ const Journey: React.FC = () => {
           {reachData.map(country => (
             <div 
               key={country.isoCode}
-              onClick={() => setExpandedCountry(expandedCountry === country.isoCode ? null : country.isoCode)}
-              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-vallenato-mustard/30 overflow-hidden"
+              onClick={() => setSelectedCountry(country)}
+              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-vallenato-mustard/30 overflow-hidden group"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -254,19 +261,7 @@ const Journey: React.FC = () => {
                     <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">{country.cities.length} {country.cities.length === 1 ? 'Ciudad' : 'Ciudades'}</p>
                   </div>
                 </div>
-                <ChevronDown className={`text-vallenato-mustard transition-transform duration-300 ${expandedCountry === country.isoCode ? 'rotate-180' : ''}`} />
-              </div>
-
-              {/* Expandable City List */}
-              <div className={`transition-all duration-500 ease-in-out ${expandedCountry === country.isoCode ? 'max-h-96 mt-6 opacity-100' : 'max-h-0 opacity-0'} overflow-y-auto custom-scrollbar`}>
-                <div className="grid grid-cols-2 gap-y-3 gap-x-4 pt-4 border-t border-gray-100">
-                  {country.cities.map((city, idx) => (
-                    <div key={idx} className="flex items-center gap-2">
-                      <MapPin size={12} className="text-vallenato-red shrink-0" />
-                      <span className="text-sm text-gray-600 truncate">{city.name}</span>
-                    </div>
-                  ))}
-                </div>
+                <ChevronRight className="text-vallenato-mustard opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
               </div>
             </div>
           ))}
@@ -297,8 +292,8 @@ const Journey: React.FC = () => {
       </div>
 
       {/* Map Modal */}
-      {selectedCountry && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {selectedCountry && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 pb-32 md:pb-40">
           {/* Backdrop */}
           <div 
             className="absolute inset-0 bg-vallenato-blue/60 backdrop-blur-sm transition-opacity"
@@ -336,13 +331,14 @@ const Journey: React.FC = () => {
                 {selectedCountry.cities.map((city, idx) => (
                   <div key={idx} className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm border border-transparent hover:border-vallenato-mustard/30 transition-colors">
                     <MapPin size={16} className="text-vallenato-mustard shrink-0" />
-                    <span className="text-sm font-medium text-gray-700">{city.name}</span>
+                    <span className="text-sm font-medium text-gray-700 leading-tight break-words flex-1">{city.name}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
