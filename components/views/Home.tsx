@@ -246,7 +246,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                   <div className="absolute inset-0 bg-vallenato-blue/5 translate-y-[100%] group-hover:translate-y-0 transition-transform"></div>
                 </div>
                 <h2 className="text-4xl md:text-5xl font-serif text-vallenato-blue mt-2 mb-2">La Memoria del Acordeón</h2>
-                <p className="text-gray-500 italic font-serif text-lg md:text-xl">Joyas musicales inéditas que marcaron la historia de nuestro folclor.</p>
+                <p className="text-gray-500 italic font-serif text-lg md:text-xl">Joyas musicales que marcaron la historia de nuestro folclor.</p>
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-12">
                 {recentAudios.map((item) => {
