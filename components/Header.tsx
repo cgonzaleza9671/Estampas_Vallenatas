@@ -13,6 +13,7 @@ const Header: React.FC = () => {
     { label: 'Inicio', path: '/' },
     { label: 'La memoria del acordeón', path: '/la-memoria-del-acordeon' },
     { label: 'Relatos legendarios', path: '/relatos-legendarios' },
+    { label: 'El viaje del vallenato', path: '/el-viaje-del-vallenato' },
     { label: 'Acerca del autor', path: '/acerca-del-autor' },
   ];
 
@@ -53,15 +54,15 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-          <nav className="flex items-center gap-1 xl:gap-2">
+        <div className="hidden lg:flex items-center justify-end flex-1 pl-10">
+          <nav className="flex items-center justify-end gap-2 lg:gap-4 xl:gap-6 w-full">
             {navItems.map((item) => {
               const active = isActive(item.path);
               return (
                 <div key={item.path} className="relative flex flex-col items-center">
                   <button
                     onClick={() => handleNav(item.path)}
-                    className={`relative z-10 px-4 py-2 rounded-full text-xs lg:text-sm xl:text-base font-sans font-semibold uppercase tracking-[0.14em] transition-colors duration-300 ${
+                    className={`relative z-10 px-3 lg:px-4 py-2 rounded-full text-[10px] lg:text-xs xl:text-sm font-sans font-semibold uppercase tracking-[0.14em] text-center leading-tight transition-colors duration-300 ${
                       active
                         ? 'text-vallenato-blue font-bold'
                         : 'text-gray-200 hover:text-white hover:bg-white/10'
