@@ -359,13 +359,13 @@ const LegendaryTales: React.FC = () => {
                    <div className="flex flex-col gap-4 w-full">
                       <button 
                         onClick={restartStory}
-                        className="w-full flex items-center justify-center gap-3 bg-vallenato-mustard text-vallenato-blue px-8 py-5 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-2xl active:scale-95"
+                        className="will-change-transform w-full flex items-center justify-center gap-3 bg-vallenato-mustard text-vallenato-blue px-8 py-5 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-white hover:scale-105 transition-all shadow-2xl active:scale-95"
                       >
                          <RotateCcw size={18} /> Volver a escuchar
                       </button>
                       <button 
                         onClick={() => setSelectedStory(null)}
-                        className="w-full flex items-center justify-center gap-3 bg-white/5 text-white/60 px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
+                        className="will-change-transform w-full flex items-center justify-center gap-3 bg-white/5 text-white/60 px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
                       >
                          Salir al archivo
                       </button>
@@ -406,7 +406,7 @@ const LegendaryTales: React.FC = () => {
         </nav>
 
         <div className="relative w-full h-[50vh] overflow-hidden">
-           <img src={selectedStory.imagen} className="w-full h-full object-cover opacity-30 scale-105 grayscale" alt="" />
+           <img src={selectedStory.imagen} className="will-change-transform w-full h-full object-cover opacity-30 scale-105 grayscale" alt="" />
            <div className="absolute inset-0 bg-gradient-to-b from-vallenato-dark/40 via-vallenato-dark/80 to-vallenato-dark"></div>
            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
               <div className="container mx-auto max-w-4xl pt-10">
@@ -502,7 +502,7 @@ const LegendaryTales: React.FC = () => {
                     }}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
+                  <div className="will-change-transform w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-gradient-to-r from-vallenato-mustard to-vallenato-red transition-all duration-150 relative"
                       style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
@@ -607,11 +607,11 @@ const LegendaryTales: React.FC = () => {
               onClick={() => handleStartStory(story)} 
               className="group bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 hover:shadow-gold transition-all duration-700 cursor-pointer flex flex-col sm:flex-row"
             >
-              <div className="w-full sm:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
-                 <img src={story.imagen} alt={story.titulo} className="w-full h-full object-cover opacity-80 grayscale group-hover:scale-110 transition-transform duration-[2s]" />
+              <div className="will-change-transform w-full sm:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
+                 <img src={story.imagen} loading="lazy" decoding="async"  alt={story.titulo} className="will-change-transform w-full h-full object-cover opacity-80 grayscale group-hover:scale-110 transition-transform duration-[2s]" />
                  <div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent opacity-60"></div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <div className="bg-white/20 backdrop-blur-xl p-5 rounded-full border border-white/30 text-white shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
+                    <div className="bg-white/20 p-5 rounded-full border border-white/30 text-white shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">
                        <Play size={24} fill="currentColor" />
                     </div>
                  </div>
