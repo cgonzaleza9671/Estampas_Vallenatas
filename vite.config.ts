@@ -15,6 +15,7 @@ export default defineConfig({
       'formdata-polyfill': path.resolve(__dirname, 'src/custom-fetch.ts'),
       'formdata-polyfill/esm.min.js': path.resolve(__dirname, 'src/custom-fetch.ts'),
       'cross-fetch': path.resolve(__dirname, 'src/custom-fetch.ts'),
+      'prop-types': path.resolve(__dirname, 'src/mock-prop-types.ts'),
     }
   },
   build: {
