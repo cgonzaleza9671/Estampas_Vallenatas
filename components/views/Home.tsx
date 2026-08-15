@@ -168,14 +168,14 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
             </p>
           </div>
           
-          <div className="mt-6 md:mt-8 w-[95%] md:w-4/5 lg:max-w-3xl bg-black/30 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl flex flex-col md:flex-row group/cta p-1.5 md:p-2">
-            <div className="md:w-5/12 p-4 md:p-5 flex flex-col justify-center items-center md:items-start text-center md:text-left relative overflow-hidden bg-white/5 rounded-[1.5rem] border border-white/5">
+          <div className="mt-6 md:mt-8 w-[95%] md:w-11/12 lg:max-w-5xl xl:max-w-6xl bg-black/30 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl flex flex-col lg:flex-row group/cta p-1.5 md:p-2 mx-auto">
+            <div className="lg:w-3/12 p-4 md:p-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left relative overflow-hidden bg-white/5 rounded-[1.5rem] border border-white/5 mb-1.5 lg:mb-0 lg:mr-1.5">
                 <div className="absolute inset-0 bg-gradient-to-br from-vallenato-mustard/20 to-transparent opacity-0 group-hover/cta:opacity-100 transition-opacity duration-1000"></div>
-                <div className="bg-white/10 p-1.5 rounded-full mb-2 border border-white/10 relative z-10 hidden md:block">
+                <div className="bg-white/10 p-1.5 rounded-full mb-2 border border-white/10 relative z-10 hidden lg:block">
                    <Sparkles size={16} className="text-vallenato-mustard animate-pulse" />
                 </div>
-                <h3 className="text-lg md:text-xl font-serif text-white font-bold mb-1.5 relative z-10 leading-tight">Empiece su recorrido <br/><span className="text-vallenato-mustard italic">histórico</span></h3>
-                <p className="text-gray-300 text-[10px] font-light mb-3 relative z-10 leading-relaxed hidden md:block">Descubra la esencia del folclor a través de nuestra colección de relatos y joyas musicales.</p>
+                <h3 className="text-lg md:text-xl font-serif text-white font-bold mb-1.5 relative z-10 leading-tight">Empiece su recorrido <br className="hidden lg:block"/><span className="text-vallenato-mustard italic">histórico</span></h3>
+                <p className="text-gray-300 text-[10px] font-light mb-3 relative z-10 leading-relaxed hidden lg:block">Descubra la esencia del folclor a través de nuestra colección de relatos y joyas musicales.</p>
                 <button 
                   onClick={() => navigate('/la-memoria-del-acordeon')}
                   className="bg-vallenato-mustard text-vallenato-blue hover:bg-white px-4 py-2 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_4px_20px_rgba(234,170,0,0.4)] hover:shadow-[0_4px_25px_rgba(255,255,255,0.6)] flex items-center gap-1.5 relative z-10 hover:scale-105 active:scale-95"
@@ -184,26 +184,31 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                 </button>
             </div>
 
-            <div className="md:w-7/12 p-1.5 md:p-2 grid grid-cols-2 gap-1.5 md:gap-2">
-                <div onClick={() => navigate('/relatos-legendarios')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-vallenato-mustard/40 hover:bg-vallenato-mustard/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+            <div className="lg:w-9/12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-1.5 md:gap-2">
+                <div onClick={() => navigate('/relatos-legendarios')} className="bg-white/5 backdrop-blur-md p-3 rounded-[1.5rem] border border-white/10 hover:border-vallenato-mustard/40 hover:bg-vallenato-mustard/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
                    <BookOpen size={18} className="text-vallenato-mustard mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-vallenato-mustard transition-colors">Relatos<br/>Legendarios</h4>
-                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Crónicas y vivencias invaluables.</p>
+                   <h4 className="text-white font-serif font-bold text-[13px] md:text-[14px] mb-0.5 relative z-10 leading-tight group-hover/card:text-vallenato-mustard transition-colors">Relatos<br/>Legendarios</h4>
+                   <p className="text-gray-400 text-[8px] hidden xl:block relative z-10 font-light leading-relaxed">Crónicas invaluables.</p>
                 </div>
-                <div onClick={() => navigate('/la-memoria-del-acordeon')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-vallenato-red/40 hover:bg-vallenato-red/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                <div onClick={() => navigate('/la-memoria-del-acordeon')} className="bg-white/5 backdrop-blur-md p-3 rounded-[1.5rem] border border-white/10 hover:border-vallenato-red/40 hover:bg-vallenato-red/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
                    <Headphones size={18} className="text-vallenato-red mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-vallenato-red transition-colors">Audios<br/>Inéditos</h4>
-                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Joyas musicales del folclor.</p>
+                   <h4 className="text-white font-serif font-bold text-[13px] md:text-[14px] mb-0.5 relative z-10 leading-tight group-hover/card:text-vallenato-red transition-colors">Audios<br/>Históricos</h4>
+                   <p className="text-gray-400 text-[8px] hidden xl:block relative z-10 font-light leading-relaxed">Joyas del folclor.</p>
                 </div>
-                <div onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-white/40 hover:bg-white/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                <div onClick={() => navigate('/la-memoria-del-acordeon?tab=video')} className="bg-white/5 backdrop-blur-md p-3 rounded-[1.5rem] border border-white/10 hover:border-white/40 hover:bg-white/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
                    <Video size={18} className="text-white mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-white transition-colors">Videoteca<br/>Histórica</h4>
-                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Presentaciones inolvidables.</p>
+                   <h4 className="text-white font-serif font-bold text-[13px] md:text-[14px] mb-0.5 relative z-10 leading-tight group-hover/card:text-white transition-colors">Videoteca<br/>Inolvidable</h4>
+                   <p className="text-gray-400 text-[8px] hidden xl:block relative z-10 font-light leading-relaxed">Presentaciones en vivo.</p>
                 </div>
-                <div onClick={() => navigate('/acerca-del-autor')} className="bg-white/5 backdrop-blur-md p-3 md:p-4 rounded-[1.5rem] border border-white/10 hover:border-[#3b82f6]/40 hover:bg-[#3b82f6]/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                <div onClick={() => navigate('/acerca-del-autor')} className="bg-white/5 backdrop-blur-md p-3 rounded-[1.5rem] border border-white/10 hover:border-[#3b82f6]/40 hover:bg-[#3b82f6]/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
                    <User size={18} className="text-[#3b82f6] mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
-                   <h4 className="text-white font-serif font-bold text-sm md:text-[15px] mb-0.5 relative z-10 leading-tight group-hover/card:text-[#3b82f6] transition-colors">Acerca<br/>del Autor</h4>
-                   <p className="text-gray-400 text-[9px] hidden md:block relative z-10 font-light leading-relaxed">Álvaro González Pimienta.</p>
+                   <h4 className="text-white font-serif font-bold text-[13px] md:text-[14px] mb-0.5 relative z-10 leading-tight group-hover/card:text-[#3b82f6] transition-colors">Acerca<br/>del Autor</h4>
+                   <p className="text-gray-400 text-[8px] hidden xl:block relative z-10 font-light leading-relaxed">Álvaro González P.</p>
+                </div>
+                <div onClick={() => navigate('/el-viaje-del-vallenato')} className="col-span-2 md:col-span-1 lg:col-span-1 bg-white/5 backdrop-blur-md p-3 rounded-[1.5rem] border border-white/10 hover:border-[#10b981]/40 hover:bg-[#10b981]/10 cursor-pointer transition-all duration-300 flex flex-col items-center text-center justify-center relative overflow-hidden group/card shadow-sm">
+                   <Globe size={18} className="text-[#10b981] mb-1.5 group-hover/card:scale-110 transition-transform relative z-10" />
+                   <h4 className="text-white font-serif font-bold text-[13px] md:text-[14px] mb-0.5 relative z-10 leading-tight group-hover/card:text-[#10b981] transition-colors">El Viaje del<br/>Vallenato</h4>
+                   <p className="text-gray-400 text-[8px] hidden xl:block relative z-10 font-light leading-relaxed">Alcance global.</p>
                 </div>
             </div>
           </div>
