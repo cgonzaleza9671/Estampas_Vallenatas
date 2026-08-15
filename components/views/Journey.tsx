@@ -116,15 +116,15 @@ const Journey: React.FC = () => {
   return (
     <div className="min-h-screen bg-vallenato-beige animate-fade-in-up pb-32">
       {/* Hero Section */}
-      <div className="bg-vallenato-blue rounded-b-[3rem] md:rounded-b-[5rem] pt-32 pb-48 px-6 relative z-10 shadow-xl">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <h1 className="text-4xl md:text-6xl font-serif font-bold text-white tracking-tight">El viaje de un legado</h1>
-          <p className="text-vallenato-cream/80 text-lg md:text-xl font-sans max-w-2xl mx-auto">
+      <div className="bg-vallenato-blue rounded-b-[1.5rem] md:rounded-b-[2rem] pt-20 pb-14 px-6 relative z-10 shadow-xl">
+        <div className="max-w-4xl mx-auto text-center space-y-2">
+          <h1 className="text-2xl md:text-4xl font-serif font-bold text-white tracking-tight">El viaje de un legado</h1>
+          <p className="text-vallenato-cream/80 text-sm md:text-base font-sans max-w-2xl mx-auto">
             Desde el corazón de Colombia, Estampas Vallenatas lleva la memoria de nuestros juglares a cientos de rincones del mundo, conectando corazones a través de la música.
           </p>
           
-          <div className="pt-10">
-            <p className="text-vallenato-mustard font-serif italic text-xl md:text-2xl font-light">
+          <div className="pt-2">
+            <p className="text-vallenato-mustard font-serif italic text-base md:text-lg font-light">
               Estampas Vallenatas, el museo digital del folclor Vallenato ha llegado a:
             </p>
           </div>
@@ -132,7 +132,7 @@ const Journey: React.FC = () => {
       </div>
 
       {/* Bento Grid (Numerical Cards) */}
-      <div className="max-w-6xl mx-auto px-6 -mt-24 relative z-20">
+      <div className="max-w-6xl mx-auto px-6 -mt-8 relative z-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1 */}
           <div className="bg-white rounded-3xl p-8 shadow-museum border-b-4 border-vallenato-mustard flex flex-col items-center text-center">
