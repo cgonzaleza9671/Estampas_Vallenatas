@@ -32,7 +32,9 @@ const mapToEsName = (geoName: string) => {
     "Russia": "Rusia",
     "France": "Francia",
     "United States": "Estados Unidos",
-    "Dominican Rep.": "República Dominicana"
+    "Dominican Rep.": "República Dominicana",
+    "New Zealand": "Nueva Zelanda",
+    "Italy": "Italia"
   };
   return map[geoName] || geoName;
 };
