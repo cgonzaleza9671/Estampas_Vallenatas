@@ -46,7 +46,15 @@ const ANIMATION_ROUTES: [number, number][] = [
   [-58.3816, -34.6037], // Buenos Aires, Argentina
   [151.2093, -33.8688], // Sydney, Australia
   [116.4074, 39.9042], // Beijing, China
-  [-99.1332, 19.4326]  // CDMX, Mexico
+  [-99.1332, 19.4326], // CDMX, Mexico
+  [-74.0060, 40.7128], // New York, US
+  [-0.1276, 51.5072], // London, UK
+  [2.3522, 48.8566], // Paris, France
+  [12.4964, 41.9028], // Rome, Italy
+  [77.2090, 28.6139], // New Delhi, India
+  [174.7762, -41.2865], // Wellington, New Zealand
+  [-73.5673, 45.5017], // Montreal, Canada
+  [-70.6693, -33.4489] // Santiago, Chile
 ];
 
 const AccordionIcon = () => (
