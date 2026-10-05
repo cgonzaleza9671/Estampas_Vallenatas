@@ -10,6 +10,7 @@ import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, 
 import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
 import { AccordionPlayIcon, AcordeonMinimal, GuacharacaMinimal, CajaMinimal, NotaMusicalMinimal } from '../CustomIcons.tsx';
 import ScrollReveal from '../ScrollReveal.tsx';
+import TypewriterHeroText from '../TypewriterHeroText.tsx';
 
 interface HomeProps {
   onPlayAudio?: (audio: AudioItem, list?: AudioItem[]) => void;
@@ -155,18 +156,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
           <span className="text-white font-sans font-light tracking-[0.3em] uppercase mb-4 text-sm md:text-base animate-fade-in-down drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">Estampas Vallenatas</span>
           <h1 className="text-5xl md:text-7xl font-serif text-white mb-4 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] leading-[1.1]"><span className="text-vallenato-mustard italic block text-3xl md:text-5xl mb-2">El Museo Digital del</span><span className="text-vallenato-red">Folclor Vallenato</span></h1>
           
-          <div className="flex flex-col items-center justify-center my-6 md:my-8 animate-fade-in-up">
-            <p className="text-gray-200 font-sans text-xs md:text-sm uppercase tracking-[0.3em] mb-2 font-medium drop-shadow-md">Hemos llegado ya a</p>
-            <div className="relative group">
-              <div className="absolute inset-0 bg-vallenato-mustard blur-2xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 animate-pulse rounded-full"></div>
-              <span className="relative text-5xl md:text-7xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-br from-white via-[#FFD700] to-[#EAAA00] drop-shadow-[0_2px_15px_rgba(234,170,0,0.6)] tracking-tight leading-none px-4">
-                <span className="text-[0.5em] align-middle mr-1">+</span>120 CANCIONES
-              </span>
-            </div>
-            <p className="text-vallenato-mustard font-calligraphy text-2xl md:text-4xl mt-3 md:mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-              joyas de nuestra memoria vallenata
-            </p>
-          </div>
+          <TypewriterHeroText />
           
           <div className="mt-6 md:mt-8 w-[95%] md:w-11/12 lg:max-w-5xl xl:max-w-6xl bg-black/30 backdrop-blur-xl border border-white/20 rounded-[2rem] shadow-2xl flex flex-col lg:flex-row group/cta p-1.5 md:p-2 mx-auto">
             <div className="lg:w-3/12 p-4 md:p-5 flex flex-col justify-center items-center lg:items-start text-center lg:text-left relative overflow-hidden bg-white/5 rounded-[1.5rem] border border-white/5 mb-1.5 lg:mb-0 lg:mr-1.5">
