@@ -9,7 +9,7 @@ interface RouteMeta {
 const routeMetaMap: Record<string, RouteMeta> = {
   '/': {
     title: 'Estampas Vallenatas | Museo Digital del Folclor Vallenato',
-    description: 'Explora Estampas Vallenatas, el museo digital definitivo de la música vallenata. Más de 100 joyas musicales y relatos legendarios recopilados por Álvaro González Pimienta.',
+    description: 'Explora Estampas Vallenatas, el museo digital definitivo de la música vallenata. Más de 120 joyas musicales y relatos legendarios recopilados por Álvaro González Pimienta.',
   },
   '/la-memoria-del-acordeon': {
     title: 'La Memoria del Acordeón | Catálogo Musical Vallenato',
