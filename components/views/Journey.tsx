@@ -17,6 +17,7 @@ const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json";
 const mapToEsName = (geoName: string) => {
   const map: Record<string, string> = {
     "United States of America": "Estados Unidos",
+    "United States": "Estados Unidos",
     "Spain": "España",
     "Germany": "Alemania",
     "Canada": "Canadá",
@@ -31,12 +32,44 @@ const mapToEsName = (geoName: string) => {
     "Russian Federation": "Rusia",
     "Russia": "Rusia",
     "France": "Francia",
-    "United States": "Estados Unidos",
-    "Dominican Rep.": "República Dominicana",
     "New Zealand": "Nueva Zelanda",
-    "Italy": "Italia"
+    "Italy": "Italia",
+    "Lithuania": "Lituania",
+    "Costa Rica": "Costa Rica",
+    "Andorra": "Andorra",
+    "Venezuela": "Venezuela",
+    "Bolivarian Republic of Venezuela": "Venezuela"
   };
   return map[geoName] || geoName;
+};
+
+const findCountry = (geo: any): ReachCountry | undefined => {
+  const geoName = geo.properties?.name || '';
+  const geoId = String(geo.id || '');
+  const esName = mapToEsName(geoName);
+
+  return reachData.find(c => {
+    // Match by ISO numeric ID (e.g. 170 for Colombia, 840 for US)
+    if (geoId && c.numericCode) {
+      if (geoId === c.numericCode || parseInt(geoId, 10) === parseInt(c.numericCode, 10)) {
+        return true;
+      }
+    }
+    // Match by Spanish name
+    if (c.name.toLowerCase() === esName.toLowerCase() || c.name.toLowerCase() === geoName.toLowerCase()) {
+      return true;
+    }
+    // Match by English name
+    if (c.englishName && c.englishName.toLowerCase() === geoName.toLowerCase()) {
+      return true;
+    }
+    // Match by ISO 2-letter alpha code
+    const isoProp = geo.properties?.iso_a2 || geo.properties?.ISO_A2 || geo.properties?.iso2;
+    if (isoProp && isoProp.toLowerCase() === c.isoCode.toLowerCase()) {
+      return true;
+    }
+    return false;
+  });
 };
 
 const COLOMBIA_COORDS: [number, number] = [-73.2452, 10.4631]; // Valledupar, Colombia
@@ -122,6 +155,7 @@ const TravelingAccordion = () => {
 
 const Journey: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<ReachCountry | null>(null);
+  const [hoveredCountry, setHoveredCountry] = useState<{ country: ReachCountry; x: number; y: number } | null>(null);
 
   return (
     <div className="min-h-screen bg-vallenato-beige animate-fade-in-up pb-32">
@@ -186,16 +220,28 @@ const Journey: React.FC = () => {
               <Geographies geography={geoUrl}>
                 {({ geographies }) =>
                   geographies.map((geo) => {
-                    const geoEsName = mapToEsName(geo.properties.name);
-                    const countryData = reachData.find(c => c.name === geoEsName);
+                    const countryData = findCountry(geo);
                     const isVisited = !!countryData;
 
                     return (
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
+                        onMouseEnter={(e) => {
+                          if (isVisited && countryData) {
+                            setHoveredCountry({ country: countryData, x: e.clientX, y: e.clientY });
+                          }
+                        }}
+                        onMouseMove={(e) => {
+                          if (isVisited && countryData) {
+                            setHoveredCountry({ country: countryData, x: e.clientX, y: e.clientY });
+                          }
+                        }}
+                        onMouseLeave={() => {
+                          setHoveredCountry(null);
+                        }}
                         onClick={() => {
-                          if (isVisited) setSelectedCountry(countryData);
+                          if (isVisited && countryData) setSelectedCountry(countryData);
                         }}
                         style={{
                           default: {
@@ -215,7 +261,11 @@ const Journey: React.FC = () => {
                             outline: 'none'
                           }
                         }}
-                      />
+                      >
+                        {isVisited && countryData && (
+                          <title>{`${countryData.name} (${countryData.cities.length} ${countryData.cities.length === 1 ? 'ciudad' : 'ciudades'}): ${countryData.cities.map(c => c.name).join(', ')}`}</title>
+                        )}
+                      </Geography>
                     );
                   })
                 }
@@ -346,6 +396,36 @@ const Journey: React.FC = () => {
                 ))}
               </div>
             </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Hover Tooltip */}
+      {hoveredCountry && createPortal(
+        <div
+          className="fixed z-[90] pointer-events-none bg-vallenato-blue text-white px-3.5 py-2.5 rounded-2xl shadow-2xl border border-vallenato-mustard/40 text-xs transition-opacity transform -translate-x-1/2 -translate-y-full mb-3"
+          style={{ left: hoveredCountry.x, top: hoveredCountry.y - 12 }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <img
+              src={`https://flagcdn.com/${hoveredCountry.country.isoCode}.svg`}
+              alt=""
+              className="w-4 h-3 object-cover rounded-xs"
+            />
+            <span className="font-bold text-sm text-vallenato-mustard">{hoveredCountry.country.name}</span>
+            <span className="text-gray-300 text-[11px]">
+              ({hoveredCountry.country.cities.length} {hoveredCountry.country.cities.length === 1 ? 'ciudad' : 'ciudades'})
+            </span>
+          </div>
+          <div className="text-gray-200 max-w-xs text-[11px] leading-snug">
+            {hoveredCountry.country.cities.slice(0, 5).map(c => c.name).join(', ')}
+            {hoveredCountry.country.cities.length > 5 && (
+              <span className="text-vallenato-mustard font-medium"> +{hoveredCountry.country.cities.length - 5} más</span>
+            )}
+          </div>
+          <div className="text-[10px] text-vallenato-cream/60 mt-1 italic">
+            Click para ver el detalle
           </div>
         </div>,
         document.body
