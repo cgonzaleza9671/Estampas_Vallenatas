@@ -114,7 +114,7 @@ const TravelingAccordion = () => {
   if (progress <= 0 || progress >= 1) return null;
 
   return (
-    <Marker coordinates={currentCoords} style={{ pointerEvents: 'none' }}>
+    <Marker coordinates={currentCoords} className="pointer-events-none">
       <AccordionIcon />
     </Marker>
   );
@@ -235,7 +235,7 @@ const Journey: React.FC = () => {
               ))}
 
               {/* Origin Glowing Marker */}
-              <Marker coordinates={COLOMBIA_COORDS} style={{ pointerEvents: 'none' }}>
+              <Marker coordinates={COLOMBIA_COORDS} className="pointer-events-none">
                 <circle r={8} fill="#B02A2A" opacity={0.3} className="animate-ping" />
                 <circle r={3} fill="#B02A2A" />
               </Marker>

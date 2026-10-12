@@ -6,12 +6,14 @@ interface TypewriterHeroTextProps {
 
 export const TypewriterHeroText: React.FC<TypewriterHeroTextProps> = ({ loop = false }) => {
   const line1Full = "Hemos llegado ya a";
-  const line2Full = "+120 CANCIONES";
+  const line2aFull = "+120 canciones";
+  const line2bFull = "y +10 relatos legendarios";
   const line3Full = "joyas de nuestra memoria vallenata";
 
-  const [phase, setPhase] = useState<'line1' | 'line2' | 'line3' | 'done'>('line1');
+  const [phase, setPhase] = useState<'line1' | 'line2a' | 'line2b' | 'line3' | 'done'>('line1');
   const [line1Count, setLine1Count] = useState(0);
-  const [line2Count, setLine2Count] = useState(0);
+  const [line2aCount, setLine2aCount] = useState(0);
+  const [line2bCount, setLine2bCount] = useState(0);
   const [line3Count, setLine3Count] = useState(0);
   const [cursorVisible, setCursorVisible] = useState(true);
 
@@ -34,18 +36,28 @@ export const TypewriterHeroText: React.FC<TypewriterHeroTextProps> = ({ loop = f
         }, 58);
       } else {
         timeoutId = setTimeout(() => {
-          setPhase('line2');
+          setPhase('line2a');
         }, 280);
       }
-    } else if (phase === 'line2') {
-      if (line2Count < line2Full.length) {
+    } else if (phase === 'line2a') {
+      if (line2aCount < line2aFull.length) {
         timeoutId = setTimeout(() => {
-          setLine2Count((prev) => prev + 1);
-        }, 85);
+          setLine2aCount((prev) => prev + 1);
+        }, 75);
+      } else {
+        timeoutId = setTimeout(() => {
+          setPhase('line2b');
+        }, 260);
+      }
+    } else if (phase === 'line2b') {
+      if (line2bCount < line2bFull.length) {
+        timeoutId = setTimeout(() => {
+          setLine2bCount((prev) => prev + 1);
+        }, 62);
       } else {
         timeoutId = setTimeout(() => {
           setPhase('line3');
-        }, 360);
+        }, 320);
       }
     } else if (phase === 'line3') {
       if (line3Count < line3Full.length) {
@@ -60,14 +72,46 @@ export const TypewriterHeroText: React.FC<TypewriterHeroTextProps> = ({ loop = f
     } else if (phase === 'done' && loop) {
       timeoutId = setTimeout(() => {
         setLine1Count(0);
-        setLine2Count(0);
+        setLine2aCount(0);
+        setLine2bCount(0);
         setLine3Count(0);
         setPhase('line1');
       }, 6000);
     }
 
     return () => clearTimeout(timeoutId);
-  }, [phase, line1Count, line2Count, line3Count, loop, line1Full.length, line2Full.length, line3Full.length]);
+  }, [phase, line1Count, line2aCount, line2bCount, line3Count, loop, line1Full.length, line2aFull.length, line2bFull.length, line3Full.length]);
+
+  // Renderiza la línea 2a con el '+' estilizado
+  const renderLine2a = (count: number) => {
+    if (count <= 0) return null;
+    const slice = line2aFull.slice(0, count);
+    return (
+      <>
+        <span className="text-[0.55em] align-middle mr-1 select-none font-bold">+</span>
+        <span>{slice.slice(1)}</span>
+      </>
+    );
+  };
+
+  // Renderiza la línea 2b con el conector 'y' y el '+' estilizado
+  const renderLine2b = (count: number) => {
+    if (count <= 0) return null;
+    const slice = line2bFull.slice(0, count);
+    const plusIdx = slice.indexOf('+');
+    if (plusIdx === -1) {
+      return <span>{slice}</span>;
+    }
+    const beforePlus = slice.slice(0, plusIdx);
+    const afterPlus = slice.slice(plusIdx + 1);
+    return (
+      <>
+        <span>{beforePlus}</span>
+        <span className="text-[0.55em] align-middle mr-1 select-none font-bold">+</span>
+        <span>{afterPlus}</span>
+      </>
+    );
+  };
 
   return (
     <div className="flex flex-col items-center justify-center my-6 md:my-8 animate-fade-in-up select-none">
@@ -83,22 +127,36 @@ export const TypewriterHeroText: React.FC<TypewriterHeroTextProps> = ({ loop = f
         )}
       </p>
 
-      {/* Línea 2: "+120 CANCIONES" con resplandor y degradado dorado intactos */}
-      <div className="relative group min-h-[3.8rem] md:min-h-[5.5rem] flex items-center justify-center">
+      {/* Bloque central en dos líneas escalonadas de gran impacto con resplandor dorado */}
+      <div className="relative group flex flex-col items-center justify-center my-1 md:my-2 w-full">
         <div
-          className={`absolute inset-0 bg-vallenato-mustard blur-2xl rounded-full transition-opacity duration-700 ${
-            line2Count > 0 ? 'opacity-30 group-hover:opacity-50 animate-pulse' : 'opacity-0'
+          className={`absolute inset-0 bg-vallenato-mustard blur-3xl rounded-full transition-opacity duration-700 pointer-events-none ${
+            line2aCount > 0 ? 'opacity-35 group-hover:opacity-50 animate-pulse' : 'opacity-0'
           }`}
         />
 
-        <div className="relative text-5xl md:text-7xl font-serif font-black tracking-tight leading-none px-4 flex items-center">
+        {/* Línea 2a: "+120 canciones" */}
+        <div className="relative min-h-[2.4rem] sm:min-h-[3rem] md:min-h-[3.8rem] flex items-center justify-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-black tracking-tight leading-none px-4">
           <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-[#FFD700] to-[#EAAA00] drop-shadow-[0_2px_15px_rgba(234,170,0,0.6)]">
-            {line2Count > 0 && <span className="text-[0.5em] align-middle mr-1">+</span>}
-            {line2Count > 1 ? line2Full.slice(1, line2Count) : ''}
+            {renderLine2a(line2aCount)}
           </span>
-          {phase === 'line2' && (
+          {phase === 'line2a' && (
             <span
-              className={`inline-block ml-1.5 w-1 md:w-2 h-9 md:h-14 bg-gradient-to-b from-[#FFD700] to-[#EAAA00] rounded-sm shadow-[0_0_12px_rgba(234,170,0,0.85)] transition-opacity duration-150 ${
+              className={`inline-block ml-1 md:ml-1.5 w-1 md:w-1.5 h-6 sm:h-7 md:h-10 bg-gradient-to-b from-[#FFD700] to-[#EAAA00] rounded-sm shadow-[0_0_12px_rgba(234,170,0,0.85)] transition-opacity duration-150 align-middle ${
+                cursorVisible ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          )}
+        </div>
+
+        {/* Línea 2b: "y +10 relatos legendarios" */}
+        <div className="relative min-h-[1.9rem] sm:min-h-[2.2rem] md:min-h-[2.9rem] flex items-center justify-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-extrabold tracking-tight leading-tight px-4 mt-1 sm:mt-1.5 md:mt-2">
+          <span className="text-transparent bg-clip-text bg-gradient-to-br from-amber-100 via-[#FFE066] to-[#EAAA00] drop-shadow-[0_2px_12px_rgba(234,170,0,0.5)]">
+            {renderLine2b(line2bCount)}
+          </span>
+          {phase === 'line2b' && (
+            <span
+              className={`inline-block ml-1 md:ml-1.5 w-1 md:w-1.5 h-4 sm:h-5 md:h-7 bg-gradient-to-b from-[#FFD700] to-[#EAAA00] rounded-sm shadow-[0_0_12px_rgba(234,170,0,0.85)] transition-opacity duration-150 align-middle ${
                 cursorVisible ? 'opacity-100' : 'opacity-0'
               }`}
             />
