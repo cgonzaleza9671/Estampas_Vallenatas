@@ -74,8 +74,11 @@ export const PersistentPlayerDock: React.FC<PersistentPlayerDockProps> = ({
   const titleTextRef = useRef<HTMLHeadingElement>(null);
   const metaContainerRef = useRef<HTMLDivElement>(null);
   const metaContentRef = useRef<HTMLDivElement>(null);
+  const commentContainerRef = useRef<HTMLDivElement>(null);
+  const commentTextRef = useRef<HTMLSpanElement>(null);
   const [overflowPx, setOverflowPx] = useState<number>(0);
   const [metaOverflowPx, setMetaOverflowPx] = useState<number>(0);
+  const [commentOverflowPx, setCommentOverflowPx] = useState<number>(0);
 
   useEffect(() => {
     const updateDistance = () => {
@@ -87,6 +90,10 @@ export const PersistentPlayerDock: React.FC<PersistentPlayerDockProps> = ({
         const diffMeta = metaContentRef.current.scrollWidth - metaContainerRef.current.clientWidth;
         setMetaOverflowPx(diffMeta > 4 ? diffMeta : 0);
       }
+      if (commentContainerRef.current && commentTextRef.current) {
+        const diffComment = commentTextRef.current.scrollWidth - commentContainerRef.current.clientWidth;
+        setCommentOverflowPx(diffComment > 2 ? diffComment : 0);
+      }
     };
 
     const timer = setTimeout(updateDistance, 80);
@@ -95,10 +102,11 @@ export const PersistentPlayerDock: React.FC<PersistentPlayerDockProps> = ({
       clearTimeout(timer);
       window.removeEventListener('resize', updateDistance);
     };
-  }, [currentAudio.titulo, currentAudio.autor, currentAudio.cantante, currentAudio.acordeonero, currentAudio.id]);
+  }, [currentAudio.titulo, currentAudio.autor, currentAudio.cantante, currentAudio.acordeonero, currentAudio.id, showStoryCard]);
 
   const marqueeDuration = Math.max(5, Math.min(14, 3 + overflowPx * 0.05));
   const metaMarqueeDuration = Math.max(7, Math.min(18, 5 + metaOverflowPx * 0.04));
+  const commentMarqueeDuration = Math.max(4, Math.min(8, 2.5 + commentOverflowPx * 0.08));
 
   const formatTime = (time: number) => {
     if (isNaN(time) || time < 0) return '0:00';
@@ -178,8 +186,17 @@ export const PersistentPlayerDock: React.FC<PersistentPlayerDockProps> = ({
             </div>
 
             <div className="flex flex-col min-w-0 flex-1 justify-center">
-              {/* Título de la Canción con auto-scroll marquee para títulos largos */}
+              {/* Título de la Canción con Número Fijo a la Izquierda y auto-scroll marquee para títulos largos */}
               <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
+                {/* Número de la canción en posición fija a la izquierda */}
+                {currentAudio.numero && (
+                  <span
+                    className="shrink-0 inline-flex items-center justify-center text-[9px] md:text-[10px] font-mono font-black text-white bg-vallenato-red/90 px-1.5 py-0.5 rounded shadow-xs tracking-wider select-none"
+                    title={"Canción #" + currentAudio.numero}
+                  >
+                    #{currentAudio.numero}
+                  </span>
+                )}
                 <div 
                   ref={titleContainerRef} 
                   className="min-w-0 flex-1 overflow-hidden relative"
@@ -269,12 +286,7 @@ export const PersistentPlayerDock: React.FC<PersistentPlayerDockProps> = ({
                     </>
                   )}
 
-                  {/* Número */}
-                  {currentAudio.numero && (
-                    <span className="hidden lg:inline-block text-[8px] bg-vallenato-red/80 text-white px-1.5 py-0.5 rounded font-black shrink-0 ml-0.5">
-                      #{currentAudio.numero}
-                    </span>
-                  )}
+
                 </div>
               </div>
             </div>
@@ -336,16 +348,38 @@ export const PersistentPlayerDock: React.FC<PersistentPlayerDockProps> = ({
               type="button"
               onClick={onToggleStoryCard}
               title={showStoryCard ? 'Ocultar comentario' : 'Ver comentario de la canción'}
-              className={`flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold transition-all duration-200 shrink-0 h-9 w-9 sm:w-[136px] md:w-[146px] px-2 md:px-3 ${
+              className={`flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold transition-all duration-200 shrink-0 h-9 w-9 sm:w-[136px] md:w-[146px] px-2 md:px-3 overflow-hidden ${
                 showStoryCard
                   ? 'bg-vallenato-red text-white shadow-md ring-1 ring-white/20'
                   : 'bg-white/10 text-white hover:bg-vallenato-mustard hover:text-vallenato-blue'
               }`}
             >
               <MessageSquareQuote size={16} className="shrink-0" />
-              <span className="hidden sm:inline text-[10px] uppercase tracking-wider truncate">
-                {showStoryCard ? 'Ocultar comentario' : 'Comentario'}
-              </span>
+              <div
+                ref={commentContainerRef}
+                className="hidden sm:block min-w-0 flex-1 overflow-hidden relative"
+                style={{
+                  maskImage: commentOverflowPx > 0 ? 'linear-gradient(to right, black calc(100% - 10px), transparent 100%)' : 'none',
+                  WebkitMaskImage: commentOverflowPx > 0 ? 'linear-gradient(to right, black calc(100% - 10px), transparent 100%)' : 'none',
+                }}
+              >
+                <span
+                  ref={commentTextRef}
+                  style={
+                    commentOverflowPx > 0
+                      ? ({
+                          '--comment-marquee-distance': `-${commentOverflowPx + 6}px`,
+                          animation: `player-dock-comment-marquee ${commentMarqueeDuration}s ease-in-out infinite`,
+                        } as React.CSSProperties)
+                      : undefined
+                  }
+                  className={`text-[10px] uppercase tracking-wider block whitespace-nowrap ${
+                    commentOverflowPx > 0 ? 'text-left' : 'text-center'
+                  }`}
+                >
+                  {showStoryCard ? 'Ocultar comentario' : 'Comentario'}
+                </span>
+              </div>
             </button>
 
             {/* Cerrar Reproductor */}
@@ -381,6 +415,17 @@ export const PersistentPlayerDock: React.FC<PersistentPlayerDockProps> = ({
           }
           65%, 85% {
             transform: translateX(var(--meta-marquee-distance, 0px));
+          }
+          100% {
+            transform: translateX(0);
+          }
+        }
+        @keyframes player-dock-comment-marquee {
+          0%, 20% {
+            transform: translateX(0);
+          }
+          65%, 85% {
+            transform: translateX(var(--comment-marquee-distance, 0px));
           }
           100% {
             transform: translateX(0);
