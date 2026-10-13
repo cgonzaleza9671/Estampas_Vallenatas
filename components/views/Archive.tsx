@@ -5,6 +5,9 @@ import { AudioItem, VideoItem } from '../../types.ts';
 import MediaModal from '../MediaModal.tsx';
 import Button from '../Button.tsx';
 import ScrollReveal from '../ScrollReveal.tsx';
+import SegmentedControl from '../SegmentedControl.tsx';
+import SpotlightCard from '../SpotlightCard.tsx';
+import AudioEqualizer from '../AudioEqualizer.tsx';
 import { Music, Video, Loader2, AlertCircle, RefreshCw, Play, Pause, Search, LayoutGrid, List, User, Mic2, ListMusic, Calendar, ChevronDown, ChevronRight, X, ExternalLink, Youtube, Info, Disc, Headphones, PenTool } from 'lucide-react';
 
 interface ArchiveProps {
@@ -200,10 +203,19 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
         </div>
 
         <div className="flex justify-center mb-12">
-           <div className="bg-white/40 backdrop-blur-sm p-1.5 rounded-2xl shadow-inner border border-white/50 inline-flex">
-              <button onClick={() => { setActiveTab('audio'); resetFilters(); }} className={`px-8 py-3 rounded-xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'audio' ? 'bg-vallenato-blue text-white shadow-xl scale-105' : 'text-vallenato-blue/60 hover:text-vallenato-blue hover:bg-white/50'}`}><Music size={16} /> Audios</button>
-              <button onClick={() => { setActiveTab('video'); resetFilters(); }} className={`px-8 py-3 rounded-xl text-xs md:text-sm font-bold uppercase tracking-widest transition-all flex items-center gap-2 ${activeTab === 'video' ? 'bg-vallenato-blue text-white shadow-xl scale-105' : 'text-vallenato-blue/60 hover:text-vallenato-blue hover:bg-white/50'}`}><Video size={16} /> Videos</button>
-           </div>
+          <SegmentedControl<'audio' | 'video'>
+            options={[
+              { value: 'audio', label: 'Audios', icon: <Music size={16} /> },
+              { value: 'video', label: 'Videos', icon: <Video size={16} /> },
+            ]}
+            value={activeTab}
+            onChange={(tab) => {
+              setActiveTab(tab);
+              resetFilters();
+            }}
+            layoutId="archive-media-tabs"
+            size="md"
+          />
         </div>
         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-museum mb-10 border border-vallenato-mustard/10 max-w-7xl mx-auto">
            <div className="flex flex-col gap-6">
@@ -305,10 +317,16 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
             {activeTab === 'audio' ? (
               <div className="space-y-12">
                 <div className="flex justify-end items-center px-4 border-b border-vallenato-mustard/20 pb-4 gap-4">
-                  <div className="flex bg-vallenato-blue/5 rounded-2xl p-1.5 gap-1.5">
-                    <button onClick={() => setViewMode('grid')} className={`p-3 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-vallenato-blue text-white shadow-lg' : 'text-vallenato-blue/40 hover:text-vallenato-blue hover:bg-white'}`}><LayoutGrid size={20} /></button>
-                    <button onClick={() => setViewMode('list')} className={`p-3 rounded-xl transition-all ${viewMode === 'list' ? 'bg-vallenato-blue text-white shadow-xl' : 'text-vallenato-blue/40 hover:text-vallenato-blue hover:bg-white'}`}><List size={20} /></button>
-                  </div>
+                  <SegmentedControl<'grid' | 'list'>
+                    options={[
+                      { value: 'grid', label: '', icon: <LayoutGrid size={18} /> },
+                      { value: 'list', label: '', icon: <List size={18} /> },
+                    ]}
+                    value={viewMode}
+                    onChange={setViewMode}
+                    layoutId="archive-view-mode"
+                    size="sm"
+                  />
                 </div>
 
                 {audios.length === 0 ? (
@@ -332,14 +350,28 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                             {(items as AudioItem[]).map((item) => {
                               const isActive = currentAudioId === item.id;
                               return (
-                                <div key={item.id} onClick={() => onPlayAudio?.(item, audios)} className={`group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden transition-all duration-500 border-2 ${isActive ? 'border-vallenato-red bg-vallenato-cream shadow-gold' : 'border-white hover:border-vallenato-mustard shadow-museum hover:-translate-y-2'} cursor-pointer`}>
+                                <SpotlightCard
+                                  key={item.id}
+                                  onClick={() => onPlayAudio?.(item, audios)}
+                                  className={`flex flex-col bg-white rounded-[2.5rem] overflow-hidden transition-all duration-500 border-2 ${
+                                    isActive
+                                      ? 'border-vallenato-red bg-vallenato-cream shadow-gold ring-2 ring-vallenato-mustard/40'
+                                      : 'border-white hover:border-vallenato-mustard shadow-museum hover:-translate-y-2'
+                                  } cursor-pointer`}
+                                >
                                   <div className="h-28 bg-vallenato-blue/5 relative overflow-hidden flex items-center justify-center">
                                      <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                                      <Disc className={`text-vallenato-mustard/20 w-32 h-32 absolute -right-8 -top-8 transform rotate-12 transition-transform duration-1000 ${isActive && isPlaying ? 'animate-[spin_10s_linear_infinite]' : 'group-hover:rotate-45'}`} />
-                                     <div className="absolute top-4 left-4 z-10">
+                                     <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
                                         {item.numero && (
                                           <div className="bg-vallenato-red text-white backdrop-blur-md px-2.5 py-1 rounded-full border border-vallenato-red/20 shadow-md">
                                              <span className="text-[10px] font-black uppercase tracking-widest text-white">#{item.numero}</span>
+                                          </div>
+                                        )}
+                                        {isActive && isPlaying && (
+                                          <div className="bg-vallenato-mustard text-vallenato-blue px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md animate-fade-in">
+                                            <AudioEqualizer isPlaying={true} size="xs" color="bg-vallenato-blue" />
+                                            <span className="text-[8px] font-black uppercase tracking-wider">Sonando</span>
                                           </div>
                                         )}
                                      </div>
@@ -354,12 +386,26 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                                            <span className="text-[8px] font-black uppercase tracking-[0.1em] text-vallenato-blue/60">{item.fecha_publicacion}</span>
                                         </div>
                                      </div>
-                                     <div className={`p-4 rounded-full transition-all duration-500 shadow-2xl relative z-0 ${isActive && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red group-hover:scale-110'}`}>
-                                       {isActive && isPlaying ? <Pause size={28} fill="currentColor"/> : <Play size={28} fill="currentColor" className="ml-1"/>}
+                                     <div className={`p-4 rounded-full transition-all duration-500 shadow-2xl relative z-0 ${isActive && isPlaying ? 'bg-vallenato-red text-white scale-110 shadow-red-500/30' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red group-hover:scale-110'}`}>
+                                       {isActive && isPlaying ? (
+                                         <div className="flex flex-col items-center justify-center gap-1">
+                                           <Pause size={24} fill="currentColor"/>
+                                           <AudioEqualizer isPlaying={true} size="xs" color="bg-white" />
+                                         </div>
+                                       ) : (
+                                         <Play size={28} fill="currentColor" className="ml-1"/>
+                                       )}
                                      </div>
                                   </div>
                                   <div className="p-8 flex flex-col flex-grow">
-                                     <h4 className={`text-xl md:text-2xl font-serif font-bold mb-6 leading-tight transition-colors line-clamp-2 ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
+                                     <div className="flex items-start justify-between gap-3 mb-4">
+                                       <h4 className={`text-xl md:text-2xl font-serif font-bold leading-tight transition-colors line-clamp-2 ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
+                                       {isActive && (
+                                         <div className="shrink-0 mt-1">
+                                           <AudioEqualizer isPlaying={isPlaying} size="sm" color="bg-vallenato-red" />
+                                         </div>
+                                       )}
+                                     </div>
                                      <div className="space-y-4 mb-8">
                                         <div className="flex items-center gap-3">
                                            <div className="w-8 h-8 rounded-xl bg-vallenato-mustard/10 flex items-center justify-center text-vallenato-mustard"><User size={14} /></div>
@@ -380,7 +426,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                                         </div>
                                      </div>
                                   </div>
-                                </div>
+                                </SpotlightCard>
                               );
                             })}
                           </div>
@@ -389,14 +435,20 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                              {(items as AudioItem[]).map((item, index) => {
                                const isActive = currentAudioId === item.id;
                                return (
-                                 <div key={item.id} onClick={() => onPlayAudio?.(item, audios)} className={`group relative overflow-hidden flex flex-col md:flex-row items-center gap-4 md:gap-10 px-8 py-6 rounded-[2.5rem] transition-all duration-500 cursor-pointer border-2 ${isActive ? 'bg-vallenato-cream/90 border-vallenato-red shadow-gold scale-[1.01] z-10' : 'bg-white/70 backdrop-blur-xl border-transparent hover:border-vallenato-mustard/40 hover:bg-white hover:shadow-xl hover:-translate-y-1'}`}>
+                                 <SpotlightCard
+                                   key={item.id}
+                                   onClick={() => onPlayAudio?.(item, audios)}
+                                   className={`flex flex-col md:flex-row items-center gap-4 md:gap-10 px-8 py-6 rounded-[2.5rem] transition-all duration-500 cursor-pointer border-2 ${
+                                     isActive
+                                       ? 'bg-vallenato-cream/90 border-vallenato-red shadow-gold scale-[1.01] z-10 ring-2 ring-vallenato-mustard/30'
+                                       : 'bg-white/70 backdrop-blur-xl border-transparent hover:border-vallenato-mustard/40 hover:bg-white hover:shadow-xl hover:-translate-y-1'
+                                   }`}
+                                 >
                                     <div className="flex-shrink-0 relative">
                                        <div className={`p-4 rounded-[1.5rem] transition-all duration-700 shadow-lg ${isActive ? 'bg-vallenato-red text-white' : 'bg-vallenato-blue/5 text-vallenato-blue group-hover:bg-vallenato-blue group-hover:text-white group-hover:rotate-[360deg]'}`}>
                                           {isActive && isPlaying ? (
-                                             <div className="flex gap-1 items-end h-6 w-6 justify-center">
-                                               <div className="w-1.5 bg-white rounded-full animate-[wave_0.8s_infinite_ease-in-out]"></div>
-                                               <div className="w-1.5 bg-white rounded-full animate-[wave_1.2s_infinite_ease-in-out]"></div>
-                                               <div className="w-1.5 bg-white rounded-full animate-[wave_1s_infinite_ease-in-out]"></div>
+                                             <div className="flex flex-col items-center justify-center gap-1 w-6 h-6">
+                                               <AudioEqualizer isPlaying={true} size="xs" color="bg-white" />
                                              </div>
                                           ) : <Play size={24} fill="currentColor" className="ml-1"/>}
                                        </div>
@@ -417,6 +469,9 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                                                 </div>
                                               )}
                                               <h4 className={`text-lg md:text-xl font-serif font-bold truncate transition-colors ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
+                                              {isActive && (
+                                                <AudioEqualizer isPlaying={isPlaying} size="xs" color="bg-vallenato-red" className="shrink-0" />
+                                              )}
                                               {(item.reproducciones || 0) > 0 && (
                                                 <span className="flex items-center gap-1 text-[9px] font-black text-gray-300 group-hover:text-vallenato-mustard transition-colors"><Headphones size={10} /> {formatPlays(item.reproducciones)}</span>
                                               )}
@@ -437,7 +492,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                                     <div className="absolute top-1/2 -translate-y-1/2 right-10 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 group-hover:translate-x-0 hidden lg:block">
                                        <div className="bg-vallenato-mustard/10 p-2.5 rounded-2xl text-vallenato-mustard shadow-sm border border-vallenato-mustard/20"><Info size={18} /></div>
                                     </div>
-                                 </div>
+                                 </SpotlightCard>
                                );
                              })}
                           </div>
@@ -460,7 +515,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                   ) : (
                     videos.map((item) => (
                       <ScrollReveal key={item.id} delay={0.1}>
-                      <div className="bg-white rounded-[3rem] overflow-hidden shadow-sm hover:shadow-gold transition-all duration-500 cursor-pointer group relative border border-white" onClick={() => { onVideoOpen?.(); setSelectedVideo(item); setIsModalOpen(true); }}>
+                      <SpotlightCard className="bg-white rounded-[3rem] overflow-hidden shadow-sm hover:shadow-gold transition-all duration-500 cursor-pointer group relative border border-white" onClick={() => { onVideoOpen?.(); setSelectedVideo(item); setIsModalOpen(true); }}>
                         <div className="aspect-video relative overflow-hidden bg-black">
                             {item.thumbnail_url && <img src={item.thumbnail_url} className="w-full h-full object-cover opacity-70 group-hover:scale-110 transition-transform duration-[2s]" alt={item.titulo} loading="lazy" />}
                             <div className="absolute inset-0 bg-gradient-to-t from-vallenato-blue/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -492,7 +547,7 @@ const Archive: React.FC<ArchiveProps> = ({ initialTab = 'audio', onPlayAudio, on
                               </div>
                             </div>
                         </div>
-                      </div>
+                      </SpotlightCard>
                       </ScrollReveal>
                     ))
                   )}

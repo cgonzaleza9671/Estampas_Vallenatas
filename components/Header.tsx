@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
@@ -29,53 +28,64 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-vallenato-blue/95 backdrop-blur-md shadow-museum border-b-4 border-vallenato-mustard transition-colors duration-300">
-      <div className="container mx-auto px-4 md:px-6 py-4 flex justify-between items-center">
+    <header className="sticky top-0 z-50 bg-vallenato-blue/85 backdrop-blur-xl border-b border-white/[0.08] transition-all duration-300">
+      <div className="container mx-auto px-4 md:px-6 h-14 md:h-16 flex justify-between items-center">
+        {/* Logo Estampas Vallenatas - Compacto y estilizado */}
         <div 
-          className="flex items-center gap-2 md:gap-3 cursor-pointer group" 
+          className="flex items-center gap-2.5 cursor-pointer group" 
           onClick={() => handleNav('/')}
         >
-          <div className="flex items-center justify-center gap-1.5 px-[5px] py-[2px] bg-white/5 rounded-lg border border-white/10 group-hover:bg-white/10 transition-colors min-w-[65px]">
-             <div className="flex gap-[2.5px] ml-1">
-                <div className="w-1.5 h-8 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
-                <div className="w-1.5 h-8 bg-vallenato-mustard transform -skew-x-12 rounded-sm shadow-sm"></div>
-                <div className="w-1.5 h-8 bg-vallenato-red transform -skew-x-12 rounded-sm shadow-sm"></div>
-             </div>
-             <div className="bg-vallenato-blue w-5 h-9 rounded-md border border-white/20 flex flex-col items-center justify-between py-1.5 shadow-inner">
-                <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
-                <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
-                <div className="w-1 h-1 bg-white rounded-full shadow-[0_0_5px_rgba(255,255,255,0.8)]"></div>
-             </div>
+          <div className="flex items-center justify-center gap-1 px-1.5 py-1 bg-white/[0.04] rounded-lg border border-white/10 group-hover:border-vallenato-mustard/40 transition-colors">
+            <div className="flex gap-[2px] ml-0.5">
+              <div className="w-1 h-5 bg-vallenato-red transform -skew-x-12 rounded-[1px] shadow-sm"></div>
+              <div className="w-1 h-5 bg-vallenato-mustard transform -skew-x-12 rounded-[1px] shadow-sm"></div>
+              <div className="w-1 h-5 bg-vallenato-red transform -skew-x-12 rounded-[1px] shadow-sm"></div>
+            </div>
+            <div className="bg-vallenato-blue w-3.5 h-6 rounded border border-white/20 flex flex-col items-center justify-between py-1 shadow-inner">
+              <div className="w-0.5 h-0.5 bg-white rounded-full"></div>
+              <div className="w-0.5 h-0.5 bg-white rounded-full"></div>
+              <div className="w-0.5 h-0.5 bg-white rounded-full"></div>
+            </div>
           </div>
 
-          <div className="flex flex-col -space-y-1.5 select-none">
-            <h1 className="text-2xl md:text-3xl font-serif font-bold text-white tracking-wide">Estampas</h1>
-            <span className="text-base md:text-lg font-sans font-light text-white tracking-[0.05em] drop-shadow-sm">Vallenatas</span>
+          <div className="flex items-baseline gap-1.5 select-none">
+            <h1 className="text-lg md:text-xl font-serif font-bold text-white tracking-wide group-hover:text-amber-200 transition-colors">
+              Estampas
+            </h1>
+            <span className="text-xs md:text-sm font-sans font-normal text-white/60 tracking-wider">
+              Vallenatas
+            </span>
           </div>
         </div>
 
-        <div className="hidden lg:flex items-center justify-end flex-1 pl-10">
-          <nav className="flex items-center justify-end gap-2 lg:gap-4 xl:gap-6 w-full">
+        {/* Menú de Navegación Estilo Linear con Caligrafía Serif de la Página */}
+        <div className="hidden lg:flex items-center justify-end flex-1 pl-8">
+          <nav className="inline-flex items-center gap-1 p-1 rounded-full bg-white/[0.03] border border-white/[0.07] backdrop-blur-md shadow-inner">
             {navItems.map((item) => {
               const active = isActive(item.path);
               return (
-                <div key={item.path} className="relative flex flex-col items-center">
+                <div key={item.path} className="relative flex items-center">
                   <button
                     onClick={() => handleNav(item.path)}
-                    className={`relative z-10 px-3 lg:px-4 py-2 rounded-full text-[10px] lg:text-xs xl:text-sm font-sans font-semibold uppercase tracking-[0.14em] text-center leading-tight transition-colors duration-300 ${
+                    className={`relative z-10 px-3.5 py-1.5 rounded-full text-xs sm:text-[13px] md:text-sm font-serif font-medium tracking-normal transition-all duration-200 ${
                       active
-                        ? 'text-vallenato-blue font-bold'
-                        : 'text-gray-200 hover:text-white hover:bg-white/10'
+                        ? 'text-amber-200 font-semibold shadow-sm'
+                        : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
                     }`}
                   >
                     {active && (
                       <motion.span
-                        layoutId="activeHeaderIndicator"
-                        className="absolute inset-0 bg-gradient-to-r from-vallenato-mustard to-amber-400 rounded-full -z-10 shadow-md"
-                        transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                        layoutId="activeHeaderPill"
+                        className="absolute inset-0 bg-white/[0.1] border border-white/[0.12] rounded-full -z-10 shadow-sm"
+                        transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
                       />
                     )}
-                    {item.label}
+                    <span className="flex items-center gap-1.5">
+                      {active && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-vallenato-mustard shadow-[0_0_8px_rgba(234,170,0,0.8)]" />
+                      )}
+                      {item.label}
+                    </span>
                   </button>
                 </div>
               );
@@ -83,40 +93,51 @@ const Header: React.FC = () => {
           </nav>
         </div>
 
+        {/* Botón Móvil */}
         <div className="lg:hidden flex items-center">
           <button 
-            className="text-white hover:text-vallenato-mustard transition-colors p-1"
+            className="text-white/80 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.05] transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Abrir menú"
           >
-            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
 
+      {/* Menú Móvil Desplegable Estilo Linear con Caligrafía Serif */}
       {mobileMenuOpen && (
-        <div className="absolute top-full left-0 w-full px-4 pt-2 lg:hidden animate-fade-in-down z-50">
-          <div className="bg-vallenato-blue/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 flex flex-col gap-1">
-            {navItems.map((item) => (
-              <button
-                key={item.path}
-                onClick={() => handleNav(item.path)}
-                className={`
-                  w-full py-3.5 px-4 rounded-xl text-sm md:text-base font-sans font-semibold uppercase tracking-[0.15em] transition-all duration-200 flex items-center justify-between group
-                  ${
-                    isActive(item.path)
-                      ? 'bg-vallenato-mustard text-vallenato-blue shadow-md' 
-                      : 'text-white hover:bg-white/10'
-                  }
-                `}
-              >
-                <div className="flex flex-col items-start">
-                  <span>{item.label}</span>
-                </div>
-                {isActive(item.path) && (
-                  <div className="w-1.5 h-1.5 rounded-full bg-vallenato-blue" />
-                )}
-              </button>
-            ))}
+        <div className="absolute top-full left-0 w-full px-4 pt-2 pb-4 lg:hidden animate-fade-in-down z-50">
+          <div className="bg-vallenato-blue/95 backdrop-blur-2xl border border-white/[0.1] rounded-2xl shadow-2xl p-2 flex flex-col gap-1">
+            {navItems.map((item) => {
+              const active = isActive(item.path);
+              return (
+                <button
+                  key={item.path}
+                  onClick={() => handleNav(item.path)}
+                  className={`
+                    w-full py-2.5 px-3.5 rounded-xl text-sm font-serif font-medium transition-all duration-200 flex items-center justify-between
+                    ${
+                      active
+                        ? 'bg-white/[0.1] text-amber-200 border border-white/[0.12] font-semibold' 
+                        : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                    }
+                  `}
+                >
+                  <span className="flex items-center gap-2">
+                    {active && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-vallenato-mustard shadow-[0_0_6px_rgba(234,170,0,0.8)]" />
+                    )}
+                    {item.label}
+                  </span>
+                  {active && (
+                    <span className="text-[10px] text-amber-200/60 uppercase tracking-widest font-mono">
+                      Activo
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}

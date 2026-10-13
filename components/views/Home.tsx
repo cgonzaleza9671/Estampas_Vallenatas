@@ -11,6 +11,8 @@ import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } 
 import { AccordionPlayIcon, AcordeonMinimal, GuacharacaMinimal, CajaMinimal, NotaMusicalMinimal } from '../CustomIcons.tsx';
 import ScrollReveal from '../ScrollReveal.tsx';
 import TypewriterHeroText from '../TypewriterHeroText.tsx';
+import SpotlightCard from '../SpotlightCard.tsx';
+import AudioEqualizer from '../AudioEqualizer.tsx';
 
 interface HomeProps {
   onPlayAudio?: (audio: AudioItem, list?: AudioItem[]) => void;
@@ -247,15 +249,29 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                 {recentAudios.map((item) => {
                   const isActive = currentAudioId === item.id;
                   return (
-                    <div key={item.id} onClick={() => onPlayAudio?.(item, recentAudios)} className={`group relative flex flex-col bg-white rounded-[2.5rem] overflow-hidden transition-all duration-500 border-2 ${isActive ? 'border-vallenato-red bg-vallenato-cream shadow-gold' : 'border-white hover:border-vallenato-mustard shadow-museum hover:-translate-y-2'} cursor-pointer`}>
+                    <SpotlightCard
+                      key={item.id}
+                      onClick={() => onPlayAudio?.(item, recentAudios)}
+                      className={`flex flex-col bg-white rounded-[2.5rem] overflow-hidden transition-all duration-500 border-2 ${
+                        isActive
+                          ? 'border-vallenato-red bg-vallenato-cream shadow-gold ring-2 ring-vallenato-mustard/40'
+                          : 'border-white hover:border-vallenato-mustard shadow-museum hover:-translate-y-2'
+                      } cursor-pointer`}
+                    >
                       <div className="absolute inset-0 texture-caja opacity-30 pointer-events-none"></div>
                       <div className="h-28 bg-vallenato-blue/5 relative overflow-hidden flex items-center justify-center">
                          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                          <Disc className={`text-vallenato-mustard/20 w-32 h-32 absolute -right-8 -top-8 transform rotate-12 transition-transform duration-1000 ${isActive && isPlaying ? 'animate-[spin_10s_linear_infinite]' : 'group-hover:rotate-45'}`} />
-                         <div className="absolute top-4 left-4 z-10">
+                         <div className="absolute top-4 left-4 z-10 flex items-center gap-2">
                            {item.numero && (
                              <div className="bg-vallenato-red text-white backdrop-blur-md px-2.5 py-1 rounded-full border border-vallenato-red/20 shadow-md">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-white">#{item.numero}</span>
+                             </div>
+                           )}
+                           {isActive && isPlaying && (
+                             <div className="bg-vallenato-mustard text-vallenato-blue px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md animate-fade-in">
+                               <AudioEqualizer isPlaying={true} size="xs" color="bg-vallenato-blue" />
+                               <span className="text-[8px] font-black uppercase tracking-wider">Sonando</span>
                              </div>
                            )}
                          </div>
@@ -270,12 +286,26 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                                <span className="text-[8px] font-black uppercase tracking-[0.1em] text-vallenato-blue/60">{item.fecha_publicacion}</span>
                             </div>
                          </div>
-                         <div className={`p-4 rounded-full transition-all duration-500 shadow-2xl relative z-0 ${isActive && isPlaying ? 'bg-vallenato-red text-white scale-110' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red group-hover:scale-110'}`}>
-                           {isActive && isPlaying ? <Pause size={28} fill="currentColor"/> : <Play size={28} fill="currentColor" className="ml-1"/>}
+                         <div className={`p-4 rounded-full transition-all duration-500 shadow-2xl relative z-0 ${isActive && isPlaying ? 'bg-vallenato-red text-white scale-110 shadow-red-500/30' : 'bg-vallenato-blue text-white group-hover:bg-vallenato-red group-hover:scale-110'}`}>
+                           {isActive && isPlaying ? (
+                             <div className="flex flex-col items-center justify-center gap-1">
+                               <Pause size={24} fill="currentColor"/>
+                               <AudioEqualizer isPlaying={true} size="xs" color="bg-white" />
+                             </div>
+                           ) : (
+                             <Play size={28} fill="currentColor" className="ml-1"/>
+                           )}
                          </div>
                       </div>
                       <div className="p-8 flex flex-col flex-grow relative z-10">
-                         <h4 className={`text-xl md:text-2xl font-serif font-bold mb-6 leading-tight transition-colors line-clamp-2 ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
+                         <div className="flex items-start justify-between gap-3 mb-4">
+                           <h4 className={`text-xl md:text-2xl font-serif font-bold leading-tight transition-colors line-clamp-2 ${isActive ? 'text-vallenato-red' : 'text-vallenato-blue group-hover:text-vallenato-red'}`}>{item.titulo}</h4>
+                           {isActive && (
+                             <div className="shrink-0 mt-1">
+                               <AudioEqualizer isPlaying={isPlaying} size="sm" color="bg-vallenato-red" />
+                             </div>
+                           )}
+                         </div>
                          <div className="space-y-4 mb-8">
                             <div className="flex items-center gap-3">
                                <div className="w-8 h-8 rounded-xl bg-vallenato-mustard/10 flex items-center justify-center text-vallenato-mustard"><User size={14} /></div>
@@ -296,7 +326,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                             </div>
                          </div>
                       </div>
-                    </div>
+                    </SpotlightCard>
                   );
                 })}
              </div>
@@ -324,7 +354,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 max-w-6xl mx-auto">
                 {recentRelatos.slice(0, 2).map((relato) => (
-                  <div key={relato.id} onClick={() => navigate('/relatos-legendarios')} className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col md:flex-row relative">
+                  <SpotlightCard key={relato.id} onClick={() => navigate('/relatos-legendarios')} className="bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 group cursor-pointer hover:shadow-gold transition-all duration-500 flex flex-col md:flex-row relative">
                     <div className="absolute inset-0 texture-guacharaca opacity-30 pointer-events-none"></div>
                     <div className="w-full md:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark"><img src={relato.imagen} alt={relato.titulo} className="w-full h-full object-cover grayscale group-hover:scale-110 transition-transform duration-[2s] opacity-90" /><div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent"></div></div>
                     <div className="p-8 md:p-10 flex-grow flex flex-col justify-between relative z-10">
@@ -343,7 +373,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                           <button className="bg-vallenato-blue text-white p-3 rounded-2xl group-hover:bg-vallenato-red transition-all shadow-lg active:scale-95"><Play size={14} fill="currentColor" /></button>
                        </div>
                     </div>
-                  </div>
+                  </SpotlightCard>
                 ))}
              </div>
              <div className="flex justify-start"><Button variant="outline" onClick={() => navigate('/relatos-legendarios')} className="group border-vallenato-mustard/30 hover:border-vallenato-mustard bg-white">Explorar todos los relatos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>
@@ -369,7 +399,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
              </div>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
                 {recentVideos.map((item) => (
-                   <div key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-[2.5rem] shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative">
+                   <SpotlightCard key={item.id} onClick={() => openMedia(item)} className="bg-white rounded-[2.5rem] shadow-lg border border-gray-100 overflow-hidden flex flex-col group hover:shadow-museum transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative">
                       <div className="absolute inset-0 texture-caja opacity-30 pointer-events-none"></div>
                       <div className="aspect-video relative overflow-hidden bg-black">
                         {item.thumbnail_url ? <img src={item.thumbnail_url} alt={item.titulo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80"/> : <div className="w-full h-full bg-vallenato-blue flex items-center justify-center relative"><Video size={48} className="text-white/50" /></div>}
@@ -393,7 +423,7 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
                          <div className="flex items-center gap-2 text-gray-400 text-[10px] uppercase font-bold tracking-widest"><Calendar size={12} /><span>{item.fecha_publicacion}</span></div>
                       </div>
                       <div className="mt-auto bg-vallenato-blue p-5 flex items-center justify-between group-hover:bg-vallenato-red transition-colors duration-300 relative z-10"><span className="text-white text-xs font-bold uppercase tracking-[0.2em]">Ver ahora</span><Play size={14} className="text-white fill-white" /></div>
-                   </div>
+                   </SpotlightCard>
                 ))}
              </div>
              <div className="flex justify-start"><Button variant="outline" onClick={() => window.open('https://www.youtube.com/@EstampasVallenatasColombia', '_blank', 'noopener,noreferrer')} className="group border-vallenato-mustard/30 bg-white">Ver más videos <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" /></Button></div>

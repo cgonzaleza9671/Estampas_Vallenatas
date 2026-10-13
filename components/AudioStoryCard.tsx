@@ -50,8 +50,8 @@ const AudioStoryCard: React.FC<AudioStoryCardProps> = ({ audio, onClose }) => {
   }, [loading, description]);
 
   return (
-    <div className="fixed bottom-28 md:bottom-32 left-4 right-4 md:left-8 md:right-auto md:max-w-md z-[70] animate-fade-in-up">
-      <div className="bg-[#E5E2D0] backdrop-blur-2xl border-l-8 border-vallenato-mustard shadow-[0_25px_60px_rgba(0,0,0,0.5)] rounded-r-3xl overflow-hidden relative group border border-white/20 transition-all duration-500">
+    <div className="fixed bottom-28 md:bottom-32 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-xl md:max-w-2xl z-[70] transition-all duration-300">
+      <div className="bg-[#E5E2D0] backdrop-blur-2xl border-l-8 border-vallenato-mustard shadow-[0_25px_60px_rgba(0,0,0,0.5)] rounded-3xl overflow-hidden relative group border border-white/20 transition-all duration-500">
         
         {/* Marca de agua decorativa */}
         <div className="absolute -right-6 -bottom-6 opacity-[0.05] text-vallenato-blue transform rotate-12 pointer-events-none">

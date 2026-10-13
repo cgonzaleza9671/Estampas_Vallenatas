@@ -9,6 +9,7 @@ import Bio from './components/views/Bio.tsx';
 import LegendaryTales from './components/views/LegendaryTales.tsx';
 import Journey from './components/views/Journey.tsx';
 import AudioStoryCard from './components/AudioStoryCard.tsx';
+import PersistentPlayerDock from './components/PersistentPlayerDock.tsx';
 import { SEOMeta } from './components/SEOMeta.tsx';
 import { Play, Pause, SkipBack, SkipForward, X, MessageSquareQuote, User, Headphones, Youtube, Star, ChevronRight } from 'lucide-react';
 import { AudioItem } from './types.ts';
@@ -24,9 +25,9 @@ const ScrollToTop = () => {
 };
 
 // Componente Invitación Flotante YouTube
-const YouTubeFloatingInvite = ({ onClose }: { onClose: () => void }) => {
+const YouTubeFloatingInvite = ({ onClose, hasAudioPlaying }: { onClose: () => void; hasAudioPlaying?: boolean }) => {
   return (
-    <div className="fixed bottom-6 right-6 z-[150] w-[calc(100%-3rem)] md:w-96 animate-fade-in-up">
+    <div className={`fixed ${hasAudioPlaying ? 'bottom-28 md:bottom-28' : 'bottom-6 md:bottom-6'} right-4 md:right-6 z-[150] w-[calc(100%-2rem)] sm:w-[calc(100%-3rem)] md:w-96 animate-fade-in-up transition-all duration-500`}>
       <div className="relative overflow-hidden bg-vallenato-dark/80 backdrop-blur-2xl border border-white/10 p-6 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.6)] group">
         <div className="absolute -right-10 -top-10 w-32 h-32 bg-vallenato-red/20 blur-3xl rounded-full group-hover:bg-vallenato-red/40 transition-colors duration-700"></div>
         <button 
@@ -186,16 +187,16 @@ const AppContent: React.FC = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
-  const canGoNext = currentAudio && playlist.findIndex(a => a.id === currentAudio.id) < playlist.length - 1;
-  const canGoPrev = currentAudio && (playlist.findIndex(a => a.id === currentAudio.id) > 0 || currentTime > 3);
+  const canGoNext = Boolean(currentAudio && playlist.findIndex(a => a.id === currentAudio.id) < playlist.length - 1);
+  const canGoPrev = Boolean(currentAudio && (playlist.findIndex(a => a.id === currentAudio.id) > 0 || currentTime > 3));
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-800 bg-vallenato-beige selection:bg-vallenato-mustard selection:text-vallenato-blue transition-colors duration-300 overflow-x-hidden">
       <ScrollToTop />
       <SEOMeta />
       <Header />
-      {showYouTubeInvite && <YouTubeFloatingInvite onClose={closeYouTubeInvite} />}
-      <main className={`flex-grow relative transition-all duration-300 ${currentAudio ? 'pb-52 md:pb-40' : 'pb-0'}`}>
+      {showYouTubeInvite && <YouTubeFloatingInvite onClose={closeYouTubeInvite} hasAudioPlaying={!!currentAudio} />}
+      <main className={`flex-grow relative transition-all duration-300 ${currentAudio ? 'pb-32 md:pb-28' : 'pb-0'}`}>
         <Routes>
           <Route path="/" element={<Home onPlayAudio={handlePlayAudio} onVideoOpen={handleVideoOpen} currentAudioId={currentAudio?.id} isPlaying={isPlaying} />} />
           <Route path="/la-memoria-del-acordeon" element={<Archive initialTab={archiveTab} onPlayAudio={handlePlayAudio} onVideoOpen={handleVideoOpen} currentAudioId={currentAudio?.id} isPlaying={isPlaying} />} />
@@ -208,62 +209,40 @@ const AppContent: React.FC = () => {
       <Footer />
       {currentAudio && showStoryCard && <AudioStoryCard audio={currentAudio} onClose={() => setShowStoryCard(false)} />}
       {currentAudio && (
-        <div className={`fixed bottom-0 left-0 w-full z-[90] animate-fade-in-up shadow-[0_-20px_60px_rgba(0,0,0,0.5)] transition-all duration-700 ${isTaleActive ? 'opacity-40 grayscale-[0.5] scale-[0.98] origin-bottom' : 'opacity-100'}`}>
-          <div className="bg-vallenato-blue text-white border-t-4 border-vallenato-mustard relative">
-            <audio ref={audioRef} src={currentAudio.url_audio} preload="none" onTimeUpdate={handleTimeUpdate} onLoadedMetadata={handleTimeUpdate} onEnded={goToNext} />
-            <div className="container mx-auto px-4 md:px-6 py-3 pb-[calc(16px+env(safe-area-inset-bottom,0px))] md:pb-4">
-              <div className="flex flex-col gap-2.5">
-                {isTaleActive && (
-                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-vallenato-red text-white text-[9px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-t-xl flex items-center gap-2 shadow-lg animate-bounce">
-                    <Headphones size={12} /> Música en espera por relato
-                  </div>
-                )}
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-mono opacity-50 w-8">{formatTime(currentTime)}</span>
-                  <div className="flex-grow relative h-2 flex items-center group">
-                    <input type="range" min="0" max={duration || 0} step="0.1" value={currentTime} onChange={(e) => { if (audioRef.current) audioRef.current.currentTime = parseFloat(e.target.value); }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-30" />
-                    <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-vallenato-mustard h-full transition-all duration-100 group-hover:bg-vallenato-red" style={{ width: `${(currentTime / duration) * 100 || 0}%` }} />
-                    </div>
-                  </div>
-                  <span className="text-[10px] font-mono opacity-50 w-8 text-right">-{formatTime(duration - currentTime)}</span>
-                </div>
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 md:gap-6 w-8/12 md:w-5/12 overflow-hidden">
-                    <button onClick={() => setShowStoryCard(!showStoryCard)} className={`p-2.5 rounded-xl text-vallenato-blue transition-all duration-300 ${showStoryCard ? 'bg-vallenato-red text-white scale-110 shadow-lg' : 'bg-vallenato-mustard shadow-md hover:bg-white'}`}>
-                      <MessageSquareQuote size={20} />
-                    </button>
-                    <div className="flex flex-col min-w-0">
-                      <div className="flex items-center gap-3 mb-1">
-                        <h5 className="text-[12px] md:text-sm font-serif font-bold truncate text-white leading-tight">{currentAudio.titulo}</h5>
-                        {isPlaying && (
-                          <div className="flex items-center gap-[2px] h-4">
-                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-1 rounded-full"></div>
-                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-2 rounded-full"></div>
-                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-3 rounded-full"></div>
-                             <div className="w-1 bg-vallenato-mustard animate-audio-bar-4 rounded-full"></div>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <User size={10} className="text-vallenato-mustard shrink-0" />
-                        <span className="text-[9px] md:text-[10px] text-vallenato-mustard font-bold uppercase tracking-widest truncate">{currentAudio.autor}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 md:gap-8 shrink-0">
-                    <button onClick={goToPrev} disabled={!canGoPrev} className={`transition-all transform hover:scale-110 hidden sm:block ${canGoPrev ? 'text-white hover:text-vallenato-mustard' : 'opacity-20 cursor-not-allowed'}`}><SkipBack size={22}/></button>
-                    <button onClick={() => setIsPlaying(!isPlaying)} className="bg-vallenato-mustard text-vallenato-blue p-3 md:p-4 rounded-full hover:scale-110 active:scale-95 transition-all shadow-lg">{isPlaying ? <Pause size={24} fill="currentColor"/> : <Play size={24} fill="currentColor" className="ml-1" />}</button>
-                    <button onClick={goToNext} disabled={!canGoNext} className={`transition-all transform hover:scale-110 hidden sm:block ${canGoNext ? 'text-white hover:text-vallenato-mustard' : 'opacity-20 cursor-not-allowed'}`}><SkipForward size={22}/></button>
-                  </div>
-                  <div className="hidden md:flex items-center justify-end gap-6 w-1/4">
-                    <button onClick={() => { setCurrentAudio(null); setShowStoryCard(false); }} className="text-white/30 hover:text-vallenato-red transition-all transform hover:rotate-90"><X size={22}/></button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <>
+          <audio
+            ref={audioRef}
+            src={currentAudio.url_audio}
+            preload="none"
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleTimeUpdate}
+            onEnded={goToNext}
+          />
+          <PersistentPlayerDock
+            currentAudio={currentAudio}
+            isPlaying={isPlaying}
+            currentTime={currentTime}
+            duration={duration}
+            isTaleActive={isTaleActive}
+            showStoryCard={showStoryCard}
+            canGoNext={canGoNext}
+            canGoPrev={canGoPrev}
+            onTogglePlay={() => setIsPlaying(!isPlaying)}
+            onNext={goToNext}
+            onPrev={goToPrev}
+            onSeek={(newTime) => {
+              if (audioRef.current) {
+                audioRef.current.currentTime = newTime;
+                setCurrentTime(newTime);
+              }
+            }}
+            onToggleStoryCard={() => setShowStoryCard(!showStoryCard)}
+            onClose={() => {
+              setCurrentAudio(null);
+              setShowStoryCard(false);
+            }}
+          />
+        </>
       )}
     </div>
   );
