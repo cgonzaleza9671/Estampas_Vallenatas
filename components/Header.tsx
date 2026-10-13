@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, LayoutGroup } from 'motion/react';
 
 const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -47,7 +47,6 @@ const Header: React.FC = () => {
               <div className="w-0.5 h-0.5 bg-white rounded-full"></div>
             </div>
           </div>
-
           <div className="flex items-baseline gap-1.5 select-none">
             <h1 className="text-lg md:text-xl font-serif font-bold text-white tracking-wide group-hover:text-amber-200 transition-colors">
               Estampas
@@ -58,39 +57,42 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Menú de Navegación Estilo Linear con Caligrafía Serif de la Página */}
+        {/* Menú de Navegación Estilo Linear con Caligrafía Serif y transición elástica compartida */}
         <div className="hidden lg:flex items-center justify-end flex-1 pl-8">
-          <nav className="inline-flex items-center gap-1 p-1 rounded-full bg-white/[0.03] border border-white/[0.07] backdrop-blur-md shadow-inner">
-            {navItems.map((item) => {
-              const active = isActive(item.path);
-              return (
-                <div key={item.path} className="relative flex items-center">
-                  <button
-                    onClick={() => handleNav(item.path)}
-                    className={`relative z-10 px-3.5 py-1.5 rounded-full text-xs sm:text-[13px] md:text-sm font-serif font-medium tracking-normal transition-all duration-200 ${
-                      active
-                        ? 'text-amber-200 font-semibold shadow-sm'
-                        : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
-                    }`}
-                  >
-                    {active && (
-                      <motion.span
-                        layoutId="activeHeaderPill"
-                        className="absolute inset-0 bg-white/[0.1] border border-white/[0.12] rounded-full -z-10 shadow-sm"
-                        transition={{ type: 'spring', bounce: 0.15, duration: 0.5 }}
-                      />
-                    )}
-                    <span className="flex items-center gap-1.5">
+          <LayoutGroup id="header-nav-group">
+            <nav className="inline-flex items-center gap-1 p-1 rounded-full bg-white/[0.03] border border-white/[0.07] backdrop-blur-md shadow-inner">
+              {navItems.map((item) => {
+                const active = isActive(item.path);
+                return (
+                  <div key={item.path} className="relative flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => handleNav(item.path)}
+                      className={`relative z-10 px-3.5 py-1.5 rounded-full text-xs sm:text-[13px] md:text-sm font-serif font-medium tracking-normal transition-colors duration-200 ${
+                        active
+                          ? 'text-amber-200 font-semibold'
+                          : 'text-white/70 hover:text-white hover:bg-white/[0.05]'
+                      }`}
+                    >
                       {active && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-vallenato-mustard shadow-[0_0_8px_rgba(234,170,0,0.8)]" />
+                        <motion.span
+                          layoutId="activeHeaderPill"
+                          className="absolute inset-0 bg-white/[0.1] border border-white/[0.12] rounded-full -z-10 shadow-sm"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
                       )}
-                      {item.label}
-                    </span>
-                  </button>
-                </div>
-              );
-            })}
-          </nav>
+                      <span className="flex items-center gap-1.5">
+                        {active && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-vallenato-mustard shadow-[0_0_8px_rgba(234,170,0,0.8)]" />
+                        )}
+                        {item.label}
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
+            </nav>
+          </LayoutGroup>
         </div>
 
         {/* Botón Móvil */}
