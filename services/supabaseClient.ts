@@ -14,16 +14,42 @@ const getCacheKey = (base: string, limit: number, page: number, filters: any = {
   return `${base}_p${page}_l${limit}_f${filterStr}_v37`;
 };
 
+const memoryCache = new Map<string, string>();
+
+const safeSetItem = (key: string, value: string): void => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(key, value);
+    } else {
+      memoryCache.set(key, value);
+    }
+  } catch (e) {
+    memoryCache.set(key, value);
+  }
+};
+
+const safeGetItem = (key: string): string | null => {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const val = localStorage.getItem(key);
+      if (val !== null) return val;
+    }
+    return memoryCache.get(key) || null;
+  } catch (e) {
+    return memoryCache.get(key) || null;
+  }
+};
+
 const setCache = (key: string, data: any) => {
   try {
-    localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
+    safeSetItem(key, JSON.stringify({ timestamp: Date.now(), data }));
   } catch (e) { /* silent */ }
 };
 
 const getCache = (key: string) => {
-  const entry = localStorage.getItem(key);
-  if (!entry) return null;
   try {
+    const entry = safeGetItem(key);
+    if (!entry) return null;
     const { timestamp, data } = JSON.parse(entry);
     if (Date.now() - timestamp > CACHE_TTL) return null;
     return data;

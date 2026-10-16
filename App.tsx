@@ -79,7 +79,12 @@ const AppContent: React.FC = () => {
 
   // Lógica de invitación flotante
   useEffect(() => {
-    const hasSeenInvite = sessionStorage.getItem('vallenato_yt_invite');
+    let hasSeenInvite = false;
+    try {
+      hasSeenInvite = Boolean(sessionStorage.getItem('vallenato_yt_invite'));
+    } catch (e) {
+      hasSeenInvite = false;
+    }
     if (!hasSeenInvite) {
       const timer = setTimeout(() => setShowYouTubeInvite(true), 4000);
       return () => clearTimeout(timer);
@@ -95,7 +100,9 @@ const AppContent: React.FC = () => {
 
   const closeYouTubeInvite = () => {
     setShowYouTubeInvite(false);
-    sessionStorage.setItem('vallenato_yt_invite', 'true');
+    try {
+      sessionStorage.setItem('vallenato_yt_invite', 'true');
+    } catch (e) { /* silent */ }
   };
 
   const handlePlayAudio = (audio: AudioItem, list?: AudioItem[]) => {

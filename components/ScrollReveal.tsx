@@ -17,7 +17,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   duration = 0.5 
 }) => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const isInView = useInView(ref, { once: true, amount: "some" });
 
   const getVariants = () => {
     switch (direction) {
