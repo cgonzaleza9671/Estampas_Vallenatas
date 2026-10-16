@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StoryItem } from '../../types.ts';
-import { fetchRelatos } from '../../services/supabaseClient.ts';
+import { fetchRelatos, getCachedRelatos } from '../../services/supabaseClient.ts';
 import { LEGENDARY_TALES } from '../../constants.ts';
 import ScrollReveal from '../ScrollReveal.tsx';
 import { ArrowLeft, Play, Pause, SkipBack, SkipForward, Quote, Timer, ChevronRight, Volume2, Loader2, Clock, Feather, Volume1, VolumeX, BookOpen, RotateCcw, CheckCircle2, FastForward } from 'lucide-react';
@@ -173,14 +173,24 @@ const STORY_TIMESTAMPS: Record<string, number[]> = {
 };
 
 const LegendaryTales: React.FC = () => {
-  const [relatos, setRelatos] = useState<StoryItem[]>([]);
+  // Carga instantánea: Usar datos cacheados o precargados locales sin esperar a red
+  const [relatos, setRelatos] = useState<StoryItem[]>(() => {
+    const cached = getCachedRelatos();
+    if (cached && cached.length > 0) return cached;
+    return LEGENDARY_TALES;
+  });
   const [selectedStory, setSelectedStory] = useState<StoryItem | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isAudioBuffering, setIsAudioBuffering] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [activeParagraphIndex, setActiveParagraphIndex] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
   const [volume, setVolume] = useState(1.0);
-  const [loading, setLoading] = useState(true);
+  // Nunca bloquear la pantalla si ya hay relatos disponibles
+  const [loading, setLoading] = useState(() => {
+    const cached = getCachedRelatos();
+    return (!cached || cached.length === 0) && LEGENDARY_TALES.length === 0;
+  });
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   
@@ -200,25 +210,30 @@ const LegendaryTales: React.FC = () => {
   }, [playbackSpeed]);
 
   useEffect(() => {
+    let isMounted = true;
     const loadRelatos = async () => {
-      setLoading(true);
       try {
         const data = await fetchRelatos();
-        // Combinar datos de Supabase con locales para asegurar que Leandro Díaz aparezca
-        const combined = [...data];
-        LEGENDARY_TALES.forEach(local => {
-          if (!combined.find(c => c.id === local.id || c.titulo === local.titulo)) {
-            combined.push(local);
-          }
-        });
-        setRelatos(combined);
+        if (isMounted && data && data.length > 0) {
+          // Combinar datos remotos con predefinidos asegurando integridad
+          const combined = [...data];
+          LEGENDARY_TALES.forEach(local => {
+            if (!combined.find(c => c.id === local.id || c.titulo.toLowerCase() === local.titulo.toLowerCase())) {
+              combined.push(local);
+            }
+          });
+          setRelatos(combined);
+        }
       } catch (err) {
-        console.error(err);
+        console.warn("Sincronización en segundo plano de relatos:", err);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     loadRelatos();
+    return () => { isMounted = false; };
   }, []);
 
   const paragraphs = useMemo(() => {
@@ -289,12 +304,27 @@ const LegendaryTales: React.FC = () => {
     }
   }, [activeParagraphIndex, isFinished, selectedStory]);
 
+  useEffect(() => {
+    return () => {
+      window.dispatchEvent(new CustomEvent('talePause'));
+    };
+  }, []);
+
+  const handleCloseStory = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    window.dispatchEvent(new CustomEvent('talePause'));
+    setSelectedStory(null);
+  };
+
   const restartStory = () => {
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
       setActiveParagraphIndex(0);
       setIsFinished(false);
       setIsPlaying(true);
+      window.dispatchEvent(new CustomEvent('talePlay'));
       audioRef.current.play().catch(console.error);
       setTimeout(() => {
         paragraphsRef.current[0]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -308,7 +338,9 @@ const LegendaryTales: React.FC = () => {
     } else if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
+        window.dispatchEvent(new CustomEvent('talePause'));
       } else {
+        window.dispatchEvent(new CustomEvent('talePlay'));
         audioRef.current.play().catch(console.error);
       }
     }
@@ -363,15 +395,33 @@ const LegendaryTales: React.FC = () => {
 
   if (selectedStory) {
     return (
-      <div className="min-h-screen bg-vallenato-dark text-white animate-fade-in pb-48">
+      <div className="fixed inset-0 z-[120] bg-vallenato-dark text-white animate-fade-in overflow-y-auto pb-48">
         <audio 
           ref={audioRef} 
           src={selectedStory.audio_url} 
+          preload="metadata"
+          onWaiting={() => setIsAudioBuffering(true)}
+          onPlaying={() => {
+            setIsAudioBuffering(false);
+            setIsPlaying(true);
+            window.dispatchEvent(new CustomEvent('talePlay'));
+          }}
+          onCanPlay={() => setIsAudioBuffering(false)}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
-          onEnded={handleEnded}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
+          onEnded={() => {
+            handleEnded();
+            window.dispatchEvent(new CustomEvent('talePause'));
+          }}
+          onPlay={() => {
+            setIsPlaying(true);
+            window.dispatchEvent(new CustomEvent('talePlay'));
+          }}
+          onPause={() => {
+            setIsPlaying(false);
+            setIsAudioBuffering(false);
+            window.dispatchEvent(new CustomEvent('talePause'));
+          }}
         />
 
         {/* Pantalla de Finalización (Overlay Centrado) */}
@@ -411,7 +461,7 @@ const LegendaryTales: React.FC = () => {
                          <RotateCcw size={18} /> Volver a escuchar
                       </button>
                       <button 
-                        onClick={() => setSelectedStory(null)}
+                        onClick={handleCloseStory}
                         className="will-change-transform w-full flex items-center justify-center gap-3 bg-white/5 text-white/60 px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
                       >
                          Salir al archivo
@@ -436,7 +486,7 @@ const LegendaryTales: React.FC = () => {
            <div className="container mx-auto grid grid-cols-3 items-center w-full">
               <div className="flex justify-start">
                 <button 
-                  onClick={() => setSelectedStory(null)} 
+                  onClick={handleCloseStory} 
                   className="flex items-center gap-2 text-white/60 hover:text-vallenato-mustard transition-all font-bold uppercase text-[9px] tracking-widest group"
                 >
                   <ArrowLeft size={14} /> <span className="hidden sm:inline">Volver</span>
@@ -598,14 +648,23 @@ const LegendaryTales: React.FC = () => {
                     <div className="flex flex-col items-center gap-2">
                        <button 
                          onClick={togglePlay} 
+                         aria-label={isAudioBuffering ? "Cargando audio" : isPlaying ? "Pausar" : "Reproducir"}
                          className={`relative p-5 rounded-full transition-all duration-500 shadow-2xl active:scale-90 group ${isPlaying ? 'bg-vallenato-red text-white' : 'bg-vallenato-mustard text-vallenato-blue'}`}
                        >
-                         {isPlaying && <div className="absolute inset-0 rounded-full bg-vallenato-red/30 animate-ping"></div>}
-                         <div className="relative z-10">
-                           {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                         {isPlaying && !isAudioBuffering && <div className="absolute inset-0 rounded-full bg-vallenato-red/30 animate-ping"></div>}
+                         <div className="relative z-10 flex items-center justify-center">
+                           {isAudioBuffering ? (
+                             <Loader2 size={24} className="animate-spin text-white" />
+                           ) : isPlaying ? (
+                             <Pause size={24} fill="currentColor" />
+                           ) : (
+                             <Play size={24} fill="currentColor" className="ml-1" />
+                           )}
                          </div>
                        </button>
-                       <span className="text-[8px] font-black uppercase tracking-widest text-white/40">{isPlaying ? 'Pausa' : 'Play'}</span>
+                       <span className="text-[8px] font-black uppercase tracking-widest text-white/40">
+                         {isAudioBuffering ? 'Cargando...' : isPlaying ? 'Pausa' : 'Play'}
+                       </span>
                     </div>
 
                     <div className="flex flex-col items-center gap-1 group">
@@ -654,8 +713,17 @@ const LegendaryTales: React.FC = () => {
               onClick={() => handleStartStory(story)} 
               className="group bg-white rounded-[2.5rem] overflow-hidden shadow-museum border border-vallenato-mustard/10 hover:shadow-gold transition-all duration-700 cursor-pointer flex flex-col sm:flex-row"
             >
-              <div className="will-change-transform w-full sm:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-vallenato-dark">
-                 <img src={story.imagen} loading="lazy" decoding="async"  alt={story.titulo} className="will-change-transform w-full h-full object-cover opacity-80 grayscale group-hover:scale-110 transition-transform duration-[2s]" />
+              <div className="will-change-transform w-full sm:w-[45%] flex-shrink-0 aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-[#001a33] to-[#002b4d]">
+                 <img 
+                   src={story.imagen} 
+                   loading="lazy" 
+                   decoding="async"  
+                   alt={story.titulo} 
+                   onError={(e) => {
+                     (e.target as HTMLImageElement).src = "https://i.imgur.com/CyzoY4Y.jpeg";
+                   }}
+                   className="will-change-transform w-full h-full object-cover opacity-85 grayscale group-hover:scale-110 transition-transform duration-[2s]" 
+                 />
                  <div className="absolute inset-0 bg-gradient-to-t from-vallenato-dark/80 via-transparent to-transparent opacity-60"></div>
                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <div className="bg-white/20 p-5 rounded-full border border-white/30 text-white shadow-2xl scale-75 group-hover:scale-100 transition-all duration-500">

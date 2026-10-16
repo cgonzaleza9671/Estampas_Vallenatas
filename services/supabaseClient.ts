@@ -299,45 +299,76 @@ export const fetchVideoFilters = async () => {
   };
 };
 
-export const fetchRelatos = async (): Promise<StoryItem[]> => {
+const withTimeout = <T>(promise: PromiseLike<T>, timeoutMs: number = 4500): Promise<T> => {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((_, reject) => 
+      setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs)
+    )
+  ]);
+};
+
+export const getCachedRelatos = (): StoryItem[] | null => {
   const cacheKey = getCacheKey('relatos', 100, 0);
-  const cached = getCache(cacheKey);
-  if (cached) return cached;
+  return getCache(cacheKey);
+};
 
-  const { data, error } = await supabase
-    .from('Relatos')
-    .select('*')
-    .order('fecha_registro', { ascending: false });
+export const fetchRelatos = async (forceRefresh: boolean = false): Promise<StoryItem[]> => {
+  const cacheKey = getCacheKey('relatos', 100, 0);
+  if (!forceRefresh) {
+    const cached = getCache(cacheKey);
+    if (cached && cached.length > 0) return cached;
+  }
 
-  if (error) return [];
-  const items = data ? data.map((db: any): StoryItem => {
-    const d = new Date(db.fecha_registro || Date.now());
-    const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  try {
+    const fetchPromise = supabase
+      .from('Relatos')
+      .select('*')
+      .order('fecha_registro', { ascending: false });
+
+    const result = await withTimeout<any>(fetchPromise, 4500);
+    const data = result?.data;
+    const error = result?.error;
+
+    if (error) {
+      console.warn("Supabase fetchRelatos error:", error);
+      const cached = getCache(cacheKey);
+      return cached || [];
+    }
+
+    const items = data ? data.map((db: any): StoryItem => {
+      const d = new Date(db.fecha_registro || Date.now());
+      const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+      
+      let imagen = db.imagen_relato || '';
+      if (imagen && !imagen.startsWith('http')) {
+        imagen = `${SUPABASE_URL}/storage/v1/object/public/Imagenes/${imagen}`;
+      }
+
+      let audio = db.relato_url || '';
+      if (audio && !audio.startsWith('http')) {
+        audio = `${SUPABASE_URL}/storage/v1/object/public/Audios/${audio}`;
+      }
+
+      return {
+        id: db.id,
+        titulo: (db.titulo || 'Sin Título').trim(),
+        subtitulo: (db.subtitulo || '').trim(),
+        fecha: `${monthNames[d.getMonth()]} ${d.getFullYear()}`,
+        imagen: imagen,
+        contenido: db.texto || '',
+        autor: "Álvaro González Pimienta",
+        audio_url: audio
+      };
+    }) : [];
     
-    let imagen = db.imagen_relato || '';
-    if (imagen && !imagen.startsWith('http')) {
-      imagen = `${SUPABASE_URL}/storage/v1/object/public/Imagenes/${imagen}`;
-    }
-
-    let audio = db.relato_url || '';
-    if (audio && !audio.startsWith('http')) {
-      audio = `${SUPABASE_URL}/storage/v1/object/public/Audios/${audio}`;
-    }
-
-    return {
-      id: db.id,
-      titulo: db.titulo || 'Sin Título',
-      subtitulo: db.subtitulo || '',
-      fecha: `${monthNames[d.getMonth()]} ${d.getFullYear()}`,
-      imagen: imagen,
-      contenido: db.texto || '',
-      autor: "Álvaro González Pimienta",
-      audio_url: audio
-    };
-  }) : [];
-  
-  if (items.length > 0) setCache(cacheKey, items);
-  return items;
+    if (items.length > 0) setCache(cacheKey, items);
+    return items;
+  } catch (err) {
+    console.warn("Supabase fetchRelatos timed out or failed:", err);
+    const cached = getCache(cacheKey);
+    return cached || [];
+  }
 };
 
 export const fetchLatestAudio = async (): Promise<AudioItem | null> => {

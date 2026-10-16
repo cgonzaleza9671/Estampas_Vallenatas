@@ -132,11 +132,6 @@ const Header: React.FC = () => {
                     )}
                     {item.label}
                   </span>
-                  {active && (
-                    <span className="text-[10px] text-amber-200/60 uppercase tracking-widest font-mono">
-                      Activo
-                    </span>
-                  )}
                 </button>
               );
             })}

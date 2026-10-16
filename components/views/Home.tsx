@@ -3,11 +3,11 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { AudioItem, VideoItem, StoryItem } from '../../types.ts';
-import { HERO_GALLERY } from '../../constants.ts';
+import { HERO_GALLERY, LEGENDARY_TALES } from '../../constants.ts';
 import Button from '../Button.tsx';
 import MediaModal from '../MediaModal.tsx';
 import { Play, Sparkles, ArrowRight, User, Video, Calendar, Pause, Mic2, Globe, BookOpen, Headphones, X, Star, Feather, ChevronRight, Disc, ListMusic, Quote } from 'lucide-react';
-import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos } from '../../services/supabaseClient.ts';
+import { fetchLatestAudio, fetchRecentAudios, fetchRecentVideos, fetchRelatos, getCachedRelatos } from '../../services/supabaseClient.ts';
 import { AccordionPlayIcon, AcordeonMinimal, GuacharacaMinimal, CajaMinimal, NotaMusicalMinimal } from '../CustomIcons.tsx';
 import ScrollReveal from '../ScrollReveal.tsx';
 import TypewriterHeroText from '../TypewriterHeroText.tsx';
@@ -26,7 +26,11 @@ const Home: React.FC<HomeProps> = ({ onPlayAudio, onVideoOpen, currentAudioId, i
   const [latestAudio, setLatestAudio] = useState<AudioItem | null>(null);
   const [recentAudios, setRecentAudios] = useState<AudioItem[]>([]);
   const [recentVideos, setRecentVideos] = useState<VideoItem[]>([]);
-  const [recentRelatos, setRecentRelatos] = useState<StoryItem[]>([]);
+  const [recentRelatos, setRecentRelatos] = useState<StoryItem[]>(() => {
+    const cached = getCachedRelatos();
+    if (cached && cached.length > 0) return cached;
+    return LEGENDARY_TALES;
+  });
   const [heroIndex, setHeroIndex] = useState(0);
   const [loadedImages, setLoadedImages] = useState<number[]>([0]);
   const [novedadIndex, setNovedadIndex] = useState(0); // 0: Audio, 1: Relato
