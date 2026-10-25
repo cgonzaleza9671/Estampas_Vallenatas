@@ -301,30 +301,42 @@ const Journey: React.FC = () => {
       <div className="max-w-6xl mx-auto px-6 mt-20">
         <h2 className="text-3xl font-serif font-bold text-vallenato-blue text-center mb-10">Directorio por País</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {reachData.map(country => (
-            <div 
-              key={country.isoCode}
-              onClick={() => setSelectedCountry(country)}
-              className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-vallenato-mustard/30 overflow-hidden group"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm shrink-0">
-                    <img 
-                      src={`https://flagcdn.com/${country.isoCode}.svg`} 
-                      alt={`Bandera de ${country.name}`} 
-                      className="w-full h-full object-cover"
-                    />
+          {reachData.map((country, index) => {
+            const itemNumber = String(index + 1).padStart(2, '0');
+            return (
+              <div 
+                key={country.isoCode}
+                onClick={() => setSelectedCountry(country)}
+                className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer border border-transparent hover:border-vallenato-mustard/30 overflow-hidden group relative"
+                aria-label={`País ${index + 1}: ${country.name}, ${country.cities.length} ciudades`}
+              >
+                {/* Número escultural de fondo / Watermark editorial */}
+                <span 
+                  className="absolute right-5 top-2.5 text-4xl md:text-5xl font-serif font-light text-vallenato-blue/[0.06] group-hover:text-vallenato-mustard/30 select-none pointer-events-none transition-colors duration-500 tabular-nums leading-none tracking-tighter"
+                  aria-hidden="true"
+                >
+                  {itemNumber}
+                </span>
+
+                <div className="flex items-center justify-between relative z-10">
+                  <div className="flex items-center gap-4 min-w-0 pr-3">
+                    <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm shrink-0">
+                      <img 
+                        src={`https://flagcdn.com/${country.isoCode}.svg`} 
+                        alt={`Bandera de ${country.name}`} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-vallenato-blue text-lg leading-tight truncate">{country.name}</h3>
+                      <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-0.5">{country.cities.length} {country.cities.length === 1 ? 'Ciudad' : 'Ciudades'}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-bold text-vallenato-blue text-lg leading-tight">{country.name}</h3>
-                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest">{country.cities.length} {country.cities.length === 1 ? 'Ciudad' : 'Ciudades'}</p>
-                  </div>
+                  <ChevronRight className="text-vallenato-mustard opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 shrink-0" />
                 </div>
-                <ChevronRight className="text-vallenato-mustard opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
